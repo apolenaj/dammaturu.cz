@@ -398,7 +398,7 @@ export function applyProductEventToState(
 ): { state: ProductLearnerState; milestones: ProductEventInput[] } {
   const at = event.at;
   const milestones: ProductEventInput[] = [];
-  let next: ProductLearnerState = {
+  const next: ProductLearnerState = {
     ...state,
     lastSeenAt: at > state.lastSeenAt ? at : state.lastSeenAt,
     firstSeenAt: state.firstSeenAt || at,

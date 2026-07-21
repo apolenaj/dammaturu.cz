@@ -76,7 +76,7 @@ describe("literature-maturity (D-052)", () => {
   });
 
   it("draws and ranks weakest by mastery", () => {
-    let a = createLiteratureBook({
+    const a = createLiteratureBook({
       id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
       titleCs: "A",
       nowIso: now,

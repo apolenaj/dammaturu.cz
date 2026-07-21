@@ -104,7 +104,7 @@ describe("progress-gamification (D-047 / D-060)", () => {
 
   it("celebrates streak marks and weekly goal once", () => {
     const now = "2026-07-20T12:00:00.000Z";
-    let state = emptyProgressState("learner-1", now);
+    const state = emptyProgressState("learner-1", now);
     const streak = celebrateStreakMarks(state, 7, now);
     expect(streak.celebrations.some((c) => c.titleCs === "7 dní v řadě")).toBe(
       true,

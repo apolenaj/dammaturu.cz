@@ -410,7 +410,7 @@ export function buildOralExaminerBrief(
   const evidenceSufficient =
     merged.length >= oralSimulationConfig.minChecklistForGrade;
 
-  const followUps: MockExamFollowUp[] = merged.slice(0, 10).map((item, i) => ({
+  const followUps: MockExamFollowUp[] = merged.slice(0, 10).map((item) => ({
     id: `fu-${item.id}`,
     checklistItemId: item.id,
     question: `Doplň: ${item.label.replace(/^[^:]+:\s*/, "").slice(0, 120)}?`,
@@ -454,7 +454,11 @@ export function briefToMockTopic(brief: OralExaminerBrief): MockExamTopic {
       : "00000000-0000-4000-8000-000000000001";
 
   // Ensure minimum checklist shape for zod when insufficient — empty topic uses stubs marked insufficient
-  let checklist = brief.checklist.map(({ evidence: _e, ...rest }) => rest);
+  const checklist = brief.checklist.map((item) => {
+    const { evidence: _ignored, ...rest } = item;
+    void _ignored;
+    return rest;
+  });
   let followUps = brief.followUps;
   if (checklist.length < 5) {
     const pad = 5 - checklist.length;

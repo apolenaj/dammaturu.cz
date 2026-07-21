@@ -187,7 +187,7 @@ export async function importFromMaterialKnowledge(input: {
 }): Promise<{ list: LiteratureMaturityList; booksTouched: number }> {
   const list = await getOrCreateLiteratureList(input.learnerId);
   const now = new Date().toISOString();
-  let books = [...list.books];
+  const books = [...list.books];
   let touched = 0;
 
   for (const material of input.materials) {
@@ -204,7 +204,7 @@ export async function importFromMaterialKnowledge(input: {
 
       const key = normalizeTitleKey(title);
       const extracted = extractFieldsFromKnowledgeUnits(groupUnits, material.id);
-      let idx = books.findIndex((b) => normalizeTitleKey(b.titleCs) === key);
+      const idx = books.findIndex((b) => normalizeTitleKey(b.titleCs) === key);
 
       if (idx < 0) {
         let slug = slugifyTitle(title);

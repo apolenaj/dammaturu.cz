@@ -621,7 +621,7 @@ export function maybeAttachPlatformSeed(
     Object.values(PLATFORM_WORK_SEEDS).find((s) => s.slug === key);
   if (!seed) return book;
 
-  let fields = { ...book.fields };
+  const fields = { ...book.fields };
   for (const fk of literatureFieldKeys) {
     const v = seed[fk];
     if (!v) continue;

@@ -11,7 +11,6 @@ import {
   siteUrl,
 } from "@/lib/supabase/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { safeInternalPath } from "@/lib/security/hardening";
 import {
   clearLocalAuthCookie,
   isLocalDevAuthEnabled,
