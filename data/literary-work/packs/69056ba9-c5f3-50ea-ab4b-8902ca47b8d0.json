@@ -1,0 +1,324 @@
+{
+  "id": "69056ba9-c5f3-50ea-ab4b-8902ca47b8d0",
+  "slug": "babicka",
+  "title": "Babička",
+  "author": "Božena Němcová",
+  "yearPublished": 1855,
+  "workType": "próza / obraz venkova",
+  "movement": "Romantismus / národní obrození (realistické prvky)",
+  "summary": "Obraz ideálního venkova a babičky jako morálního středu — idyla s realistickými detaily.",
+  "related": {
+    "curriculumTopicSlug": "rozbor-babicka",
+    "sourceFilename": "Babička.docx",
+    "testHref": "/app/tests/otazky/cjl-otazky"
+  },
+  "sections": [
+    {
+      "id": "quick_grasp",
+      "summaryCs": "Rychlý vstup do díla.",
+      "blocks": [
+        {
+          "type": "callout",
+          "tone": "brand",
+          "title": "Jednou větou",
+          "body": "Próza o babičce na Starém bělidle — ideál lidskosti, řádu a venkovského společenství."
+        },
+        {
+          "type": "bullets",
+          "items": [
+            "Autorka: Božena Němcová · 1855",
+            "Žánr: próza (obraz / idyla s realistickými prvky)",
+            "Jádro: babička jako morální centrum",
+            "Prostor: Staré bělidlo a okolí"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "author_context",
+      "blocks": [
+        {
+          "type": "key_value",
+          "pairs": [
+            {
+              "label": "Autorka",
+              "value": "Božena Němcová (1820–1862)"
+            },
+            {
+              "label": "Vydání",
+              "value": "1855"
+            },
+            {
+              "label": "Kontext",
+              "value": "Národní obrození; zájem o lid a venkov"
+            },
+            {
+              "label": "Souvislost",
+              "value": "Také téma v ceska-literatura (nemcova-babicka)"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Němcová spojuje romantický ideál s pozorováním venkovského života. Babička je kanonické dílo české literatury."
+        }
+      ]
+    },
+    {
+      "id": "themes_motifs",
+      "blocks": [
+        {
+          "type": "bullets",
+          "items": [
+            "Lidskost, moudrost, soucit",
+            "Rodina a výchova dětí",
+            "Venkovský řád a práce",
+            "Kontrast dvora / panství a lidového světa",
+            "Příroda, zvyky, tradice"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "spacetime",
+      "blocks": [
+        {
+          "type": "key_value",
+          "pairs": [
+            {
+              "label": "Čas",
+              "value": "Cyklus roku / dětství vypravěčky; idylický, ne striktně chronikářský"
+            },
+            {
+              "label": "Prostor",
+              "value": "Staré bělidlo, údolí, okolní vesnický svět, panství"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "composition",
+      "blocks": [
+        {
+          "type": "bullets",
+          "items": [
+            "Epizodická stavba (obrazy / kapitoly)",
+            "Rámec vzpomínky a přítomnosti babičky",
+            "Prolínání všedních scén s klíčovými konflikty",
+            "Gradace k odchodu babičky"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "genre",
+      "blocks": [
+        {
+          "type": "key_value",
+          "pairs": [
+            {
+              "label": "Druh",
+              "value": "Próza"
+            },
+            {
+              "label": "Žánr",
+              "value": "Obraz venkova / idyla s realistickými prvky"
+            },
+            {
+              "label": "Poznámka",
+              "value": "U maturity neříkej jen „pohádka“ — je to umělecká próza"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "characters",
+      "blocks": [
+        {
+          "type": "character",
+          "name": "Babička",
+          "role": "Morální a emocionální centrum",
+          "traits": [
+            "moudrost",
+            "pracovitost",
+            "soucit",
+            "řád"
+          ]
+        },
+        {
+          "type": "character",
+          "name": "Děti (Barunka aj.)",
+          "role": "Pohled dětství / výchova",
+          "traits": [
+            "zvídavost",
+            "láska k babičce",
+            "růst"
+          ]
+        },
+        {
+          "type": "character",
+          "name": "Postavy dvora / okolí",
+          "role": "Společenský kontrast",
+          "traits": [
+            "hierarchie",
+            "konflikty",
+            "lidské typy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "plot",
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "Děj není dobrodružný thriller — je to sled obrazů života s babičkou, konflikty komunity a postupné uzavření idyly."
+        },
+        {
+          "type": "bullets",
+          "items": [
+            "Příchod babičky na Staré bělidlo",
+            "Všední život, zvyky, výchova",
+            "Vztahy s okolím a panstvím",
+            "Závěrečné vyústění (odchod babičky)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "language",
+      "blocks": [
+        {
+          "type": "bullets",
+          "items": [
+            "Srozumitelná, obrazná próza",
+            "Lidové prvky a dialogy",
+            "Popis detailů venkova",
+            "Emocionální, ale ne patetický tón Máchova typu"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tropes",
+      "blocks": [
+        {
+          "type": "bullets",
+          "items": [
+            "Symbolika domu / bělidla jako řádu",
+            "Kontrast lidového a panského světa",
+            "Ideál babičky jako typ",
+            "Cyklus přírody jako rámec života"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "exam_talking_points",
+      "blocks": [
+        {
+          "type": "callout",
+          "tone": "success",
+          "title": "Řekni u zkoušky",
+          "body": "Babička je próza o ideálu lidskosti a venkovského společenství. Zařaď autorku, rok, prostor (Staré bělidlo) a charakterizuj babičku jako morální centrum."
+        },
+        {
+          "type": "bullets",
+          "items": [
+            "Žánr + rok + prostor",
+            "3 vlastnosti babičky + příklad chování",
+            "Témata: rodina, řád, lidskost",
+            "Odliš od balady (Erben) i od Máje"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "common_mistakes",
+      "blocks": [
+        {
+          "type": "bullets",
+          "items": [
+            "Říct, že je to „jen pohádka pro děti“",
+            "Zaměnit Němcovou s Erbenem/Máchou",
+            "Nepopsat prostor / Staré bělidlo",
+            "Přehlížet společenský kontrast (lid × panství)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "test",
+      "blocks": [
+        {
+          "type": "quiz",
+          "id": "bab-q1",
+          "question": "Autorkou Babičky je:",
+          "options": [
+            "K. J. Erben",
+            "Božena Němcová",
+            "Gabriela Preissová",
+            "Karolina Světlá"
+          ],
+          "correctIndex": 1,
+          "explanation": "Autorkou je Božena Němcová."
+        },
+        {
+          "type": "quiz",
+          "id": "bab-q2",
+          "question": "Děj se odehrává především:",
+          "options": [
+            "V Praze u soudu",
+            "Na Starém bělidle a okolí",
+            "V ruském realismu",
+            "Na frontě"
+          ],
+          "correctIndex": 1,
+          "explanation": "Ústřední prostor je Staré bělidlo."
+        },
+        {
+          "type": "quiz",
+          "id": "bab-q3",
+          "question": "Babička jako postava představuje především:",
+          "options": [
+            "Romantického bundlera",
+            "Morální centrum a lidskou moudrost",
+            "Komickou figuru bez funkce",
+            "Antagonistu dětí"
+          ],
+          "correctIndex": 1,
+          "explanation": "Babička je morální a emocionální centrum díla."
+        }
+      ]
+    },
+    {
+      "id": "oral_exam",
+      "blocks": [
+        {
+          "type": "oral_prompt",
+          "id": "bab-o1",
+          "prompt": "Charakterizuj babičku a vysvětli, proč je centrem díla.",
+          "tips": [
+            "3 vlastnosti",
+            "1 situace",
+            "Vztah k dětem / okolí"
+          ]
+        },
+        {
+          "type": "oral_prompt",
+          "id": "bab-o2",
+          "prompt": "Zařaď Babičku žánrově a časoprostorově.",
+          "tips": [
+            "Próza / obraz venkova",
+            "1855",
+            "Staré bělidlo"
+          ]
+        }
+      ]
+    }
+  ],
+  "createdAt": "2026-07-20T12:00:00.000Z",
+  "updatedAt": "2026-07-20T12:00:00.000Z"
+}

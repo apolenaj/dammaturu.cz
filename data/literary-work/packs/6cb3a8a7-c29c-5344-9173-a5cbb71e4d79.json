@@ -1,0 +1,341 @@
+{
+  "id": "6cb3a8a7-c29c-5344-9173-a5cbb71e4d79",
+  "slug": "maj",
+  "title": "Máj",
+  "author": "Karel Hynek Mácha",
+  "yearPublished": 1836,
+  "workType": "lyrickoepická báseň",
+  "movement": "Romantismus",
+  "summary": "Vrchol českého romantismu — příroda, vina, láska a smrt v májovém kraji.",
+  "related": {
+    "curriculumTopicSlug": "rozbor-maj",
+    "sourceFilename": "Máj.docx",
+    "reconstructionHref": "/app/learn/rekonstrukce-pribehu/literarni-dej",
+    "testHref": "/app/tests/otazky/cjl-otazky",
+    "teachBackHref": "/app/learn/nauc-zpatky/cjl-teach-back"
+  },
+  "sections": [
+    {
+      "id": "quick_grasp",
+      "summaryCs": "Mikro-orientace před hlubším rozborem.",
+      "blocks": [
+        {
+          "type": "callout",
+          "tone": "brand",
+          "title": "Jednou větou",
+          "body": "Romantická báseň o vině, lásce a smrti — příroda zrcadlí vnitřní drama."
+        },
+        {
+          "type": "bullets",
+          "items": [
+            "Autor: K. H. Mácha · 1836",
+            "Žánr: lyrickoepická báseň (4 zpěvy + 2 intermezza)",
+            "Jádro: Jarmila / Vilém — zločin, vina, poprava",
+            "Klíč: kontrast krásy máje a lidské tragédie"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "author_context",
+      "blocks": [
+        {
+          "type": "key_value",
+          "pairs": [
+            {
+              "label": "Autor",
+              "value": "Karel Hynek Mácha (1810–1836)"
+            },
+            {
+              "label": "Směr",
+              "value": "Romantismus (český vrchol)"
+            },
+            {
+              "label": "Vydání",
+              "value": "1836"
+            },
+            {
+              "label": "Kontext",
+              "value": "Osobní i národní napětí; vliv evropského romantismu"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Mácha spojuje intenzivní subjektivitu, kult přírody a motivy viny a smrti. Máj je jeho stěžejní dílo — krátké, ale husté."
+        }
+      ]
+    },
+    {
+      "id": "themes_motifs",
+      "blocks": [
+        {
+          "type": "bullets",
+          "items": [
+            "Láska a zrada",
+            "Vina a trest",
+            "Příroda jako zrcadlo duše",
+            "Samota, smrt, pomíjivost",
+            "Konflikt ideálu a reality"
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "Motivy",
+          "body": "Májová noc, jezero, vězení, popraviště, hvězdy — opakující se obrazy vážou lyrickou a epickou vrstvu."
+        }
+      ]
+    },
+    {
+      "id": "spacetime",
+      "blocks": [
+        {
+          "type": "key_value",
+          "pairs": [
+            {
+              "label": "Čas",
+              "value": "Májová noc / jaro; děj koncentrovaný, ne kronikářský"
+            },
+            {
+              "label": "Prostor",
+              "value": "Česká krajina — jezero, skály, vězení, popraviště"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Časoprostor je silně atmosférický: příroda není kulisa, ale aktivní partner emocí."
+        }
+      ]
+    },
+    {
+      "id": "composition",
+      "blocks": [
+        {
+          "type": "bullets",
+          "items": [
+            "4 zpěvy + 2 intermezza",
+            "Střídání lyrických a epických pasáží",
+            "Kruhová / zrcadlová výstavba obrazů přírody",
+            "Gradace k tragickému vyústění"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "genre",
+      "blocks": [
+        {
+          "type": "key_value",
+          "pairs": [
+            {
+              "label": "Druh",
+              "value": "Poesie"
+            },
+            {
+              "label": "Žánr",
+              "value": "Lyrickoepická báseň"
+            },
+            {
+              "label": "Forma",
+              "value": "Vázaný verš, bohatá obraznost"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "U maturity zdůrazni lyrickoepický charakter: epický příběh je nesen silnou lyrickou atmosférou."
+        }
+      ]
+    },
+    {
+      "id": "characters",
+      "blocks": [
+        {
+          "type": "character",
+          "name": "Vilém (Hynek)",
+          "role": "Romantický hrdina / vězeň",
+          "traits": [
+            "vášeň",
+            "vina",
+            "vnitřní konflikt",
+            "osamělost"
+          ]
+        },
+        {
+          "type": "character",
+          "name": "Jarmila",
+          "role": "Milovaná žena",
+          "traits": [
+            "krása",
+            "tragický osud",
+            "spojena s přírodními obrazy"
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "warning",
+          "title": "Pozor",
+          "body": "Nezaměňuj Máchovy postavy s Erbenovými (Kytice) — jiný typ hrdiny i morálky."
+        }
+      ]
+    },
+    {
+      "id": "plot",
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "Epická linie sleduje dramatický vztah a zločin, který vede k trestu. Lyrické pasáže přírody rámcují a komentují lidský osud."
+        },
+        {
+          "type": "bullets",
+          "items": [
+            "Expozice májové krajiny a napětí",
+            "Odhalení viny / konfliktu",
+            "Vězení a vnitřní monolog",
+            "Tragické vyústění (poprava / ztráta)"
+          ]
+        },
+        {
+          "type": "link_cta",
+          "label": "Procvičit děj (rekonstrukce)",
+          "href": "/app/learn/rekonstrukce-pribehu/literarni-dej"
+        }
+      ]
+    },
+    {
+      "id": "language",
+      "blocks": [
+        {
+          "type": "bullets",
+          "items": [
+            "Bohatá metaforika a senzuální obrazy",
+            "Zvukomalba, opakování, refrénovitost",
+            "Kontrast světlých a temných motivů",
+            "Subjektivní, emocionálně nabitý jazyk"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tropes",
+      "blocks": [
+        {
+          "type": "bullets",
+          "items": [
+            "Metafora a personifikace přírody",
+            "Symbolika máje, noci, hvězd, vody",
+            "Oxymóron / kontrast krásy a smrti",
+            "Apostrofa, řečnické otázky"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "exam_talking_points",
+      "blocks": [
+        {
+          "type": "callout",
+          "tone": "success",
+          "title": "Řekni u zkoušky",
+          "body": "Máj je vrchol českého romantismu: subjekt, příroda a vina. Formálně lyrickoepická báseň s propojením děje a atmosféry."
+        },
+        {
+          "type": "bullets",
+          "items": [
+            "Zařaď směr + rok + žánr",
+            "Jmenuj 2–3 motivy a uveď příklad z textu",
+            "Vysvětli vztah přírody a vnitřního dramatu",
+            "Odliš od Erbena (morálka / balada)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "common_mistakes",
+      "blocks": [
+        {
+          "type": "bullets",
+          "items": [
+            "Říct, že Máj je balada jako Kytice",
+            "Zaměnit Máchu s Erbenem",
+            "Ignorovat lyrickou vrstvu a vyprávět jen „děj“",
+            "Datovat dílo mimo 1836 / špatný směr"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "test",
+      "blocks": [
+        {
+          "type": "quiz",
+          "id": "maj-q1",
+          "question": "Ve kterém roce vyšel Máj?",
+          "options": [
+            "1820",
+            "1836",
+            "1853",
+            "1868"
+          ],
+          "correctIndex": 1,
+          "explanation": "Máj vyšel roku 1836."
+        },
+        {
+          "type": "quiz",
+          "id": "maj-q2",
+          "question": "Jaký je žánr Máje?",
+          "options": [
+            "Realistický román",
+            "Lyrickoepická báseň",
+            "Drama",
+            "Pohádka"
+          ],
+          "correctIndex": 1,
+          "explanation": "Máj je lyrickoepická báseň."
+        },
+        {
+          "type": "quiz",
+          "id": "maj-q3",
+          "question": "Ke kterému směru patří Mácha / Máj?",
+          "options": [
+            "Realismus",
+            "Romantismus",
+            "Naturalismus",
+            "Klasicismus"
+          ],
+          "correctIndex": 1,
+          "explanation": "Máj je klíčové dílo českého romantismu."
+        }
+      ]
+    },
+    {
+      "id": "oral_exam",
+      "blocks": [
+        {
+          "type": "oral_prompt",
+          "id": "maj-o1",
+          "prompt": "Zařaď Máj do kontextu romantismu a vysvětli roli přírody.",
+          "tips": [
+            "Začni směrem a rokem",
+            "Uveď 1 motiv + 1 obraz",
+            "Srovnej krátce s Erbenem"
+          ]
+        },
+        {
+          "type": "oral_prompt",
+          "id": "maj-o2",
+          "prompt": "Popiš kompozici a vztah lyrické a epické složky.",
+          "tips": [
+            "Zpěvy / intermezza",
+            "Příroda vs. děj",
+            "Gradace k tragédii"
+          ]
+        }
+      ]
+    }
+  ],
+  "createdAt": "2026-07-20T12:00:00.000Z",
+  "updatedAt": "2026-07-20T12:00:00.000Z"
+}

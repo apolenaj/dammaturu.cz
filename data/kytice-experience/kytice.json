@@ -1,0 +1,645 @@
+{
+  "id": "8a5b83e0-a6eb-5998-8262-a5c4a01bc1aa",
+  "slug": "kytice",
+  "title": "Kytice — 13 balad",
+  "author": "Karel Jaromír Erben",
+  "summary": "Interaktivní collection balad ze SOURCE Kytice.docx: konflikt, vina, trest, motiv + hry.",
+  "themeCs": "Morální provinění člověka a jejich následky",
+  "motifOverviewCs": "sobeckost, chamtivost, zločin x trest, mateřství, láska, osud",
+  "sourceFilename": "Kytice.docx",
+  "literaryWorkHref": "/app/learn/dilo/kytice",
+  "reconstructionPackHref": "/app/learn/rekonstrukce-pribehu/literarni-dej",
+  "ballads": [
+    {
+      "id": "8136f8c8-7ca9-5551-9241-ab980fcec9ba",
+      "slug": "kytice",
+      "title": "Kytice",
+      "orderIndex": 0,
+      "storyBrief": "Dětem zemřela matka a ony chodily každý den na její hrob. Matka se proměnila v kvítek. Děti ji poznaly po dechu - mateří dech = mateřídouška. Matka představuje vlast, sirotci národ.",
+      "mainConflict": "Sirotci ztrácejí matku a hledají ji na hrobě.",
+      "guilt": "Bez přímé viny dětí — ztráta matky / vlasti.",
+      "punishment": "Proměna matky v květ; děti žijí s památkou (mateřídouška).",
+      "motif": "mateřství · vlast · sirotci",
+      "memorablePoint": "Mateří dech = mateřídouška; matka = vlast, sirotci = národ.",
+      "evidence": {
+        "qaItemId": "92588d61e556400ab8b6e2b1a06d5371",
+        "knowledgeUnitId": "storyrecon:kytice-ballad-kytice",
+        "publishedStatement": "Dětem zemřela matka a ony chodily každý den na její hrob. Matka se proměnila v kvítek. Děti ji poznaly po dechu - mateří dech = mateřídouška. Matka představuje vlast, sirotci národ.",
+        "validationStatus": "verified_from_source",
+        "filename": "Kytice.docx"
+      },
+      "storyReconstructionSlug": null
+    },
+    {
+      "id": "7aa3d423-f6af-57dd-b136-43bb635d84a7",
+      "slug": "vodnik",
+      "title": "Vodník",
+      "orderIndex": 1,
+      "storyBrief": "Dcera šla k jezeru a vodník ji stáhl pod hladinu. Měli spolu dítě. Prosila ho, aby se mohla jít ještě rozloučit s matkou. Přemluvila ho, on si však nechal u sebe jako pojistku jejich dítě a řekl jí, ať se vrátí do půlnoci. Půlnoc odbila a vodník bouchal na dveře. Matka však svou dceru držela uvnitř. Zpoza dveří se ozval řev dítěte, pak najednou utichl a něco spadlo. Vodník odešel. Matka otevřela dveře a na zemi viděla tělíčko bez hlavy a hlavu bez tělíčka.",
+      "mainConflict": "Dcera u jezera × vodník; návrat k matce vs. držení dítěte.",
+      "guilt": "Dcera chce odejít od vodníka; matka ji zadrží přes půlnoc.",
+      "punishment": "Vodník zabije dítě — tělíčko bez hlavy u dveří.",
+      "motif": "voda · mateřství · slib / lhůta",
+      "memorablePoint": "Pojistka dítěte u vodníka a půlnoc u dveří.",
+      "evidence": {
+        "qaItemId": "6937e6782e734ad99f712c9709f23b40",
+        "knowledgeUnitId": "storyrecon:kytice-ballad-vodnik",
+        "publishedStatement": "Dcera šla k jezeru a vodník ji stáhl pod hladinu. Měli spolu dítě. Prosila ho, aby se mohla jít ještě rozloučit s matkou. Přemluvila ho, on si však nechal u sebe jako pojistku jejich dítě a řekl jí, ať se vrátí do půlnoci. Půlnoc odbila a vodník bouchal na dveře. Matka však svou dceru držela uvnitř. Zpoza dveří se ozval řev dítěte, pak najednou utichl a něco spadlo. Vodník odešel. Matka otevřela dveře a na zemi viděla tělíčko bez hlavy a hlavu bez tělíčka.",
+        "validationStatus": "verified_from_source",
+        "filename": "Kytice.docx"
+      },
+      "storyReconstructionSlug": "kytice-vodnik"
+    },
+    {
+      "id": "eadeda67-5e89-5735-aa80-cac87495c9ad",
+      "slug": "polednice",
+      "title": "Polednice",
+      "orderIndex": 2,
+      "storyBrief": "Matka zavolala na své nezbedné dítě polednici. Když polednice skutečně přišla, matka své dítě bránila, tiskla ho k sobě tak silně, až ho zadusila.",
+      "mainConflict": "Matka hrozí dítěti polednicí — a ta skutečně přijde.",
+      "guilt": "Matka zavolá polednici na nezbedné dítě.",
+      "punishment": "V panice dítě tiskne tak silně, až ho zadusí.",
+      "motif": "mateřství · hrozba · vina z přehnané ochrany",
+      "memorablePoint": "Hrozba se naplní; trest je matčin vlastní čin.",
+      "evidence": {
+        "qaItemId": "5ea2dba2c22d436d94a36a4e85284579",
+        "knowledgeUnitId": "storyrecon:kytice-ballad-polednice",
+        "publishedStatement": "Matka zavolala na své nezbedné dítě polednici. Když polednice skutečně přišla, matka své dítě bránila, tiskla ho k sobě tak silně, až ho zadusila.",
+        "validationStatus": "verified_from_source",
+        "filename": "Kytice.docx"
+      },
+      "storyReconstructionSlug": "kytice-polednice"
+    },
+    {
+      "id": "127ad500-1d10-5618-9878-b9c6a77a7c26",
+      "slug": "zahorovo-loze",
+      "title": "Záhořovo lože",
+      "orderIndex": 3,
+      "storyBrief": "Poutník (mládenec) šel lesem a potkal lesního muže. Ten jej chtěl zabít, ale poutník mu řekl, že jde do pekla a že mu z pekla pošle zprávu. Lesní muž byl udiven, protože tohle mu ještě nikdo neřekl, a tak poutníka pustil. Poutník se vrátil z pekla a říkal, že znamením kříže donutil satana, pekelného knížete, rozkázat ďáblu, ať vrátí krvavý zápis. Ďábel však odmítl, a tak ho satan nechal vykoupat v pekelné koupeli (z jedné strany hoří, z druhé strany mrzne). Ďábel odmítl vydat zápis. Dal mu tedy satan obejmout pekelnou děvu (železná děva, jež ho drtila). Ani pak však ďábel nechtěl vydat krvavý zápis. Ale když uslyšel, že ho dají na lože Záhořovo (mučící lože), lekl se a ihned zápis vydal. Lesní muž se lekl, protože Záhoř byl on. Bál se, co ho čeká v pekle, prosil o odpuštění. Poutník řekl, že má klečet tak dlouho, dokud se zase nevrátí. Po několika letech šel lesem stařeček s jinochem a řekl mu, ať mu donese vodu. Jinoch jde tedy hledat vodu. Najde hýbající se pařez, lekne se a jde to říct stařečkovi. Ten přijde k pařezu - je to Záhoř, který tam pořád klečí - a řekne mu, že mu přináší pokoj. Povídá: “Amen”, a oba zemřou.",
+      "mainConflict": "Poutník vs. lesní muž / cesta do pekla a zpět.",
+      "guilt": "Lesní muž chce zabít; ďábel drží krvavý zápis.",
+      "punishment": "Pekelné tresty a zápas o zápis — legenda o vykoupení.",
+      "motif": "peklo · kříž · vykoupení",
+      "memorablePoint": "Neobvyklá balada bez ženské hrdinky (dle SOURCE).",
+      "evidence": {
+        "qaItemId": "63f5aa61d66841dbb186f424c3cdf67b",
+        "knowledgeUnitId": "storyrecon:kytice-ballad-zahorovo-loze",
+        "publishedStatement": "Poutník (mládenec) šel lesem a potkal lesního muže. Ten jej chtěl zabít, ale poutník mu řekl, že jde do pekla a že mu z pekla pošle zprávu. Lesní muž byl udiven, protože tohle mu ještě nikdo neřekl, a tak poutníka pustil. Poutník se vrátil z pekla a říkal, že znamením kříže donutil satana, pekelného knížete, rozkázat ďáblu, ať vrátí krvavý zápis. Ďábel však odmítl, a tak ho satan nechal vykoupat v pekelné koupeli (z jedné strany hoří, z druhé strany mrzne). Ďábel odmítl vydat zápis. Dal mu tedy satan obejmout pekelnou děvu (železná děva, jež ho drtila). Ani pak však ďábel nechtěl vydat krvavý zápis. Ale když uslyšel, že ho dají na lože Záhořovo (mučící lože), lekl se a ihned zápis vydal. Lesní muž se lekl, protože Záhoř byl on. Bál se, co ho čeká v pekle, prosil o odpuštění. Poutník řekl, že má klečet tak dlouho, dokud se zase nevrátí. Po několika letech šel lesem stařeček s jinochem a řekl mu, ať mu donese vodu. Jinoch jde tedy hledat vodu. Najde hýbající se pařez, lekne se a jde to říct stařečkovi. Ten přijde k pařezu - je to Záhoř, který tam pořád klečí - a řekne mu, že mu přináší pokoj. Povídá: “Amen”, a oba zemřou.",
+        "validationStatus": "verified_from_source",
+        "filename": "Kytice.docx"
+      },
+      "storyReconstructionSlug": null
+    },
+    {
+      "id": "c80861da-b17b-5ac2-af1f-2a9c2b53dacf",
+      "slug": "stedry-den",
+      "title": "Štědrý den",
+      "orderIndex": 4,
+      "storyBrief": "Dvě dívky, Hana a Marie, uvidí ve vodní hladině svou budoucnost. Hana viděla svatbu a Marie spatřila kostel a rakev. Marie už se Haniny svatby nedožila. Za rok už žádné dívky k jezeru nešly. Lépe je nic nevědět, než poznat strašlivou jistotu.",
+      "mainConflict": "Dívky chtějí poznat budoucnost ve vodě.",
+      "guilt": "Touha znát osud (Hana a Marie u hladiny).",
+      "punishment": "Marie vidí rakev a svatby se nedožije.",
+      "motif": "osud · voda · věštění",
+      "memorablePoint": "Lépe nic nevědět než strašlivou jistotu.",
+      "evidence": {
+        "qaItemId": "c1c8786b7ada44878ee9a21b4b974504",
+        "knowledgeUnitId": "storyrecon:kytice-ballad-stedry-den",
+        "publishedStatement": "Dvě dívky, Hana a Marie, uvidí ve vodní hladině svou budoucnost. Hana viděla svatbu a Marie spatřila kostel a rakev. Marie už se Haniny svatby nedožila. Za rok už žádné dívky k jezeru nešly. Lépe je nic nevědět, než poznat strašlivou jistotu.",
+        "validationStatus": "verified_from_source",
+        "filename": "Kytice.docx"
+      },
+      "storyReconstructionSlug": null
+    },
+    {
+      "id": "8b2fb32c-2aa7-51be-b29c-36eceb28262a",
+      "slug": "holoubek",
+      "title": "Holoubek",
+      "orderIndex": 5,
+      "storyBrief": "Vdova želela po manželovi, ale do měsíce si vzala jiného. Na hrobu jejího bývalého sedával holoubek, který zpíval pravdu. Žena cítila vinu, nemohla se jí zbavit, a tak se utopila.",
+      "mainConflict": "Vdova se brzy znovu vdá — svědomí ji usvědčuje.",
+      "guilt": "Příliš rychlá nová svatba po smrti manžela.",
+      "punishment": "Holoubek zpívá pravdu; žena se utopí.",
+      "motif": "vina · svědomí · holub",
+      "memorablePoint": "Holoubek na hrobě zpívá pravdu o vině.",
+      "evidence": {
+        "qaItemId": "b3335e2a0e6f41c79c71a4105b19c7e9",
+        "knowledgeUnitId": "storyrecon:kytice-ballad-holoubek",
+        "publishedStatement": "Vdova želela po manželovi, ale do měsíce si vzala jiného. Na hrobu jejího bývalého sedával holoubek, který zpíval pravdu. Žena cítila vinu, nemohla se jí zbavit, a tak se utopila.",
+        "validationStatus": "verified_from_source",
+        "filename": "Kytice.docx"
+      },
+      "storyReconstructionSlug": null
+    },
+    {
+      "id": "8f018627-640d-5a55-abba-88b363f80cf8",
+      "slug": "lilie",
+      "title": "Lilie",
+      "orderIndex": 6,
+      "storyBrief": "Umřela mladá dívka. Na jejím hrobě rostl vřes a vyrostla tam také lilie. Projížděl tudy pán na lov a když spatřil lilii, chtěl, aby mu ji sluha utrhl. Třetí den se z ní stane žena. Pán si ji vezme za manželku a slíbí, že ji bude chránit před sluncem (postaví zeď). Žena porodila dítě. Pán musel odjet ke králi a pověřil svou matku, ať se o jeho ženu stará. Jeho matka nechala strhnout zeď, jež chránila ženu. Pán přijede zpátky a zjistí, že jeho dítě je mrtvé a po jeho paní zůstala zvadlá lilie.",
+      "mainConflict": "Lilie-žena potřebuje ochranu; matka pána zeď strhne.",
+      "guilt": "Zrada / zanedbání ochrany (zeď stržena).",
+      "punishment": "Dítě mrtvé, zbývá zvadlá lilie.",
+      "motif": "proměna · ochrana · zrada",
+      "memorablePoint": "Ze lilie žena — bez ochrany zvadne.",
+      "evidence": {
+        "qaItemId": "9407ace826fe43cc8e12da0d59284600",
+        "knowledgeUnitId": "storyrecon:kytice-ballad-lilie",
+        "publishedStatement": "Umřela mladá dívka. Na jejím hrobě rostl vřes a vyrostla tam také lilie. Projížděl tudy pán na lov a když spatřil lilii, chtěl, aby mu ji sluha utrhl. Třetí den se z ní stane žena. Pán si ji vezme za manželku a slíbí, že ji bude chránit před sluncem (postaví zeď). Žena porodila dítě. Pán musel odjet ke králi a pověřil svou matku, ať se o jeho ženu stará. Jeho matka nechala strhnout zeď, jež chránila ženu. Pán přijede zpátky a zjistí, že jeho dítě je mrtvé a po jeho paní zůstala zvadlá lilie.",
+        "validationStatus": "verified_from_source",
+        "filename": "Kytice.docx"
+      },
+      "storyReconstructionSlug": null
+    },
+    {
+      "id": "a57a0ff4-cfac-5812-9b81-1a811e767d31",
+      "slug": "vestkyne",
+      "title": "Věštkyně",
+      "orderIndex": 7,
+      "storyBrief": "Věštkyně (Libuše), předpovídající budoucnost českého národa (lepší časy).",
+      "mainConflict": "Proroctví o budoucnosti národa (Libuše).",
+      "guilt": "Bez klasické viny postavy — úlomky proroctví.",
+      "punishment": "Bez klasického trestu — výhled lepších časů.",
+      "motif": "proroctví · národ · budoucnost",
+      "memorablePoint": "Věštkyně (Libuše) předpovídá lepší časy národa.",
+      "evidence": {
+        "qaItemId": "41d52256a65048a5bcff93e3c6a67de1",
+        "knowledgeUnitId": "storyrecon:kytice-ballad-vestkyne",
+        "publishedStatement": "Věštkyně (Libuše), předpovídající budoucnost českého národa (lepší časy).",
+        "validationStatus": "verified_from_source",
+        "filename": "Kytice.docx"
+      },
+      "storyReconstructionSlug": null
+    },
+    {
+      "id": "4d3b2adb-020d-5812-8a48-303419da879e",
+      "slug": "svatebni-kosile",
+      "title": "Svatební košile",
+      "orderIndex": 8,
+      "storyBrief": "Dívka se modlí, aby se už její milý vrátil z ciziny. Nikdo jiný jí na tom světě nezbyl. Rodiče i sourozenci už byli po smrti. V noci klepe její milý na okno a říká, ať s ním jde, že se stane jeho ženou. Jdou lesem a postupně jí milý zahazuje její modlitební knížky, růženec a křížek. V uzlíku s sebou měla ještě košile, které šila, když byl milý pryč. Přivedl ji na hřbitov, pochopila, že on už je taky mrtvý. Běžela se schovat. Modlila se. Ráno zakokrhal kohout a vše ustalo. Na každém hrobě byl útržek z košile.",
+      "mainConflict": "Dívka jde s „milým“ — on je mrtvý; zahazuje svátosti.",
+      "guilt": "Touha po milém / opuštění ochrany (knížky, růženec, křížek).",
+      "punishment": "Hřbitov, mrtví; ráno útržky košile na hrobech.",
+      "motif": "mrtvý milý · modlitba · zákaz",
+      "memorablePoint": "Kohout zakokrhá — vše ustane; na hrobech útržky košile.",
+      "evidence": {
+        "qaItemId": "f63195fd05c848079eb38daa9cfbf7b2",
+        "knowledgeUnitId": "storyrecon:kytice-ballad-svatebni-kosile",
+        "publishedStatement": "Dívka se modlí, aby se už její milý vrátil z ciziny. Nikdo jiný jí na tom světě nezbyl. Rodiče i sourozenci už byli po smrti. V noci klepe její milý na okno a říká, ať s ním jde, že se stane jeho ženou. Jdou lesem a postupně jí milý zahazuje její modlitební knížky, růženec a křížek. V uzlíku s sebou měla ještě košile, které šila, když byl milý pryč. Přivedl ji na hřbitov, pochopila, že on už je taky mrtvý. Běžela se schovat. Modlila se. Ráno zakokrhal kohout a vše ustalo. Na každém hrobě byl útržek z košile.",
+        "validationStatus": "verified_from_source",
+        "filename": "Kytice.docx"
+      },
+      "storyReconstructionSlug": "kytice-svatebni-kosile"
+    },
+    {
+      "id": "5018f3eb-c943-543c-a37c-9d5fdb8ceab7",
+      "slug": "vrba",
+      "title": "Vrba",
+      "orderIndex": 9,
+      "storyBrief": "Muž říká ženě, že večer jde spát celá svěží a zdráva a v noci vypadá jako mrtvá. Ona říká, že jí to je souzeno. Bába mu řekla, že její duše je v noci ve stromu (vrbě). On strom uťal a jeho žena zemřela. Byl nešťastný a ptal se vrby, co má dělat. Hlas mu poradí, aby z jejích prkének udělal kolébku pro syna. Bude to, jako by ho matka chovala. A až syn vyroste, bude dělat z proutí píšťaličky a tak bude rozmlouvat se svou matkou.",
+      "mainConflict": "Muž nechápe noční „smrt“ ženy — duše je ve vrbě.",
+      "guilt": "Muž utne vrbu (zničí schránku duše).",
+      "punishment": "Žena zemře; syn má kolébku/píšťalky z vrby.",
+      "motif": "strom · duše · mateřství",
+      "memorablePoint": "Duše ve vrbě — uťatí stromu zabíjí ženu.",
+      "evidence": {
+        "qaItemId": "ab115ff6b8ea4e2091c76dd36934ad72",
+        "knowledgeUnitId": "storyrecon:kytice-ballad-vrba",
+        "publishedStatement": "Muž říká ženě, že večer jde spát celá svěží a zdráva a v noci vypadá jako mrtvá. Ona říká, že jí to je souzeno. Bába mu řekla, že její duše je v noci ve stromu (vrbě). On strom uťal a jeho žena zemřela. Byl nešťastný a ptal se vrby, co má dělat. Hlas mu poradí, aby z jejích prkének udělal kolébku pro syna. Bude to, jako by ho matka chovala. A až syn vyroste, bude dělat z proutí píšťaličky a tak bude rozmlouvat se svou matkou.",
+        "validationStatus": "verified_from_source",
+        "filename": "Kytice.docx"
+      },
+      "storyReconstructionSlug": null
+    },
+    {
+      "id": "d7fbddbb-24f6-5d18-a3e4-825c3b2e810b",
+      "slug": "zlaty-kolovrat",
+      "title": "Zlatý kolovrat",
+      "orderIndex": 10,
+      "storyBrief": "Král si chce vzít za ženu Dorničku, nevlastní dceru staré babice. Babice se svou dcerou mají doprovodit Dorničku na hrad. V lese ji ale zabijí, useknou jí hnáty a vypíchnou oči. Matka pak vydává svoji vlastní dceru za Dorničku (byly si podobné). Konala se svatba. Král musel odjet. Vlastní dcera si koupila od chlapce zlatý kolovrat za nohy, přeslici za ruce a kužel za oči. Stařeček pak hnáty a oči vrátil Dorničce a pomocí živé vody tělo opět srostlo. Král se vrátil na hrad a chtěl, aby mu jeho žena něco upředla. Když začala příst, kolovrat řekl pravdu o mordu. Král jel hledat Dorničku a našel ji. Babice i s dcerou našly v hlubokém lese to, co samy udělaly Dorničce. Vlci je roztrhali.",
+      "mainConflict": "Babice a dcera zabijí Dorničku a podvrhnou nevěstu.",
+      "guilt": "Vražda Dorničky a podvod na králi.",
+      "punishment": "Pravda vyjede najevo; viníci potrestáni (kolovrat / píseň).",
+      "motif": "podvod · vražda · odhalení",
+      "memorablePoint": "Usťaté hnáty a oči — podvržená nevěsta.",
+      "evidence": {
+        "qaItemId": "bfa2af98b63741a28036b7a3e9c68770",
+        "knowledgeUnitId": "storyrecon:kytice-ballad-zlaty-kolovrat",
+        "publishedStatement": "Král si chce vzít za ženu Dorničku, nevlastní dceru staré babice. Babice se svou dcerou mají doprovodit Dorničku na hrad. V lese ji ale zabijí, useknou jí hnáty a vypíchnou oči. Matka pak vydává svoji vlastní dceru za Dorničku (byly si podobné). Konala se svatba. Král musel odjet. Vlastní dcera si koupila od chlapce zlatý kolovrat za nohy, přeslici za ruce a kužel za oči. Stařeček pak hnáty a oči vrátil Dorničce a pomocí živé vody tělo opět srostlo. Král se vrátil na hrad a chtěl, aby mu jeho žena něco upředla. Když začala příst, kolovrat řekl pravdu o mordu. Král jel hledat Dorničku a našel ji. Babice i s dcerou našly v hlubokém lese to, co samy udělaly Dorničce. Vlci je roztrhali.",
+        "validationStatus": "verified_from_source",
+        "filename": "Kytice.docx"
+      },
+      "storyReconstructionSlug": "kytice-zlaty-kolovrat"
+    },
+    {
+      "id": "9ae14d63-13bf-5b7d-9b33-bcc87a1f8dd1",
+      "slug": "dcerina-kletba",
+      "title": "Dceřina kletba",
+      "orderIndex": 11,
+      "storyBrief": "Žena zabije své dítě. Matce říká, že se jde oběsit. Chlapci, který se s ní těšíval, vzkazuje: “Požehnání, červa v duši do skonání, že jí zrádně mluvíval.” Matka se ptá, co zanechá dcera jí. A dcera jí odpoví, že ji proklíná, že ji proklíná za to, že jí to dovolila.",
+      "mainConflict": "Dcera zabije dítě a proklíná matku i milence.",
+      "guilt": "Vražda dítěte; matka dovolila vztah / situaci.",
+      "punishment": "Dcera se jde oběsit; matce zanechá kletbu.",
+      "motif": "kletba · vina · mateřství",
+      "memorablePoint": "Prokletí matky za to, že jí to dovolila.",
+      "evidence": {
+        "qaItemId": "74b8ab14fed2408e99e0abb34f5cd086",
+        "knowledgeUnitId": "storyrecon:kytice-ballad-dcerina-kletba",
+        "publishedStatement": "Žena zabije své dítě. Matce říká, že se jde oběsit. Chlapci, který se s ní těšíval, vzkazuje: “Požehnání, červa v duši do skonání, že jí zrádně mluvíval.” Matka se ptá, co zanechá dcera jí. A dcera jí odpoví, že ji proklíná, že ji proklíná za to, že jí to dovolila.",
+        "validationStatus": "verified_from_source",
+        "filename": "Kytice.docx"
+      },
+      "storyReconstructionSlug": null
+    },
+    {
+      "id": "30aa927a-08a4-50d8-b7bf-dff0f2e36f07",
+      "slug": "poklad",
+      "title": "Poklad",
+      "orderIndex": 12,
+      "storyBrief": "Žena šla na Velký pátek ke kostelíčku. Na cestě, kde vždy stával kámen, najednou byla otevřená skála. Žena uvnitř našla stříbro, zlato. Odnesla si ho domů a dítě nechala ve skále. V kostele skončilo modlení. Skála zmizela. Zlato a stříbro se proměnilo v hlínu a kamení. Žena plakala. Za rok, na Velký pátek, se skála znovu objevila. Žena vešla dovnitř, popadla své dítě a utíkala pryč. Ani trochu z toho bohatství si nevzala.",
+      "mainConflict": "Žena bere zlato ze skály a nechá ve skále dítě.",
+      "guilt": "Chamtivost — zlato před dítětem.",
+      "punishment": "Skála zmizí; zlato → hlína; dítě uvězněno do dalšího roku.",
+      "motif": "chamtivost · Velký pátek · skála",
+      "memorablePoint": "Zlato a stříbro se promění v hlínu a kamení.",
+      "evidence": {
+        "qaItemId": "bd652bd7a2374222904f9b375dc3e30e",
+        "knowledgeUnitId": "storyrecon:kytice-ballad-poklad",
+        "publishedStatement": "Žena šla na Velký pátek ke kostelíčku. Na cestě, kde vždy stával kámen, najednou byla otevřená skála. Žena uvnitř našla stříbro, zlato. Odnesla si ho domů a dítě nechala ve skále. V kostele skončilo modlení. Skála zmizela. Zlato a stříbro se proměnilo v hlínu a kamení. Žena plakala. Za rok, na Velký pátek, se skála znovu objevila. Žena vešla dovnitř, popadla své dítě a utíkala pryč. Ani trochu z toho bohatství si nevzala.",
+        "validationStatus": "verified_from_source",
+        "filename": "Kytice.docx"
+      },
+      "storyReconstructionSlug": "kytice-poklad"
+    }
+  ],
+  "games": {
+    "recognizeByStory": [
+      {
+        "id": "recognize-kytice",
+        "balladSlug": "kytice",
+        "promptStory": "Dětem zemřela matka a ony chodily každý den na její hrob. Matka se proměnila v kvítek. Děti ji poznaly po dechu - mateří dech = mateřídouška. Matka představuje vlast, sirotci národ.",
+        "options": [
+          "Vodník",
+          "Záhořovo lože",
+          "Polednice",
+          "Kytice"
+        ],
+        "correctIndex": 3
+      },
+      {
+        "id": "recognize-vodnik",
+        "balladSlug": "vodnik",
+        "promptStory": "Dcera šla k jezeru a vodník ji stáhl pod hladinu. Měli spolu dítě. Prosila ho, aby se mohla jít ještě rozloučit s matkou. Přemluvila ho, on si však nechal u sebe jako pojistku jejich dítě a řekl jí,…",
+        "options": [
+          "Polednice",
+          "Záhořovo lože",
+          "Štědrý den",
+          "Vodník"
+        ],
+        "correctIndex": 3
+      },
+      {
+        "id": "recognize-polednice",
+        "balladSlug": "polednice",
+        "promptStory": "Matka zavolala na své nezbedné dítě polednici. Když polednice skutečně přišla, matka své dítě bránila, tiskla ho k sobě tak silně, až ho zadusila.",
+        "options": [
+          "Štědrý den",
+          "Holoubek",
+          "Záhořovo lože",
+          "Polednice"
+        ],
+        "correctIndex": 3
+      },
+      {
+        "id": "recognize-zahorovo-loze",
+        "balladSlug": "zahorovo-loze",
+        "promptStory": "Poutník (mládenec) šel lesem a potkal lesního muže. Ten jej chtěl zabít, ale poutník mu řekl, že jde do pekla a že mu z pekla pošle zprávu. Lesní muž byl udiven, protože tohle mu ještě nikdo neřekl,…",
+        "options": [
+          "Štědrý den",
+          "Záhořovo lože",
+          "Lilie",
+          "Holoubek"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "id": "recognize-stedry-den",
+        "balladSlug": "stedry-den",
+        "promptStory": "Dvě dívky, Hana a Marie, uvidí ve vodní hladině svou budoucnost. Hana viděla svatbu a Marie spatřila kostel a rakev. Marie už se Haniny svatby nedožila. Za rok už žádné dívky k jezeru nešly. Lépe je…",
+        "options": [
+          "Holoubek",
+          "Věštkyně",
+          "Štědrý den",
+          "Lilie"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "id": "recognize-holoubek",
+        "balladSlug": "holoubek",
+        "promptStory": "Vdova želela po manželovi, ale do měsíce si vzala jiného. Na hrobu jejího bývalého sedával holoubek, který zpíval pravdu. Žena cítila vinu, nemohla se jí zbavit, a tak se utopila.",
+        "options": [
+          "Lilie",
+          "Svatební košile",
+          "Věštkyně",
+          "Holoubek"
+        ],
+        "correctIndex": 3
+      },
+      {
+        "id": "recognize-lilie",
+        "balladSlug": "lilie",
+        "promptStory": "Umřela mladá dívka. Na jejím hrobě rostl vřes a vyrostla tam také lilie. Projížděl tudy pán na lov a když spatřil lilii, chtěl, aby mu ji sluha utrhl. Třetí den se z ní stane žena. Pán si ji vezme za…",
+        "options": [
+          "Věštkyně",
+          "Lilie",
+          "Vrba",
+          "Svatební košile"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "id": "recognize-vestkyne",
+        "balladSlug": "vestkyne",
+        "promptStory": "Věštkyně (Libuše), předpovídající budoucnost českého národa (lepší časy).",
+        "options": [
+          "Svatební košile",
+          "Zlatý kolovrat",
+          "Vrba",
+          "Věštkyně"
+        ],
+        "correctIndex": 3
+      },
+      {
+        "id": "recognize-svatebni-kosile",
+        "balladSlug": "svatebni-kosile",
+        "promptStory": "Dívka se modlí, aby se už její milý vrátil z ciziny. Nikdo jiný jí na tom světě nezbyl. Rodiče i sourozenci už byli po smrti. V noci klepe její milý na okno a říká, ať s ním jde, že se stane jeho žen…",
+        "options": [
+          "Zlatý kolovrat",
+          "Dceřina kletba",
+          "Svatební košile",
+          "Vrba"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "id": "recognize-vrba",
+        "balladSlug": "vrba",
+        "promptStory": "Muž říká ženě, že večer jde spát celá svěží a zdráva a v noci vypadá jako mrtvá. Ona říká, že jí to je souzeno. Bába mu řekla, že její duše je v noci ve stromu (vrbě). On strom uťal a jeho žena zemře…",
+        "options": [
+          "Poklad",
+          "Vrba",
+          "Zlatý kolovrat",
+          "Dceřina kletba"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "id": "recognize-zlaty-kolovrat",
+        "balladSlug": "zlaty-kolovrat",
+        "promptStory": "Král si chce vzít za ženu Dorničku, nevlastní dceru staré babice. Babice se svou dcerou mají doprovodit Dorničku na hrad. V lese ji ale zabijí, useknou jí hnáty a vypíchnou oči. Matka pak vydává svoj…",
+        "options": [
+          "Zlatý kolovrat",
+          "Dceřina kletba",
+          "Poklad",
+          "Kytice"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "id": "recognize-dcerina-kletba",
+        "balladSlug": "dcerina-kletba",
+        "promptStory": "Žena zabije své dítě. Matce říká, že se jde oběsit. Chlapci, který se s ní těšíval, vzkazuje: “Požehnání, červa v duši do skonání, že jí zrádně mluvíval.” Matka se ptá, co zanechá dcera jí. A dcera j…",
+        "options": [
+          "Dceřina kletba",
+          "Poklad",
+          "Kytice",
+          "Vodník"
+        ],
+        "correctIndex": 0
+      }
+    ],
+    "matchGuiltConsequence": [
+      {
+        "id": "match-kytice",
+        "balladSlug": "kytice",
+        "guilt": "Bez přímé viny dětí — ztráta matky / vlasti.",
+        "punishment": "Proměna matky v květ; děti žijí s památkou (mateřídouška)."
+      },
+      {
+        "id": "match-vodnik",
+        "balladSlug": "vodnik",
+        "guilt": "Dcera chce odejít od vodníka; matka ji zadrží přes půlnoc.",
+        "punishment": "Vodník zabije dítě — tělíčko bez hlavy u dveří."
+      },
+      {
+        "id": "match-polednice",
+        "balladSlug": "polednice",
+        "guilt": "Matka zavolá polednici na nezbedné dítě.",
+        "punishment": "V panice dítě tiskne tak silně, až ho zadusí."
+      },
+      {
+        "id": "match-zahorovo-loze",
+        "balladSlug": "zahorovo-loze",
+        "guilt": "Lesní muž chce zabít; ďábel drží krvavý zápis.",
+        "punishment": "Pekelné tresty a zápas o zápis — legenda o vykoupení."
+      },
+      {
+        "id": "match-stedry-den",
+        "balladSlug": "stedry-den",
+        "guilt": "Touha znát osud (Hana a Marie u hladiny).",
+        "punishment": "Marie vidí rakev a svatby se nedožije."
+      },
+      {
+        "id": "match-holoubek",
+        "balladSlug": "holoubek",
+        "guilt": "Příliš rychlá nová svatba po smrti manžela.",
+        "punishment": "Holoubek zpívá pravdu; žena se utopí."
+      },
+      {
+        "id": "match-lilie",
+        "balladSlug": "lilie",
+        "guilt": "Zrada / zanedbání ochrany (zeď stržena).",
+        "punishment": "Dítě mrtvé, zbývá zvadlá lilie."
+      },
+      {
+        "id": "match-svatebni-kosile",
+        "balladSlug": "svatebni-kosile",
+        "guilt": "Touha po milém / opuštění ochrany (knížky, růženec, křížek).",
+        "punishment": "Hřbitov, mrtví; ráno útržky košile na hrobech."
+      },
+      {
+        "id": "match-vrba",
+        "balladSlug": "vrba",
+        "guilt": "Muž utne vrbu (zničí schránku duše).",
+        "punishment": "Žena zemře; syn má kolébku/píšťalky z vrby."
+      },
+      {
+        "id": "match-zlaty-kolovrat",
+        "balladSlug": "zlaty-kolovrat",
+        "guilt": "Vražda Dorničky a podvod na králi.",
+        "punishment": "Pravda vyjede najevo; viníci potrestáni (kolovrat / píseň)."
+      },
+      {
+        "id": "match-dcerina-kletba",
+        "balladSlug": "dcerina-kletba",
+        "guilt": "Vražda dítěte; matka dovolila vztah / situaci.",
+        "punishment": "Dcera se jde oběsit; matce zanechá kletbu."
+      },
+      {
+        "id": "match-poklad",
+        "balladSlug": "poklad",
+        "guilt": "Chamtivost — zlato před dítětem.",
+        "punishment": "Skála zmizí; zlato → hlína; dítě uvězněno do dalšího roku."
+      }
+    ],
+    "whichBallad": [
+      {
+        "id": "which-kytice",
+        "balladSlug": "kytice",
+        "clue": "Sirotci ztrácejí matku a hledají ji na hrobě. · Motiv: mateřství · vlast · sirotci",
+        "options": [
+          "Polednice",
+          "Lilie",
+          "Štědrý den",
+          "Kytice"
+        ],
+        "correctIndex": 3
+      },
+      {
+        "id": "which-vodnik",
+        "balladSlug": "vodnik",
+        "clue": "Dcera u jezera × vodník; návrat k matce vs. držení dítěte. · Motiv: voda · mateřství · slib / lhůta",
+        "options": [
+          "Záhořovo lože",
+          "Holoubek",
+          "Věštkyně",
+          "Vodník"
+        ],
+        "correctIndex": 3
+      },
+      {
+        "id": "which-polednice",
+        "balladSlug": "polednice",
+        "clue": "Matka hrozí dítěti polednicí — a ta skutečně přijde. · Motiv: mateřství · hrozba · vina z přehnané ochrany",
+        "options": [
+          "Štědrý den",
+          "Svatební košile",
+          "Lilie",
+          "Polednice"
+        ],
+        "correctIndex": 3
+      },
+      {
+        "id": "which-zahorovo-loze",
+        "balladSlug": "zahorovo-loze",
+        "clue": "Poutník vs. lesní muž / cesta do pekla a zpět. · Motiv: peklo · kříž · vykoupení",
+        "options": [
+          "Holoubek",
+          "Vrba",
+          "Záhořovo lože",
+          "Věštkyně"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "id": "which-stedry-den",
+        "balladSlug": "stedry-den",
+        "clue": "Dívky chtějí poznat budoucnost ve vodě. · Motiv: osud · voda · věštění",
+        "options": [
+          "Lilie",
+          "Štědrý den",
+          "Zlatý kolovrat",
+          "Svatební košile"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "id": "which-holoubek",
+        "balladSlug": "holoubek",
+        "clue": "Vdova se brzy znovu vdá — svědomí ji usvědčuje. · Motiv: vina · svědomí · holub",
+        "options": [
+          "Věštkyně",
+          "Dceřina kletba",
+          "Vrba",
+          "Holoubek"
+        ],
+        "correctIndex": 3
+      },
+      {
+        "id": "which-lilie",
+        "balladSlug": "lilie",
+        "clue": "Lilie-žena potřebuje ochranu; matka pána zeď strhne. · Motiv: proměna · ochrana · zrada",
+        "options": [
+          "Poklad",
+          "Lilie",
+          "Svatební košile",
+          "Zlatý kolovrat"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "id": "which-vestkyne",
+        "balladSlug": "vestkyne",
+        "clue": "Proroctví o budoucnosti národa (Libuše). · Motiv: proroctví · národ · budoucnost",
+        "options": [
+          "Vrba",
+          "Kytice",
+          "Dceřina kletba",
+          "Věštkyně"
+        ],
+        "correctIndex": 3
+      },
+      {
+        "id": "which-svatebni-kosile",
+        "balladSlug": "svatebni-kosile",
+        "clue": "Dívka jde s „milým“ — on je mrtvý; zahazuje svátosti. · Motiv: mrtvý milý · modlitba · zákaz",
+        "options": [
+          "Svatební košile",
+          "Vodník",
+          "Poklad",
+          "Zlatý kolovrat"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "id": "which-vrba",
+        "balladSlug": "vrba",
+        "clue": "Muž nechápe noční „smrt“ ženy — duše je ve vrbě. · Motiv: strom · duše · mateřství",
+        "options": [
+          "Dceřina kletba",
+          "Vrba",
+          "Polednice",
+          "Kytice"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "id": "which-zlaty-kolovrat",
+        "balladSlug": "zlaty-kolovrat",
+        "clue": "Babice a dcera zabijí Dorničku a podvrhnou nevěstu. · Motiv: podvod · vražda · odhalení",
+        "options": [
+          "Poklad",
+          "Zlatý kolovrat",
+          "Záhořovo lože",
+          "Vodník"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "id": "which-dcerina-kletba",
+        "balladSlug": "dcerina-kletba",
+        "clue": "Dcera zabije dítě a proklíná matku i milence. · Motiv: kletba · vina · mateřství",
+        "options": [
+          "Dceřina kletba",
+          "Kytice",
+          "Polednice",
+          "Štědrý den"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  },
+  "requiresVerifiedOnly": true,
+  "createdAt": "2026-07-20T12:00:00.000Z",
+  "updatedAt": "2026-07-20T12:00:00.000Z"
+}

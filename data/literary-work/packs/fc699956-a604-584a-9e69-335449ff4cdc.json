@@ -1,0 +1,325 @@
+{
+  "id": "fc699956-a604-584a-9e69-335449ff4cdc",
+  "slug": "kytice",
+  "title": "Kytice",
+  "author": "Karel Jaromír Erben",
+  "yearPublished": 1853,
+  "workType": "sbírka balad",
+  "movement": "Romantismus / národní obrození",
+  "summary": "Balady o vině, trestu a řádu světa — lidová tradice přetavená do umělé poesie.",
+  "related": {
+    "curriculumTopicSlug": "rozbor-kytice",
+    "sourceFilename": "Kytice.docx",
+    "reconstructionHref": "/app/learn/rekonstrukce-pribehu/literarni-dej",
+    "testHref": "/app/tests/otazky/cjl-otazky"
+  },
+  "sections": [
+    {
+      "id": "quick_grasp",
+      "summaryCs": "Rychlá orientace ve sbírce.",
+      "blocks": [
+        {
+          "type": "callout",
+          "tone": "brand",
+          "title": "Jednou větou",
+          "body": "Sbírka balad: porušení mravního/přírodního řádu → trest. Matka a dítě jako ústřední osa."
+        },
+        {
+          "type": "bullets",
+          "items": [
+            "Autor: K. J. Erben · 1853 (rozšíření později)",
+            "Žánr: balady (sbírka)",
+            "Jádro: vina – trest – poučení",
+            "Odliš od Máje: Erben = řád a kolektivní morálka"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "author_context",
+      "blocks": [
+        {
+          "type": "key_value",
+          "pairs": [
+            {
+              "label": "Autor",
+              "value": "Karel Jaromír Erben (1811–1870)"
+            },
+            {
+              "label": "Role",
+              "value": "Básník, folklorista, historik"
+            },
+            {
+              "label": "Vydání",
+              "value": "1853"
+            },
+            {
+              "label": "Kontext",
+              "value": "Národní obrození + romantismus lidové tradice"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Erben čerpá z lidové slovesnosti. Kytice není „soukromá zpověď“ jako Máj, ale svět pravidel a důsledků."
+        }
+      ]
+    },
+    {
+      "id": "themes_motifs",
+      "blocks": [
+        {
+          "type": "bullets",
+          "items": [
+            "Vina a trest",
+            "Mateřství / vztah matka–dítě",
+            "Nadpřirozeno zasahující do lidského světa",
+            "Osudovost a mravní řád",
+            "Pomsta, přísaha, zákaz"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "spacetime",
+      "blocks": [
+        {
+          "type": "key_value",
+          "pairs": [
+            {
+              "label": "Čas",
+              "value": "Nadčasový / pohádkově-baladický (ne historická kronika)"
+            },
+            {
+              "label": "Prostor",
+              "value": "Venkov, les, voda, dům — lidový svět"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "composition",
+      "blocks": [
+        {
+          "type": "bullets",
+          "items": [
+            "Sbírka samostatných balad (rámec „kytice“)",
+            "Typická baladická stavba: situace → konflikt → katastrofa",
+            "Opakující se motivické vzorce napříč básněmi",
+            "Ústřední báseň Kytice jako programový úvod"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "genre",
+      "blocks": [
+        {
+          "type": "key_value",
+          "pairs": [
+            {
+              "label": "Druh",
+              "value": "Poesie"
+            },
+            {
+              "label": "Žánr",
+              "value": "Balada (sbírka balad)"
+            },
+            {
+              "label": "Znaky",
+              "value": "Dějovost, tragika, nadpřirozeno, zkratka"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "characters",
+      "blocks": [
+        {
+          "type": "character",
+          "name": "Matka (typ)",
+          "role": "Opakující se figura napříč baladami",
+          "traits": [
+            "ochrana / selhání",
+            "vina",
+            "důsledek činu"
+          ]
+        },
+        {
+          "type": "character",
+          "name": "Dítě / dcera / syn (typ)",
+          "role": "Oběť nebo spouštěč konfliktu",
+          "traits": [
+            "bezbrannost",
+            "nárok na řád",
+            "tragický osud"
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "Tip",
+          "body": "U ústní zkoušky jmenuj 2–3 konkrétní balady (např. Vodník, Svatební košile, Polednice) a u každé 1 konflikt."
+        }
+      ]
+    },
+    {
+      "id": "plot",
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "Každá balada má vlastní děj. Společný vzorec: porušení zákazu/řádu → zásah vyšší moci / katastrofa → poučení."
+        },
+        {
+          "type": "bullets",
+          "items": [
+            "Kytice (rámec, matka a děti)",
+            "Vodník — slib, voda, trest",
+            "Svatební košile — mrtvý milý, zákaz, záchrana",
+            "Polednice — hrozba, vina matky"
+          ]
+        },
+        {
+          "type": "link_cta",
+          "label": "Procvičit dějové beaty",
+          "href": "/app/learn/rekonstrukce-pribehu/literarni-dej"
+        }
+      ]
+    },
+    {
+      "id": "language",
+      "blocks": [
+        {
+          "type": "bullets",
+          "items": [
+            "Lidový tón, srozumitelnost",
+            "Refrény, opakování, rytmus balady",
+            "Dialogičnost a dramatický spád",
+            "Konkrétní, „viditelné“ obrazy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tropes",
+      "blocks": [
+        {
+          "type": "bullets",
+          "items": [
+            "Symbolika vody, lesa, poledne, noci",
+            "Personifikace nadpřirozených sil",
+            "Gradace a kontrast",
+            "Ironie osudu / zrcadlení viny"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "exam_talking_points",
+      "blocks": [
+        {
+          "type": "callout",
+          "tone": "success",
+          "title": "Řekni u zkoušky",
+          "body": "Kytice = balady o vině a trestu z lidové tradice. Erben staví mravní řád; odliš od Máchova subjektivního romantismu."
+        },
+        {
+          "type": "bullets",
+          "items": [
+            "Definuj baladu",
+            "Uveď 2 balady + konflikt",
+            "Motivy matka–dítě, vina–trest",
+            "Srovnání Mácha × Erben"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "common_mistakes",
+      "blocks": [
+        {
+          "type": "bullets",
+          "items": [
+            "Tvrdit, že Kytice je jediná báseň (ne sbírka)",
+            "Zaměnit Erbena s Máchou",
+            "Přehlížet mravní řád a vidět jen „strašidla“",
+            "Špatné datování / směr"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "test",
+      "blocks": [
+        {
+          "type": "quiz",
+          "id": "kyt-q1",
+          "question": "Kytice je především:",
+          "options": [
+            "Realistický román",
+            "Sbírka balad",
+            "Drama",
+            "Cestopis"
+          ],
+          "correctIndex": 1,
+          "explanation": "Kytice je sbírka balad."
+        },
+        {
+          "type": "quiz",
+          "id": "kyt-q2",
+          "question": "Ústřední princip Erbenových balad je:",
+          "options": [
+            "Náhodný humor",
+            "Vina a trest / porušení řádu",
+            "Vědecký popis společnosti",
+            "Politická satira"
+          ],
+          "correctIndex": 1,
+          "explanation": "Balady stojí na vině, trestu a řádu."
+        },
+        {
+          "type": "quiz",
+          "id": "kyt-q3",
+          "question": "Autorem Kytice je:",
+          "options": [
+            "K. H. Mácha",
+            "K. J. Erben",
+            "Božena Němcová",
+            "Alois Jirásek"
+          ],
+          "correctIndex": 1,
+          "explanation": "Autorem je Karel Jaromír Erben."
+        }
+      ]
+    },
+    {
+      "id": "oral_exam",
+      "blocks": [
+        {
+          "type": "oral_prompt",
+          "id": "kyt-o1",
+          "prompt": "Vysvětli žánr balady a uveď dvě konkrétní balady z Kytice.",
+          "tips": [
+            "Definice balady",
+            "Konflikt + trest",
+            "Bez dlouhého převyprávění celého děje"
+          ]
+        },
+        {
+          "type": "oral_prompt",
+          "id": "kyt-o2",
+          "prompt": "Srovnej Erbena a Máchu (řád vs. subjekt).",
+          "tips": [
+            "Kolektivní morálka",
+            "Subjektivní romantismus",
+            "1 příklad z každého"
+          ]
+        }
+      ]
+    }
+  ],
+  "createdAt": "2026-07-20T12:00:00.000Z",
+  "updatedAt": "2026-07-20T12:00:00.000Z"
+}

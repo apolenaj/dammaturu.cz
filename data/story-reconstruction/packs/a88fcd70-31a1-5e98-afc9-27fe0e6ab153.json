@@ -1,0 +1,1101 @@
+{
+  "id": "a88fcd70-31a1-5e98-afc9-27fe0e6ab153",
+  "slug": "literarni-dej",
+  "title": "Story Reconstruction — literární děj",
+  "summary": "Seřaď zamíchané dějové události (Máj, Maryša, Otec Goriot, Zločin a trest, Anna Karenina, Kytice). Easy 4 · medium 6 · hard 8+. Po úspěchu vizuální dějová osa. Každý krok = verified SOURCE.",
+  "requiresVerifiedOnly": true,
+  "stories": [
+    {
+      "id": "0b898489-f055-56c8-9e1c-3050c10864b4",
+      "slug": "maj",
+      "title": "Máj — dějová linie",
+      "workTitle": "Máj",
+      "author": "Karel Hynek Mácha",
+      "summary": "Seřaď zpěvy a intermezza Máchova Máje.",
+      "steps": [
+        {
+          "id": "5a7bcd5c-ae16-5cce-a79b-75627a306956",
+          "order": 0,
+          "label": "1. Zpěv: Popis krásné, májové přírody; Jarmila skočí do Jezera a utopí se.",
+          "evidenceId": "maj-1"
+        },
+        {
+          "id": "7589582d-3fa0-560a-81c3-12c95191555c",
+          "order": 1,
+          "label": "2. Zpěv: Vilém ve vězení přemýšlí; necítí vinu; úvahy o vlastním životě",
+          "evidenceId": "maj-2"
+        },
+        {
+          "id": "a4ac5e7b-ac34-5765-b8cb-8fd5a7a8e574",
+          "order": 2,
+          "label": "1. Intermezzo: Příroda společně s duchy připravuje Vilémův pohřeb a volají ho k sobě",
+          "evidenceId": "maj-3"
+        },
+        {
+          "id": "c6aaaa04-f591-55a2-aa64-37f2ff6e1e43",
+          "order": 3,
+          "label": "3. Zpěv: Vilémova poprava; loučí se s přírodou, krajinou, vlastí",
+          "evidenceId": "maj-4"
+        },
+        {
+          "id": "cecbfae3-0bf8-5b8d-8dba-3693c6d16010",
+          "order": 4,
+          "label": "2. Intermezzo: Je již po smrti Viléma a duchové loupežníků po něm truchlí, truchlí i příroda",
+          "evidenceId": "maj-5"
+        },
+        {
+          "id": "0c40e759-6db8-5dcf-831a-16079cfcec4c",
+          "order": 5,
+          "label": "4. Zpěv: Do vesnice se vrací poutník/sám autor; ztotožnění Máchy s dějem; „Hynku! Viléme! Jarmilo!“",
+          "evidenceId": "maj-6"
+        },
+        {
+          "id": "f704b458-0e3d-5fd8-adad-5cfbbbdeec3f",
+          "order": 6,
+          "label": "vystupuje ve 4. zpěvu, sám autor",
+          "evidenceId": "maj-7"
+        },
+        {
+          "id": "634df601-6db2-5d3c-b1f4-86e2b211151d",
+          "order": 7,
+          "label": "zamyšlený, vrací se k Vilémovu popravišti",
+          "evidenceId": "maj-8"
+        }
+      ]
+    },
+    {
+      "id": "690a3a7a-3dce-5ff7-a1d8-19d3dd5f9040",
+      "slug": "marysa",
+      "title": "Maryša — dějová linie",
+      "workTitle": "Maryša",
+      "author": "Alois a Vilém Mrštíkové",
+      "summary": "Seřaď klíčové události sociálního dramatu Maryša.",
+      "steps": [
+        {
+          "id": "43b7e1c4-5455-593a-8c2d-9b79d558335f",
+          "order": 0,
+          "label": "Mladá Maryša je dcerou bohatého sedláka Lízala, miluje však Francka, synka z chudé rodiny, který je právě odveden na vojnu do Brna.",
+          "evidenceId": "marysa-1"
+        },
+        {
+          "id": "5018f8ab-a2e9-537f-a69c-fb7de67d572d",
+          "order": 1,
+          "label": "Přišel se za Maryšou rozloučit, ale Lízal ho vyžene.",
+          "evidenceId": "marysa-2"
+        },
+        {
+          "id": "2ccccf40-2beb-592e-93e6-64b2aedf2037",
+          "order": 2,
+          "label": "Má pro dceru vyhlédnutého jiného ženicha – bohatého mlynáře Vávru, vdovce se třemi dětmi.",
+          "evidenceId": "marysa-3"
+        },
+        {
+          "id": "2b827e89-e26d-5b38-bd2d-64a96d7a5d24",
+          "order": 3,
+          "label": "Přes Maryšin odpor a prosby přinutí Lízal za vydatné spolupráce své ženy a její tety, aby si Maryša Vávru vzala.",
+          "evidenceId": "marysa-4"
+        },
+        {
+          "id": "e780c902-3e7c-57e1-a4ba-1afb317b0680",
+          "order": 4,
+          "label": "Manželství není šťastné, Vávra tráví více času v hospodě než doma, Maryšu i bije.",
+          "evidenceId": "marysa-5"
+        },
+        {
+          "id": "baae2941-2cd6-5700-b257-0c717fbc3f64",
+          "order": 5,
+          "label": "Po dvou letech se vrací Francek z vojny.",
+          "evidenceId": "marysa-6"
+        },
+        {
+          "id": "bd3987b0-9ebb-57ba-a7f6-45dc7c29c4ec",
+          "order": 6,
+          "label": "Přijde dokonce i do mlýna, kde se Maryšu snaží přesvědčit, aby s ním utekla do Brna.",
+          "evidenceId": "marysa-7"
+        },
+        {
+          "id": "6400f3b6-b187-53c5-b12f-dbef562ec0ea",
+          "order": 7,
+          "label": "Otráví Vávru jedem nasypaným do kávy. K činu se přizná.",
+          "evidenceId": "marysa-8"
+        }
+      ]
+    },
+    {
+      "id": "b3876770-2339-55ae-9127-630171afbfcc",
+      "slug": "otec-goriot",
+      "title": "Otec Goriot — dějová linie",
+      "workTitle": "Otec Goriot",
+      "author": "Honoré de Balzac",
+      "summary": "Seřaď osudy Goriota a Rastignaca.",
+      "steps": [
+        {
+          "id": "70b37f8c-c555-5ef0-be0d-65a035fb10e5",
+          "order": 0,
+          "label": "Román zobrazuje dva zdánlivě protichůdné osudy lidí, kteří se náhodou ocitnou ve stejném penzionu.",
+          "evidenceId": "goriot-1"
+        },
+        {
+          "id": "6f571b18-89f2-56fb-91d1-a80773aac287",
+          "order": 1,
+          "label": "Jde o příběh Goriota, bývalého obchodníka s nudlemi, a Evžena Rastignaca, mladého studenta práv.",
+          "evidenceId": "goriot-2"
+        },
+        {
+          "id": "21e6360b-8549-54c2-b82e-d9c748eae587",
+          "order": 2,
+          "label": "Goriot je otcem dvou dcer, které se snaží dostat se do vznešené pařížské společnosti, k čemuž jim má dopomoci otcův majetek.",
+          "evidenceId": "goriot-3"
+        },
+        {
+          "id": "4dcc3384-9b93-5c9d-aafe-e1dc14549e92",
+          "order": 3,
+          "label": "První dcera Anastázie si vezme hraběte, druhá dcera Delfina bankéře.",
+          "evidenceId": "goriot-4"
+        },
+        {
+          "id": "515f21a6-7f4f-5fea-ab4e-467d195763f8",
+          "order": 4,
+          "label": "Ač jsou obě bohatě provdány, z otce jen vydírají peníze a stydí se za něj.",
+          "evidenceId": "goriot-5"
+        },
+        {
+          "id": "b160c18a-a13c-58a6-94f1-0ee56432dfac",
+          "order": 5,
+          "label": "Ten umírá v chudobě, opuštěn a opovrhován okolím.",
+          "evidenceId": "goriot-6"
+        },
+        {
+          "id": "365c05c2-4be6-5668-bf4c-9d3f78409dbd",
+          "order": 6,
+          "label": "Student Rastignac je zpočátku obětavý a stará se o umírajícího Goriota.",
+          "evidenceId": "goriot-7"
+        },
+        {
+          "id": "40459895-b513-5908-8e01-6f42c0b34e64",
+          "order": 7,
+          "label": "Později pod vlivem prostředí se mění a ze zištných důvodů se stává milencem jedné z Goriotových dcer.",
+          "evidenceId": "goriot-8"
+        }
+      ]
+    },
+    {
+      "id": "96da1f84-5951-522b-a749-8d5c09b7c52d",
+      "slug": "zlocin-a-trest",
+      "title": "Zločin a trest — dějová linie",
+      "workTitle": "Zločin a trest",
+      "author": "F. M. Dostojevskij",
+      "summary": "Seřaď klíčové události Raskolnikovova příběhu.",
+      "steps": [
+        {
+          "id": "17cfa0c4-ae20-50fa-8963-92b073bda72d",
+          "order": 0,
+          "label": "Raskolnikov, chudý student z Petrohradu, aby získal peníze, se rozhodne zabít starou lichvářku.",
+          "evidenceId": "zt-1"
+        },
+        {
+          "id": "1c473393-cae7-5eb1-a143-e091fd3fcd57",
+          "order": 1,
+          "label": "Během zločinu se náhodně v bytě objeví i její setra, kterou taktéž zavraždí.",
+          "evidenceId": "zt-2"
+        },
+        {
+          "id": "25ec7e20-185a-5367-8219-8d9d5bc67267",
+          "order": 2,
+          "label": "Zahladí veškeré stopy.",
+          "evidenceId": "zt-3"
+        },
+        {
+          "id": "b9c2ca85-93bd-54cf-8362-f922cf91bf16",
+          "order": 3,
+          "label": "Snaží se svůj čin racionálně zdůvodnit, ale dostává se do těžké psychické krize.",
+          "evidenceId": "zt-4"
+        },
+        {
+          "id": "5111e621-4443-561d-943e-31aa2a33bef0",
+          "order": 4,
+          "label": "Zamiluje se do Soni, která svou rodinu živí prostitucí.",
+          "evidenceId": "zt-5"
+        },
+        {
+          "id": "1838551a-23ef-58a7-96c3-1d98d714baa2",
+          "order": 5,
+          "label": "Postupem času nachází v sobě sílu a přizná se jí ke spáchanému zločinu.",
+          "evidenceId": "zt-6"
+        },
+        {
+          "id": "840593bd-dba8-5dd0-a4ab-bd73916a0e30",
+          "order": 6,
+          "label": "Raskolnikov se jde udat, je odsouzen na nucené práce na Sibiř a Soňa jej dobrovolně doprovází.",
+          "evidenceId": "zt-7"
+        },
+        {
+          "id": "107f0aee-5636-5665-a967-7cebfd123c93",
+          "order": 7,
+          "label": "Nesobecká láska způsobí postupný duševní přerod hlavního hrdiny.",
+          "evidenceId": "zt-8"
+        }
+      ]
+    },
+    {
+      "id": "732ae416-e9e5-50d2-83d7-b7355209b93a",
+      "slug": "anna-karenina",
+      "title": "Anna Karenina — dějová linie",
+      "workTitle": "Anna Karenina",
+      "author": "Lev N. Tolstoj",
+      "summary": "Seřaď klíčové milostné a společenské obraty Anny Kareniny.",
+      "steps": [
+        {
+          "id": "26c74f8a-2f6c-5c8e-af15-799c24487d2f",
+          "order": 0,
+          "label": "zachycuje osudy ruské šlechtičny Anny Kareniny, která přijíždí z Petrohradu do Moskvy, aby zachránila rozpadající se manželství svého bratra.",
+          "evidenceId": "ak-1"
+        },
+        {
+          "id": "36059829-4396-5af3-ac8c-e777c02a78fc",
+          "order": 1,
+          "label": "I krátké setkání vdané Anny a Vronského na plese však vznítí vášeň lásky.",
+          "evidenceId": "ak-2"
+        },
+        {
+          "id": "36226178-954f-584d-ade9-5957a0577f32",
+          "order": 2,
+          "label": "Kitty, zlomena nešťastnou láskou k Vronskému, odjíždí do ciziny.",
+          "evidenceId": "ak-3"
+        },
+        {
+          "id": "adccdb90-1f93-5f4a-89f8-03c64029c5c9",
+          "order": 3,
+          "label": "Ten ji však pronásleduje a Anna se nakonec poddává.",
+          "evidenceId": "ak-4"
+        },
+        {
+          "id": "b8c00e61-1050-5802-b093-00111763ea9a",
+          "order": 4,
+          "label": "Po zjištění těhotenství se Anna vyzpovídá manželovi a opustí jej.",
+          "evidenceId": "ak-5"
+        },
+        {
+          "id": "87f4ba67-418b-523d-bfab-d6816e76f51e",
+          "order": 5,
+          "label": "Po těžkém porodu Anna odjíždí s Vronským do ciziny",
+          "evidenceId": "ak-6"
+        },
+        {
+          "id": "7031cdc5-8b8d-5633-9069-7ded3b3acf7b",
+          "order": 6,
+          "label": "Po svatbě žijí šťastně na venkově.",
+          "evidenceId": "ak-7"
+        },
+        {
+          "id": "be2b3147-162e-5e0f-8044-bceacedbb9e4",
+          "order": 7,
+          "label": "Anna nakonec nevidí jiné východisko a rozhodne se svůj život ukončit skokem pod vlak.",
+          "evidenceId": "ak-8"
+        }
+      ]
+    },
+    {
+      "id": "c07ba208-e7a0-5f70-aba6-c37968a03859",
+      "slug": "kytice-vodnik",
+      "title": "Kytice — Vodník",
+      "workTitle": "Vodník (Kytice)",
+      "author": "K. J. Erben",
+      "summary": "Seřaď děj balady Vodník.",
+      "steps": [
+        {
+          "id": "4b79d5ed-b3d1-5ba7-bd13-e064dd8b774e",
+          "order": 0,
+          "label": "Dcera šla k jezeru a vodník ji stáhl pod hladinu.",
+          "evidenceId": "vodnik-1"
+        },
+        {
+          "id": "be29e0cd-f5d3-59a4-8bf6-b9260dcf603a",
+          "order": 1,
+          "label": "Měli spolu dítě.",
+          "evidenceId": "vodnik-2"
+        },
+        {
+          "id": "d09e802f-fc5a-5d8f-aad7-f543512da3d0",
+          "order": 2,
+          "label": "Prosila ho, aby se mohla jít ještě rozloučit s matkou.",
+          "evidenceId": "vodnik-3"
+        },
+        {
+          "id": "e5050f20-77d6-5bcf-9b76-13e7e3ae21ff",
+          "order": 3,
+          "label": "Přemluvila ho, on si však nechal u sebe jako pojistku jejich dítě a řekl jí, ať se vrátí do půlnoci.",
+          "evidenceId": "vodnik-4"
+        },
+        {
+          "id": "75d68df1-1df6-5e47-8095-1298f6403f65",
+          "order": 4,
+          "label": "Půlnoc odbila a vodník bouchal na dveře.",
+          "evidenceId": "vodnik-5"
+        },
+        {
+          "id": "a3cca1d2-3c5e-55b9-a597-dea62d2fbc5c",
+          "order": 5,
+          "label": "Matka však svou dceru držela uvnitř.",
+          "evidenceId": "vodnik-6"
+        },
+        {
+          "id": "be72beba-74e5-524c-901a-ee7769621edf",
+          "order": 6,
+          "label": "Zpoza dveří se ozval řev dítěte, pak najednou utichl a něco spadlo.",
+          "evidenceId": "vodnik-7"
+        },
+        {
+          "id": "e0cae391-df53-571b-b0bd-a327b96dd3f5",
+          "order": 7,
+          "label": "Matka otevřela dveře a na zemi viděla tělíčko bez hlavy a hlavu bez tělíčka.",
+          "evidenceId": "vodnik-8"
+        }
+      ]
+    },
+    {
+      "id": "b5fd70c6-f614-5e2a-8948-178bff8ad305",
+      "slug": "kytice-svatebni-kosile",
+      "title": "Kytice — Svatební košile",
+      "workTitle": "Svatební košile (Kytice)",
+      "author": "K. J. Erben",
+      "summary": "Seřaď děj balady Svatební košile.",
+      "steps": [
+        {
+          "id": "6d596341-c08f-5d45-b659-778d8002e350",
+          "order": 0,
+          "label": "Rodiče i sourozenci už byli po smrti.",
+          "evidenceId": "sk-8"
+        },
+        {
+          "id": "1e763e04-bcd5-582f-91cf-0c02922b161c",
+          "order": 1,
+          "label": "Dívka se modlí, aby se už její milý vrátil z ciziny.",
+          "evidenceId": "sk-1"
+        },
+        {
+          "id": "91772c32-40fa-5924-acd2-1c6b0b089f15",
+          "order": 2,
+          "label": "V noci klepe její milý na okno a říká, ať s ním jde, že se stane jeho ženou.",
+          "evidenceId": "sk-2"
+        },
+        {
+          "id": "85bbf570-2858-5a40-a8c8-6bc88bee43ba",
+          "order": 3,
+          "label": "Jdou lesem a postupně jí milý zahazuje její modlitební knížky, růženec a křížek.",
+          "evidenceId": "sk-3"
+        },
+        {
+          "id": "1869e8fb-d04f-5da3-9bef-642f7d5fb4e4",
+          "order": 4,
+          "label": "Přivedl ji na hřbitov, pochopila, že on už je taky mrtvý.",
+          "evidenceId": "sk-4"
+        },
+        {
+          "id": "97ab52ba-d080-5048-a71d-54314ba7476a",
+          "order": 5,
+          "label": "Běžela se schovat. Modlila se.",
+          "evidenceId": "sk-5"
+        },
+        {
+          "id": "72cfe1a0-2ec4-596a-a918-69ba2376bc83",
+          "order": 6,
+          "label": "Ráno zakokrhal kohout a vše ustalo.",
+          "evidenceId": "sk-6"
+        },
+        {
+          "id": "d5e4c29d-e121-591c-b38a-130c2f1e4dff",
+          "order": 7,
+          "label": "Na každém hrobě byl útržek z košile.",
+          "evidenceId": "sk-7"
+        }
+      ]
+    },
+    {
+      "id": "de326bcd-ba50-5ebd-b4d2-b7497f053575",
+      "slug": "kytice-zlaty-kolovrat",
+      "title": "Kytice — Zlatý kolovrat",
+      "workTitle": "Zlatý kolovrat (Kytice)",
+      "author": "K. J. Erben",
+      "summary": "Seřaď děj balady Zlatý kolovrat.",
+      "steps": [
+        {
+          "id": "151b38b2-a77d-51c2-8528-b8a1315a6256",
+          "order": 0,
+          "label": "Král si chce vzít za ženu Dorničku, nevlastní dceru staré babice.",
+          "evidenceId": "zk-1"
+        },
+        {
+          "id": "4c73d732-8a47-5b2c-a7ff-0b75cb3c5f85",
+          "order": 1,
+          "label": "V lese ji ale zabijí, useknou jí hnáty a vypíchnou oči.",
+          "evidenceId": "zk-2"
+        },
+        {
+          "id": "1815a6fd-5b1a-5e7c-bf2d-b600617ebf2f",
+          "order": 2,
+          "label": "Matka pak vydává svoji vlastní dceru za Dorničku (byly si podobné).",
+          "evidenceId": "zk-3"
+        },
+        {
+          "id": "4f8cb706-f373-5d8c-b10f-d3ca7854efb6",
+          "order": 3,
+          "label": "Konala se svatba. Král musel odjet.",
+          "evidenceId": "zk-4"
+        },
+        {
+          "id": "5b497b78-286d-5bf3-b48a-9fae647f6cc5",
+          "order": 4,
+          "label": "Vlastní dcera si koupila od chlapce zlatý kolovrat za nohy, přeslici za ruce a kužel za oči.",
+          "evidenceId": "zk-5"
+        },
+        {
+          "id": "8153daba-85b1-53ce-a712-7c89ffd3a930",
+          "order": 5,
+          "label": "Stařeček pak hnáty a oči vrátil Dorničce a pomocí živé vody tělo opět srostlo.",
+          "evidenceId": "zk-6"
+        },
+        {
+          "id": "70302bbc-9392-5645-8575-94d444dcebbf",
+          "order": 6,
+          "label": "Když začala příst, kolovrat řekl pravdu o mordu.",
+          "evidenceId": "zk-7"
+        },
+        {
+          "id": "801468c7-72a8-5c3e-9eec-8ed1accbc405",
+          "order": 7,
+          "label": "Babice i s dcerou našly v hlubokém lese to, co samy udělaly Dorničce. Vlci je roztrhali.",
+          "evidenceId": "zk-8"
+        }
+      ]
+    },
+    {
+      "id": "ec3352cc-422f-5769-8ff5-2713226cf32a",
+      "slug": "kytice-polednice",
+      "title": "Kytice — Polednice",
+      "workTitle": "Polednice (Kytice)",
+      "author": "K. J. Erben",
+      "summary": "Seřaď děj balady Polednice.",
+      "steps": [
+        {
+          "id": "88de8d5c-4549-547e-9889-5c279f278727",
+          "order": 0,
+          "label": "Matka zavolala na své nezbedné dítě polednici.",
+          "evidenceId": "pol-1"
+        },
+        {
+          "id": "1473e830-97e3-5007-9489-fa25f0d4bfd7",
+          "order": 1,
+          "label": "Když polednice skutečně přišla,",
+          "evidenceId": "pol-2"
+        },
+        {
+          "id": "1809cc39-dc9f-5f0f-a9c6-8464e8813e60",
+          "order": 2,
+          "label": "matka své dítě bránila,",
+          "evidenceId": "pol-3"
+        },
+        {
+          "id": "ed7071e5-e3ef-528d-858a-44bef89ddb62",
+          "order": 3,
+          "label": "tiskla ho k sobě tak silně, až ho zadusila.",
+          "evidenceId": "pol-4"
+        }
+      ]
+    },
+    {
+      "id": "ba2398d7-aa1a-5d20-a265-6a95b0bdbabb",
+      "slug": "kytice-poklad",
+      "title": "Kytice — Poklad",
+      "workTitle": "Poklad (Kytice)",
+      "author": "K. J. Erben",
+      "summary": "Seřaď děj balady Poklad.",
+      "steps": [
+        {
+          "id": "1cf30c8f-1606-5b81-ae4b-9723159d89ab",
+          "order": 0,
+          "label": "Žena šla na Velký pátek ke kostelíčku.",
+          "evidenceId": "pok-1"
+        },
+        {
+          "id": "26429beb-58d8-5a86-9064-103951f6546c",
+          "order": 1,
+          "label": "najednou byla otevřená skála.",
+          "evidenceId": "pok-2"
+        },
+        {
+          "id": "3e866e6c-c7ee-5f58-9f19-228d966ea92c",
+          "order": 2,
+          "label": "Žena uvnitř našla stříbro, zlato.",
+          "evidenceId": "pok-3"
+        },
+        {
+          "id": "9a6e1086-2ef2-57a3-b7c0-32a47020ba03",
+          "order": 3,
+          "label": "Odnesla si ho domů a dítě nechala ve skále.",
+          "evidenceId": "pok-4"
+        },
+        {
+          "id": "e37d148e-7641-5fe1-aeb7-b34d11798cc8",
+          "order": 4,
+          "label": "Skála zmizela.",
+          "evidenceId": "pok-5"
+        },
+        {
+          "id": "edc26c9d-0073-5880-867a-b38f34aba31c",
+          "order": 5,
+          "label": "Zlato a stříbro se proměnilo v hlínu a kamení.",
+          "evidenceId": "pok-6"
+        },
+        {
+          "id": "a98c8d2f-f450-512e-afe2-f82f18da0a87",
+          "order": 6,
+          "label": "Za rok, na Velký pátek, se skála znovu objevila.",
+          "evidenceId": "pok-7"
+        },
+        {
+          "id": "6d318f2a-ff4c-5931-b629-5e17950c072e",
+          "order": 7,
+          "label": "Žena vešla dovnitř, popadla své dítě a utíkala pryč.",
+          "evidenceId": "pok-8"
+        }
+      ]
+    }
+  ],
+  "evidence": {
+    "maj-1": {
+      "qaItemId": "5d884888cdeb4624bf4448f8220b6ce7",
+      "knowledgeUnitId": "storyrecon:maj-1",
+      "publishedStatement": "1. Zpěv: Popis krásné, májové přírody; Jarmila skočí do Jezera a utopí se.",
+      "validationStatus": "verified_from_source",
+      "filename": "Máj.docx"
+    },
+    "maj-2": {
+      "qaItemId": "c616a1c6e8ca483cbd7dc0cc70330b1b",
+      "knowledgeUnitId": "storyrecon:maj-2",
+      "publishedStatement": "2. Zpěv: Vilém ve vězení přemýšlí; necítí vinu; úvahy o vlastním životě",
+      "validationStatus": "verified_from_source",
+      "filename": "Máj.docx"
+    },
+    "maj-3": {
+      "qaItemId": "1c1cd64b22fe4b1da67cf9cda81cb645",
+      "knowledgeUnitId": "storyrecon:maj-3",
+      "publishedStatement": "1. Intermezzo: Příroda společně s duchy připravuje Vilémův pohřeb a volají ho k sobě",
+      "validationStatus": "verified_from_source",
+      "filename": "Máj.docx"
+    },
+    "maj-4": {
+      "qaItemId": "89cc3df7d5b444568b0f57d6527ae93e",
+      "knowledgeUnitId": "storyrecon:maj-4",
+      "publishedStatement": "3. Zpěv: Vilémova poprava; loučí se s přírodou, krajinou, vlastí",
+      "validationStatus": "verified_from_source",
+      "filename": "Máj.docx"
+    },
+    "maj-5": {
+      "qaItemId": "cd240e069e2f44679ab6d80dc55dfba9",
+      "knowledgeUnitId": "storyrecon:maj-5",
+      "publishedStatement": "2. Intermezzo: Je již po smrti Viléma a duchové loupežníků po něm truchlí, truchlí i příroda",
+      "validationStatus": "verified_from_source",
+      "filename": "Máj.docx"
+    },
+    "maj-6": {
+      "qaItemId": "8cc36c0e63014063bc1510a712bd4a90",
+      "knowledgeUnitId": "storyrecon:maj-6",
+      "publishedStatement": "4. Zpěv: Do vesnice se vrací poutník/sám autor; ztotožnění Máchy s dějem; „Hynku! Viléme! Jarmilo!“",
+      "validationStatus": "verified_from_source",
+      "filename": "Máj.docx"
+    },
+    "maj-7": {
+      "qaItemId": "13c58da654e143b3aae5ebc87ffc0882",
+      "knowledgeUnitId": "storyrecon:maj-7",
+      "publishedStatement": "vystupuje ve 4. zpěvu, sám autor",
+      "validationStatus": "verified_from_source",
+      "filename": "Máj.docx"
+    },
+    "maj-8": {
+      "qaItemId": "09bcc049ec6e4dafab146eb34c02f78d",
+      "knowledgeUnitId": "storyrecon:maj-8",
+      "publishedStatement": "zamyšlený, vrací se k Vilémovu popravišti",
+      "validationStatus": "verified_from_source",
+      "filename": "Máj.docx"
+    },
+    "marysa-1": {
+      "qaItemId": "a06ef998ad2249a092dda1145d48654a",
+      "knowledgeUnitId": "storyrecon:marysa-1",
+      "publishedStatement": "Mladá Maryša je dcerou bohatého sedláka Lízala, miluje však Francka, synka z chudé rodiny, který je právě odveden na vojnu do Brna.",
+      "validationStatus": "verified_from_source",
+      "filename": "12. České drama 2. pol 19. stol.docx"
+    },
+    "marysa-2": {
+      "qaItemId": "8ad2cb8eaa3c474c8813c9dab207f070",
+      "knowledgeUnitId": "storyrecon:marysa-2",
+      "publishedStatement": "Přišel se za Maryšou rozloučit, ale Lízal ho vyžene.",
+      "validationStatus": "verified_from_source",
+      "filename": "12. České drama 2. pol 19. stol.docx"
+    },
+    "marysa-3": {
+      "qaItemId": "63e9cd8805b342378d6d6aa522522760",
+      "knowledgeUnitId": "storyrecon:marysa-3",
+      "publishedStatement": "Má pro dceru vyhlédnutého jiného ženicha – bohatého mlynáře Vávru, vdovce se třemi dětmi.",
+      "validationStatus": "verified_from_source",
+      "filename": "12. České drama 2. pol 19. stol.docx"
+    },
+    "marysa-4": {
+      "qaItemId": "d4ae11e08e624791b6cde7160cc56b03",
+      "knowledgeUnitId": "storyrecon:marysa-4",
+      "publishedStatement": "Přes Maryšin odpor a prosby přinutí Lízal za vydatné spolupráce své ženy a její tety, aby si Maryša Vávru vzala.",
+      "validationStatus": "verified_from_source",
+      "filename": "12. České drama 2. pol 19. stol.docx"
+    },
+    "marysa-5": {
+      "qaItemId": "f58595a0429240d3b65a4df1b921c068",
+      "knowledgeUnitId": "storyrecon:marysa-5",
+      "publishedStatement": "Manželství není šťastné, Vávra tráví více času v hospodě než doma, Maryšu i bije.",
+      "validationStatus": "verified_from_source",
+      "filename": "12. České drama 2. pol 19. stol.docx"
+    },
+    "marysa-6": {
+      "qaItemId": "95f7b23b45294a9b92185c7b5f94a854",
+      "knowledgeUnitId": "storyrecon:marysa-6",
+      "publishedStatement": "Po dvou letech se vrací Francek z vojny.",
+      "validationStatus": "verified_from_source",
+      "filename": "12. České drama 2. pol 19. stol.docx"
+    },
+    "marysa-7": {
+      "qaItemId": "052bb440f19b41f88077b322e424ba93",
+      "knowledgeUnitId": "storyrecon:marysa-7",
+      "publishedStatement": "Přijde dokonce i do mlýna, kde se Maryšu snaží přesvědčit, aby s ním utekla do Brna.",
+      "validationStatus": "verified_from_source",
+      "filename": "12. České drama 2. pol 19. stol.docx"
+    },
+    "marysa-8": {
+      "qaItemId": "30284bffa6e141d99b7ca509acad57f3",
+      "knowledgeUnitId": "storyrecon:marysa-8",
+      "publishedStatement": "Otráví Vávru jedem nasypaným do kávy. K činu se přizná.",
+      "validationStatus": "verified_from_source",
+      "filename": "12. České drama 2. pol 19. stol.docx"
+    },
+    "goriot-1": {
+      "qaItemId": "8164fd1d526740689728a4aaf66df29e",
+      "knowledgeUnitId": "storyrecon:goriot-1",
+      "publishedStatement": "Román zobrazuje dva zdánlivě protichůdné osudy lidí, kteří se náhodou ocitnou ve stejném penzionu.",
+      "validationStatus": "verified_from_source",
+      "filename": "2. Realismus ve Francii.docx"
+    },
+    "goriot-2": {
+      "qaItemId": "65880fdb6bf241cdaf9bca539069cdea",
+      "knowledgeUnitId": "storyrecon:goriot-2",
+      "publishedStatement": "Jde o příběh Goriota, bývalého obchodníka s nudlemi, a Evžena Rastignaca, mladého studenta práv.",
+      "validationStatus": "verified_from_source",
+      "filename": "2. Realismus ve Francii.docx"
+    },
+    "goriot-3": {
+      "qaItemId": "f5f81b8c224e4c97ac0c8b0290e407f4",
+      "knowledgeUnitId": "storyrecon:goriot-3",
+      "publishedStatement": "Goriot je otcem dvou dcer, které se snaží dostat se do vznešené pařížské společnosti, k čemuž jim má dopomoci otcův majetek.",
+      "validationStatus": "verified_from_source",
+      "filename": "2. Realismus ve Francii.docx"
+    },
+    "goriot-4": {
+      "qaItemId": "04c7ea900e1b4a6c966016ebea033dd7",
+      "knowledgeUnitId": "storyrecon:goriot-4",
+      "publishedStatement": "První dcera Anastázie si vezme hraběte, druhá dcera Delfina bankéře.",
+      "validationStatus": "verified_from_source",
+      "filename": "2. Realismus ve Francii.docx"
+    },
+    "goriot-5": {
+      "qaItemId": "a253f5eda4944bcfa80330fb56cee0f8",
+      "knowledgeUnitId": "storyrecon:goriot-5",
+      "publishedStatement": "Ač jsou obě bohatě provdány, z otce jen vydírají peníze a stydí se za něj.",
+      "validationStatus": "verified_from_source",
+      "filename": "2. Realismus ve Francii.docx"
+    },
+    "goriot-6": {
+      "qaItemId": "ce727b44918c4b11a038048c4bf8f2ec",
+      "knowledgeUnitId": "storyrecon:goriot-6",
+      "publishedStatement": "Ten umírá v chudobě, opuštěn a opovrhován okolím.",
+      "validationStatus": "verified_from_source",
+      "filename": "2. Realismus ve Francii.docx"
+    },
+    "goriot-7": {
+      "qaItemId": "f2cb1006e4c74f88945fda6f2137e437",
+      "knowledgeUnitId": "storyrecon:goriot-7",
+      "publishedStatement": "Student Rastignac je zpočátku obětavý a stará se o umírajícího Goriota.",
+      "validationStatus": "verified_from_source",
+      "filename": "2. Realismus ve Francii.docx"
+    },
+    "goriot-8": {
+      "qaItemId": "6ee3a212aa5143bd870cad897a6687c6",
+      "knowledgeUnitId": "storyrecon:goriot-8",
+      "publishedStatement": "Později pod vlivem prostředí se mění a ze zištných důvodů se stává milencem jedné z Goriotových dcer.",
+      "validationStatus": "verified_from_source",
+      "filename": "2. Realismus ve Francii.docx"
+    },
+    "zt-1": {
+      "qaItemId": "408d3b7fce654572b7b2212860d4d1b2",
+      "knowledgeUnitId": "storyrecon:zt-1",
+      "publishedStatement": "Raskolnikov, chudý student z Petrohradu, aby získal peníze, se rozhodne zabít starou lichvářku.",
+      "validationStatus": "verified_from_source",
+      "filename": "3. Realismus v Rusku.docx"
+    },
+    "zt-2": {
+      "qaItemId": "e2378bc096554be796daff20faaa53ed",
+      "knowledgeUnitId": "storyrecon:zt-2",
+      "publishedStatement": "Během zločinu se náhodně v bytě objeví i její setra, kterou taktéž zavraždí.",
+      "validationStatus": "verified_from_source",
+      "filename": "3. Realismus v Rusku.docx"
+    },
+    "zt-3": {
+      "qaItemId": "d30baa938c0b45848537006096f9d133",
+      "knowledgeUnitId": "storyrecon:zt-3",
+      "publishedStatement": "Zahladí veškeré stopy.",
+      "validationStatus": "verified_from_source",
+      "filename": "3. Realismus v Rusku.docx"
+    },
+    "zt-4": {
+      "qaItemId": "0e0ab87e5ea54e4780508fd6d9d34318",
+      "knowledgeUnitId": "storyrecon:zt-4",
+      "publishedStatement": "Snaží se svůj čin racionálně zdůvodnit, ale dostává se do těžké psychické krize.",
+      "validationStatus": "verified_from_source",
+      "filename": "3. Realismus v Rusku.docx"
+    },
+    "zt-5": {
+      "qaItemId": "8c9587f0f1be474690b996f4ee045c11",
+      "knowledgeUnitId": "storyrecon:zt-5",
+      "publishedStatement": "Zamiluje se do Soni, která svou rodinu živí prostitucí.",
+      "validationStatus": "verified_from_source",
+      "filename": "3. Realismus v Rusku.docx"
+    },
+    "zt-6": {
+      "qaItemId": "cb3a69b93cea43e2a142d34d58a28a50",
+      "knowledgeUnitId": "storyrecon:zt-6",
+      "publishedStatement": "Postupem času nachází v sobě sílu a přizná se jí ke spáchanému zločinu.",
+      "validationStatus": "verified_from_source",
+      "filename": "3. Realismus v Rusku.docx"
+    },
+    "zt-7": {
+      "qaItemId": "bed0245b8c35451bbf995626f9772a55",
+      "knowledgeUnitId": "storyrecon:zt-7",
+      "publishedStatement": "Raskolnikov se jde udat, je odsouzen na nucené práce na Sibiř a Soňa jej dobrovolně doprovází.",
+      "validationStatus": "verified_from_source",
+      "filename": "3. Realismus v Rusku.docx"
+    },
+    "zt-8": {
+      "qaItemId": "18d2e62e93654707bcae1a3a49cb0b52",
+      "knowledgeUnitId": "storyrecon:zt-8",
+      "publishedStatement": "Nesobecká láska způsobí postupný duševní přerod hlavního hrdiny.",
+      "validationStatus": "verified_from_source",
+      "filename": "3. Realismus v Rusku.docx"
+    },
+    "ak-1": {
+      "qaItemId": "2cfc7aeafae5491ca8a192058d8fb71a",
+      "knowledgeUnitId": "storyrecon:ak-1",
+      "publishedStatement": "zachycuje osudy ruské šlechtičny Anny Kareniny, která přijíždí z Petrohradu do Moskvy, aby zachránila rozpadající se manželství svého bratra.",
+      "validationStatus": "verified_from_source",
+      "filename": "3. Realismus v Rusku.docx"
+    },
+    "ak-2": {
+      "qaItemId": "a39d497cd3b649d88b04587ea16161ef",
+      "knowledgeUnitId": "storyrecon:ak-2",
+      "publishedStatement": "I krátké setkání vdané Anny a Vronského na plese však vznítí vášeň lásky.",
+      "validationStatus": "verified_from_source",
+      "filename": "3. Realismus v Rusku.docx"
+    },
+    "ak-3": {
+      "qaItemId": "4d15ba87c72e4696a7a99f192eb75453",
+      "knowledgeUnitId": "storyrecon:ak-3",
+      "publishedStatement": "Kitty, zlomena nešťastnou láskou k Vronskému, odjíždí do ciziny.",
+      "validationStatus": "verified_from_source",
+      "filename": "3. Realismus v Rusku.docx"
+    },
+    "ak-4": {
+      "qaItemId": "98c4ac49fe364774aef63e6b6289161f",
+      "knowledgeUnitId": "storyrecon:ak-4",
+      "publishedStatement": "Ten ji však pronásleduje a Anna se nakonec poddává.",
+      "validationStatus": "verified_from_source",
+      "filename": "3. Realismus v Rusku.docx"
+    },
+    "ak-5": {
+      "qaItemId": "e29c568b70e7424fb7ea203bd72b5703",
+      "knowledgeUnitId": "storyrecon:ak-5",
+      "publishedStatement": "Po zjištění těhotenství se Anna vyzpovídá manželovi a opustí jej.",
+      "validationStatus": "verified_from_source",
+      "filename": "3. Realismus v Rusku.docx"
+    },
+    "ak-6": {
+      "qaItemId": "dfe6afebf02e4c868dfd24175379abd7",
+      "knowledgeUnitId": "storyrecon:ak-6",
+      "publishedStatement": "Po těžkém porodu Anna odjíždí s Vronským do ciziny",
+      "validationStatus": "verified_from_source",
+      "filename": "3. Realismus v Rusku.docx"
+    },
+    "ak-7": {
+      "qaItemId": "f0032caa45be4dbaac1488973e1e1d43",
+      "knowledgeUnitId": "storyrecon:ak-7",
+      "publishedStatement": "Po svatbě žijí šťastně na venkově.",
+      "validationStatus": "verified_from_source",
+      "filename": "3. Realismus v Rusku.docx"
+    },
+    "ak-8": {
+      "qaItemId": "3698ec90c5c5458e9a55cfc9f6bef45d",
+      "knowledgeUnitId": "storyrecon:ak-8",
+      "publishedStatement": "Anna nakonec nevidí jiné východisko a rozhodne se svůj život ukončit skokem pod vlak.",
+      "validationStatus": "verified_from_source",
+      "filename": "3. Realismus v Rusku.docx"
+    },
+    "vodnik-1": {
+      "qaItemId": "11d2b9a917db48428b555c129386c10e",
+      "knowledgeUnitId": "storyrecon:vodnik-1",
+      "publishedStatement": "Dcera šla k jezeru a vodník ji stáhl pod hladinu.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "vodnik-2": {
+      "qaItemId": "62ba4063bf5f4bf695bfe44c783094c1",
+      "knowledgeUnitId": "storyrecon:vodnik-2",
+      "publishedStatement": "Měli spolu dítě.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "vodnik-3": {
+      "qaItemId": "b403e4329b36424385f8c9a62c08464c",
+      "knowledgeUnitId": "storyrecon:vodnik-3",
+      "publishedStatement": "Prosila ho, aby se mohla jít ještě rozloučit s matkou.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "vodnik-4": {
+      "qaItemId": "85ab8c59bb944d6a9aa9c3e23e9207cf",
+      "knowledgeUnitId": "storyrecon:vodnik-4",
+      "publishedStatement": "Přemluvila ho, on si však nechal u sebe jako pojistku jejich dítě a řekl jí, ať se vrátí do půlnoci.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "vodnik-5": {
+      "qaItemId": "5a0ad6eb2a77418bb4ab7af7a34e1190",
+      "knowledgeUnitId": "storyrecon:vodnik-5",
+      "publishedStatement": "Půlnoc odbila a vodník bouchal na dveře.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "vodnik-6": {
+      "qaItemId": "9a1ded7348314f3eb31edab4cbffd08d",
+      "knowledgeUnitId": "storyrecon:vodnik-6",
+      "publishedStatement": "Matka však svou dceru držela uvnitř.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "vodnik-7": {
+      "qaItemId": "aeaaf444276646d091bb93fdc90b477d",
+      "knowledgeUnitId": "storyrecon:vodnik-7",
+      "publishedStatement": "Zpoza dveří se ozval řev dítěte, pak najednou utichl a něco spadlo.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "vodnik-8": {
+      "qaItemId": "f5ba210137af41949a68a3bd65cafa89",
+      "knowledgeUnitId": "storyrecon:vodnik-8",
+      "publishedStatement": "Matka otevřela dveře a na zemi viděla tělíčko bez hlavy a hlavu bez tělíčka.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "sk-8": {
+      "qaItemId": "caf5d3f1d03847418d7176acfb6e8d74",
+      "knowledgeUnitId": "storyrecon:sk-8",
+      "publishedStatement": "Rodiče i sourozenci už byli po smrti.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "sk-1": {
+      "qaItemId": "b7698290d79040bbb534683707310a4f",
+      "knowledgeUnitId": "storyrecon:sk-1",
+      "publishedStatement": "Dívka se modlí, aby se už její milý vrátil z ciziny.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "sk-2": {
+      "qaItemId": "da321bd1b05f47e6a04d76bd52227128",
+      "knowledgeUnitId": "storyrecon:sk-2",
+      "publishedStatement": "V noci klepe její milý na okno a říká, ať s ním jde, že se stane jeho ženou.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "sk-3": {
+      "qaItemId": "a2f734137c734c26a5645e3419c81452",
+      "knowledgeUnitId": "storyrecon:sk-3",
+      "publishedStatement": "Jdou lesem a postupně jí milý zahazuje její modlitební knížky, růženec a křížek.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "sk-4": {
+      "qaItemId": "b01f6004220f4fadb3d97a6b47e1336c",
+      "knowledgeUnitId": "storyrecon:sk-4",
+      "publishedStatement": "Přivedl ji na hřbitov, pochopila, že on už je taky mrtvý.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "sk-5": {
+      "qaItemId": "5c43c0af8ccb450193f6caaddb20a300",
+      "knowledgeUnitId": "storyrecon:sk-5",
+      "publishedStatement": "Běžela se schovat. Modlila se.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "sk-6": {
+      "qaItemId": "4c42035700274fafa0028a7ab02ac27b",
+      "knowledgeUnitId": "storyrecon:sk-6",
+      "publishedStatement": "Ráno zakokrhal kohout a vše ustalo.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "sk-7": {
+      "qaItemId": "230f05373008435e913fcc5766c84408",
+      "knowledgeUnitId": "storyrecon:sk-7",
+      "publishedStatement": "Na každém hrobě byl útržek z košile.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "zk-1": {
+      "qaItemId": "5070ec1a61644aa9b476a64df1772804",
+      "knowledgeUnitId": "storyrecon:zk-1",
+      "publishedStatement": "Král si chce vzít za ženu Dorničku, nevlastní dceru staré babice.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "zk-2": {
+      "qaItemId": "4b9873316628422c992f1144b09f4753",
+      "knowledgeUnitId": "storyrecon:zk-2",
+      "publishedStatement": "V lese ji ale zabijí, useknou jí hnáty a vypíchnou oči.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "zk-3": {
+      "qaItemId": "5cbfca451f0c42f19c8b3f9e8dfc639d",
+      "knowledgeUnitId": "storyrecon:zk-3",
+      "publishedStatement": "Matka pak vydává svoji vlastní dceru za Dorničku (byly si podobné).",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "zk-4": {
+      "qaItemId": "ffdbf06b0bce4641b70c1d8753a8b2b2",
+      "knowledgeUnitId": "storyrecon:zk-4",
+      "publishedStatement": "Konala se svatba. Král musel odjet.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "zk-5": {
+      "qaItemId": "4cfb22c495bb41c5ae1df488964b4da7",
+      "knowledgeUnitId": "storyrecon:zk-5",
+      "publishedStatement": "Vlastní dcera si koupila od chlapce zlatý kolovrat za nohy, přeslici za ruce a kužel za oči.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "zk-6": {
+      "qaItemId": "71b0a8b88f774ed49222c0622b095684",
+      "knowledgeUnitId": "storyrecon:zk-6",
+      "publishedStatement": "Stařeček pak hnáty a oči vrátil Dorničce a pomocí živé vody tělo opět srostlo.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "zk-7": {
+      "qaItemId": "3bca067ebde44d8380353037974df7de",
+      "knowledgeUnitId": "storyrecon:zk-7",
+      "publishedStatement": "Když začala příst, kolovrat řekl pravdu o mordu.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "zk-8": {
+      "qaItemId": "76578f010fc14a558bca815ff306dfae",
+      "knowledgeUnitId": "storyrecon:zk-8",
+      "publishedStatement": "Babice i s dcerou našly v hlubokém lese to, co samy udělaly Dorničce. Vlci je roztrhali.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "pol-1": {
+      "qaItemId": "826cec726ae54cc28ce770e63e7ac76a",
+      "knowledgeUnitId": "storyrecon:pol-1",
+      "publishedStatement": "Matka zavolala na své nezbedné dítě polednici.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "pol-2": {
+      "qaItemId": "1678a5b35159434493c69239f434a52e",
+      "knowledgeUnitId": "storyrecon:pol-2",
+      "publishedStatement": "Když polednice skutečně přišla, matka své dítě bránila, tiskla ho k sobě tak silně, až ho zadusila.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "pol-3": {
+      "qaItemId": "30e5031da2944fea8039e37497fb5e03",
+      "knowledgeUnitId": "storyrecon:pol-3",
+      "publishedStatement": "Když polednice skutečně přišla, matka své dítě bránila, tiskla ho k sobě tak silně, až ho zadusila.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "pol-4": {
+      "qaItemId": "c67694371e1e4bc3b9cf498f1c4c2063",
+      "knowledgeUnitId": "storyrecon:pol-4",
+      "publishedStatement": "Když polednice skutečně přišla, matka své dítě bránila, tiskla ho k sobě tak silně, až ho zadusila.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "pok-1": {
+      "qaItemId": "f1c81c95cc09400da761c23db766d956",
+      "knowledgeUnitId": "storyrecon:pok-1",
+      "publishedStatement": "Žena šla na Velký pátek ke kostelíčku.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "pok-2": {
+      "qaItemId": "63ac57a5293a497d8ea7187121243dee",
+      "knowledgeUnitId": "storyrecon:pok-2",
+      "publishedStatement": "Na cestě, kde vždy stával kámen, najednou byla otevřená skála.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "pok-3": {
+      "qaItemId": "4d448f481aaa418e9dd54891210aafcc",
+      "knowledgeUnitId": "storyrecon:pok-3",
+      "publishedStatement": "Žena uvnitř našla stříbro, zlato.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "pok-4": {
+      "qaItemId": "b09dd35128974ddeaa7e4bb68fbd3331",
+      "knowledgeUnitId": "storyrecon:pok-4",
+      "publishedStatement": "Odnesla si ho domů a dítě nechala ve skále.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "pok-5": {
+      "qaItemId": "27ed8ac4b4cd471fb20ee06d5a5a5e8b",
+      "knowledgeUnitId": "storyrecon:pok-5",
+      "publishedStatement": "Skála zmizela.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "pok-6": {
+      "qaItemId": "3b1f34d8e79d46d697580d89c091dd2c",
+      "knowledgeUnitId": "storyrecon:pok-6",
+      "publishedStatement": "Zlato a stříbro se proměnilo v hlínu a kamení.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "pok-7": {
+      "qaItemId": "24a72cbeeafa4dc1b9747b8dbf92b48d",
+      "knowledgeUnitId": "storyrecon:pok-7",
+      "publishedStatement": "Za rok, na Velký pátek, se skála znovu objevila.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    },
+    "pok-8": {
+      "qaItemId": "c7d55be0e2524e31b43889a73e45ecac",
+      "knowledgeUnitId": "storyrecon:pok-8",
+      "publishedStatement": "Žena vešla dovnitř, popadla své dítě a utíkala pryč.",
+      "validationStatus": "verified_from_source",
+      "filename": "Kytice.docx"
+    }
+  },
+  "createdAt": "2026-07-20T23:50:35.342Z",
+  "updatedAt": "2026-07-20T23:50:35.342Z"
+}

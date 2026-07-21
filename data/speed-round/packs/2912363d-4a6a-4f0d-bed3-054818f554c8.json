@@ -1,0 +1,837 @@
+{
+  "id": "2912363d-4a6a-4f0d-bed3-054818f554c8",
+  "slug": "cjl-speed",
+  "title": "Speed Round — 60 sekund",
+  "summary": "Rychlé fakta: autor→dílo, pojem→definice, true/false, směr→vlastnost. 60 s. Žádná hluboká interpretace.",
+  "durationMs": 60000,
+  "questions": [
+    {
+      "id": "95b4f4f1-53b0-4eed-99e8-e07ca5b712f3",
+      "slug": "aw-neruda",
+      "kind": "author_work",
+      "prompt": "Jan Neruda → ?",
+      "options": [
+        {
+          "id": "9bb572ac-2407-4583-a635-eab5d2140eb6",
+          "label": "Povídky malostranské"
+        },
+        {
+          "id": "27972d6b-50e0-4012-8c2f-0fa4958fc566",
+          "label": "Kytice"
+        },
+        {
+          "id": "6378edef-63d6-450a-ad9a-611e934732b7",
+          "label": "Máj"
+        },
+        {
+          "id": "c9bfdf35-8ff2-4fe2-a62b-d49af06d4275",
+          "label": "Babička"
+        }
+      ],
+      "correctOptionId": "9bb572ac-2407-4583-a635-eab5d2140eb6",
+      "factHint": "Neruda napsal Povídky malostranské."
+    },
+    {
+      "id": "ccb72477-6e8b-4c74-a3f8-f1871a340848",
+      "slug": "aw-macha",
+      "kind": "author_work",
+      "prompt": "K. H. Mácha → ?",
+      "options": [
+        {
+          "id": "7d6942f4-b00a-464f-b4af-ee8949a048f9",
+          "label": "Máj"
+        },
+        {
+          "id": "a9033358-3330-4d8e-81cd-534f6982975d",
+          "label": "Maryša"
+        },
+        {
+          "id": "f395d75a-8216-40be-a0d5-eb7d1127f299",
+          "label": "Babička"
+        },
+        {
+          "id": "cfca13a6-dfe4-4cef-bf17-bfcf27a2f631",
+          "label": "Tyrolské elegie"
+        }
+      ],
+      "correctOptionId": "7d6942f4-b00a-464f-b4af-ee8949a048f9"
+    },
+    {
+      "id": "f00272a7-d6f2-4cdf-a62b-0419c845c520",
+      "slug": "aw-erben",
+      "kind": "author_work",
+      "prompt": "K. J. Erben → ?",
+      "options": [
+        {
+          "id": "0e3180f4-5c75-45ce-a45d-1d133d62e327",
+          "label": "Kytice"
+        },
+        {
+          "id": "e1c8c548-6996-436e-94a2-e58d09f72179",
+          "label": "Máj"
+        },
+        {
+          "id": "202b711c-a168-48bb-ada9-e03cf6e19e16",
+          "label": "Otec Goriot"
+        },
+        {
+          "id": "549693f1-7cb5-4834-a75b-e45ee1b27a05",
+          "label": "Povídky malostranské"
+        }
+      ],
+      "correctOptionId": "0e3180f4-5c75-45ce-a45d-1d133d62e327"
+    },
+    {
+      "id": "37ef6b79-43ea-4d4d-85e1-7a5fed69800a",
+      "slug": "aw-nemcova",
+      "kind": "author_work",
+      "prompt": "Božena Němcová → ?",
+      "options": [
+        {
+          "id": "46f23caf-7b5d-4bb7-bc5d-8a5a5ebc71ff",
+          "label": "Babička"
+        },
+        {
+          "id": "d3a3c16b-4b95-43dc-ba19-4726bd915101",
+          "label": "Máj"
+        },
+        {
+          "id": "4ec8b4bb-7bd6-4006-8c81-470d3bfc3c86",
+          "label": "Zločin a trest"
+        },
+        {
+          "id": "8e957a29-32e7-49a7-8665-df34fd272276",
+          "label": "Maryša"
+        }
+      ],
+      "correctOptionId": "46f23caf-7b5d-4bb7-bc5d-8a5a5ebc71ff"
+    },
+    {
+      "id": "62a4d852-5acd-449f-9701-935ccef92204",
+      "slug": "aw-havlicek",
+      "kind": "author_work",
+      "prompt": "K. Havlíček Borovský → ?",
+      "options": [
+        {
+          "id": "27b434ec-93f9-4551-b2b2-3835886c3445",
+          "label": "Tyrolské elegie"
+        },
+        {
+          "id": "1aeb7a8d-b09b-450e-948b-baa264d799b4",
+          "label": "Máj"
+        },
+        {
+          "id": "f126dac2-7fc6-4b33-a6a1-e9f5695dd5cc",
+          "label": "Kytice"
+        },
+        {
+          "id": "b55b3cbd-ef00-448a-a6de-a8c165e452cc",
+          "label": "Babička"
+        }
+      ],
+      "correctOptionId": "27b434ec-93f9-4551-b2b2-3835886c3445"
+    },
+    {
+      "id": "f6b85d02-5537-46e5-8c5c-d078062a5aad",
+      "slug": "aw-balzac",
+      "kind": "author_work",
+      "prompt": "Honoré de Balzac → ?",
+      "options": [
+        {
+          "id": "c2a9f5c8-9230-4f3d-847a-42ba67de8353",
+          "label": "Otec Goriot"
+        },
+        {
+          "id": "1247d29c-f24f-45a4-b1b1-cecb587ebaa9",
+          "label": "Anna Karenina"
+        },
+        {
+          "id": "acdbd77f-a64b-4229-871e-08bf0043e860",
+          "label": "Máj"
+        },
+        {
+          "id": "f3fe8d84-84a3-420e-813f-a001cfcdf675",
+          "label": "Maryša"
+        }
+      ],
+      "correctOptionId": "c2a9f5c8-9230-4f3d-847a-42ba67de8353"
+    },
+    {
+      "id": "9a8cd918-c013-4855-aeb4-53cd0e4f8211",
+      "slug": "aw-dostojevskij",
+      "kind": "author_work",
+      "prompt": "F. M. Dostojevskij → ?",
+      "options": [
+        {
+          "id": "49790d2a-0fd4-4d0b-beda-45f988eb195d",
+          "label": "Zločin a trest"
+        },
+        {
+          "id": "b0d1e167-8845-48a2-b215-7ff3d6852b80",
+          "label": "Babička"
+        },
+        {
+          "id": "bb63cd1f-9b1d-4386-a3fc-6d0523944066",
+          "label": "Kytice"
+        },
+        {
+          "id": "9a676d63-018a-4746-b2b0-7c4dd755917a",
+          "label": "Otec Goriot"
+        }
+      ],
+      "correctOptionId": "49790d2a-0fd4-4d0b-beda-45f988eb195d"
+    },
+    {
+      "id": "98472e13-2406-42da-a9cc-1047a5d1ed0a",
+      "slug": "aw-tolstoj",
+      "kind": "author_work",
+      "prompt": "L. N. Tolstoj → ?",
+      "options": [
+        {
+          "id": "0a62994e-4bc3-4a63-ae74-0728685dbd53",
+          "label": "Anna Karenina"
+        },
+        {
+          "id": "4f604b3d-d349-4660-9c1b-d1ba92b7526b",
+          "label": "Máj"
+        },
+        {
+          "id": "a0ca2af7-e474-4fbb-b414-003c97ca5a97",
+          "label": "Maryša"
+        },
+        {
+          "id": "04395a53-9d3c-41c2-933b-50541b3c612c",
+          "label": "Povídky malostranské"
+        }
+      ],
+      "correctOptionId": "0a62994e-4bc3-4a63-ae74-0728685dbd53"
+    },
+    {
+      "id": "7213abfe-ba11-46e6-8719-f6e67ebaeb7b",
+      "slug": "aw-mrstikove",
+      "kind": "author_work",
+      "prompt": "Bratři Mrštíkové → ?",
+      "options": [
+        {
+          "id": "2065cc6f-f8d5-42de-a9bb-3030191b876f",
+          "label": "Maryša"
+        },
+        {
+          "id": "3a84cf08-b804-4e00-9f38-14774d0bbeec",
+          "label": "Máj"
+        },
+        {
+          "id": "98befb61-941f-45d9-a25d-5da4af2b8882",
+          "label": "Kytice"
+        },
+        {
+          "id": "7db93f38-bdab-41bc-9460-8300e515d986",
+          "label": "Otec Goriot"
+        }
+      ],
+      "correctOptionId": "2065cc6f-f8d5-42de-a9bb-3030191b876f"
+    },
+    {
+      "id": "d629cb78-382c-4704-b556-61196d97ba57",
+      "slug": "aw-shakespeare",
+      "kind": "author_work",
+      "prompt": "W. Shakespeare → země?",
+      "options": [
+        {
+          "id": "6e6898f1-9b3d-4b4a-bf7e-7d6c78bac673",
+          "label": "Anglie"
+        },
+        {
+          "id": "8b2657ed-bd5a-40b7-ad05-562f0a9b8867",
+          "label": "Francie"
+        },
+        {
+          "id": "4eb32ef4-e30c-4a68-9063-d2e51ebee0c0",
+          "label": "Rusko"
+        },
+        {
+          "id": "23628ead-558d-45f4-a94a-fe7aa6537139",
+          "label": "Německo"
+        }
+      ],
+      "correctOptionId": "6e6898f1-9b3d-4b4a-bf7e-7d6c78bac673",
+      "factHint": "Shakespeare je anglický dramatik."
+    },
+    {
+      "id": "dc0c77d1-7ebb-4421-8d94-a702fb867a97",
+      "slug": "td-metafora",
+      "kind": "term_definition",
+      "prompt": "Metafora = ?",
+      "options": [
+        {
+          "id": "c4f05ca9-2f19-4eef-9bb9-e365fee72027",
+          "label": "přenesené pojmenování podle podobnosti"
+        },
+        {
+          "id": "58f5cbd1-8587-4ccc-a4dc-590acd7c6b4c",
+          "label": "záměna části a celku"
+        },
+        {
+          "id": "8cc34dba-3a9c-4678-9b47-2acb12eaee9d",
+          "label": "básnický přívlastek"
+        },
+        {
+          "id": "744a7a39-7f54-43b2-adde-74d7b6e8ad42",
+          "label": "opakování slov"
+        }
+      ],
+      "correctOptionId": "c4f05ca9-2f19-4eef-9bb9-e365fee72027"
+    },
+    {
+      "id": "263901ab-3c5b-4b9e-8cd5-4595390a0340",
+      "slug": "td-epiteton",
+      "kind": "term_definition",
+      "prompt": "Epiteton = ?",
+      "options": [
+        {
+          "id": "54f0d4bd-d656-4ea0-aede-bd0738dc67b7",
+          "label": "básnický přívlastek"
+        },
+        {
+          "id": "d54362ca-505d-41aa-8ab4-490fec40cd2b",
+          "label": "přirovnání se ‚jako‘"
+        },
+        {
+          "id": "9d599bb9-d61a-461e-8a6e-13514aa02f7a",
+          "label": "řečnická otázka"
+        },
+        {
+          "id": "3cead7f6-0565-4714-a1ed-92ff9347619d",
+          "label": "opak významu"
+        }
+      ],
+      "correctOptionId": "54f0d4bd-d656-4ea0-aede-bd0738dc67b7"
+    },
+    {
+      "id": "34dfe453-2533-4f7a-a0cf-14568c45ac67",
+      "slug": "td-synekdocha",
+      "kind": "term_definition",
+      "prompt": "Synekdocha = ?",
+      "options": [
+        {
+          "id": "1f37e4f9-6556-4e57-8590-a76bb5bd0c68",
+          "label": "záměna části a celku"
+        },
+        {
+          "id": "5b8149b1-d891-439c-9e1c-3f1680a423cb",
+          "label": "přenos podle podobnosti"
+        },
+        {
+          "id": "a97699eb-fc52-49b5-8259-cdf90f5a4896",
+          "label": "zveličení"
+        },
+        {
+          "id": "9b55f1ca-fd3d-4d3c-92f0-0c41e18d7c70",
+          "label": "zosobnění"
+        }
+      ],
+      "correctOptionId": "1f37e4f9-6556-4e57-8590-a76bb5bd0c68"
+    },
+    {
+      "id": "46a82ed1-debd-4c94-b669-aaca012be61c",
+      "slug": "td-ironie",
+      "kind": "term_definition",
+      "prompt": "Ironie = ?",
+      "options": [
+        {
+          "id": "34b2ef50-7ffe-46e7-8c3e-d807b3c62a87",
+          "label": "význam opačný než doslovný"
+        },
+        {
+          "id": "93806802-d3aa-4cb1-82de-95a19de12c43",
+          "label": "zdrobnělina"
+        },
+        {
+          "id": "1204d3c2-980f-4b77-9f03-b9aec757d782",
+          "label": "příměr"
+        },
+        {
+          "id": "29782190-a28b-4af4-b66f-66fd012623c0",
+          "label": "opakování hlásek"
+        }
+      ],
+      "correctOptionId": "34b2ef50-7ffe-46e7-8c3e-d807b3c62a87"
+    },
+    {
+      "id": "7f63044c-c981-4bfc-8309-c477ed99c4a4",
+      "slug": "td-balada",
+      "kind": "term_definition",
+      "prompt": "Balada = ?",
+      "options": [
+        {
+          "id": "2aa2d068-b055-4bf3-9757-91f006f0891e",
+          "label": "lyricko-epický útvar, často tragický"
+        },
+        {
+          "id": "eab2c9f4-e3a0-4551-95db-9518b38143e0",
+          "label": "krátká lyrická báseň o lásce"
+        },
+        {
+          "id": "ea65762d-d541-4748-94ec-ed30456320f0",
+          "label": "komedie o omylech"
+        },
+        {
+          "id": "ef7eaa87-96b1-49af-9b86-cd97048e2b0c",
+          "label": "cestopis"
+        }
+      ],
+      "correctOptionId": "2aa2d068-b055-4bf3-9757-91f006f0891e"
+    },
+    {
+      "id": "45fbc126-c409-4a52-8b5e-8836b1bb2bce",
+      "slug": "td-roman",
+      "kind": "term_definition",
+      "prompt": "Román = ?",
+      "options": [
+        {
+          "id": "4a9c01e3-c10f-4a4b-baae-694a01dad2ba",
+          "label": "rozsáhlý epický útvar v próze"
+        },
+        {
+          "id": "2b1ce16c-96f0-42f2-977a-2d328cabbf51",
+          "label": "14veršová lyrická forma"
+        },
+        {
+          "id": "90e3cd78-1738-4dca-80f8-7ec851437607",
+          "label": "jevištní dialog bez děje"
+        },
+        {
+          "id": "4a13d377-5df9-442b-bea4-56dc124a606f",
+          "label": "pouhá reportáž"
+        }
+      ],
+      "correctOptionId": "4a9c01e3-c10f-4a4b-baae-694a01dad2ba"
+    },
+    {
+      "id": "d998a6c4-01e3-4306-8e1c-89b6d8396a48",
+      "slug": "td-drama",
+      "kind": "term_definition",
+      "prompt": "Drama = ?",
+      "options": [
+        {
+          "id": "51957505-426b-41b6-90ec-ad63e8611372",
+          "label": "dílo určené především k jevišti"
+        },
+        {
+          "id": "6eefe824-daa8-4b4f-86a5-867177f5a1b0",
+          "label": "vždy jen veselohra"
+        },
+        {
+          "id": "bf60dc78-59f4-4d36-8b85-6a0ef3bc6048",
+          "label": "jen deníková próza"
+        },
+        {
+          "id": "5f0a77c9-ecd1-45d0-908d-7b35bc2fc93d",
+          "label": "jen sonetový cyklus"
+        }
+      ],
+      "correctOptionId": "51957505-426b-41b6-90ec-ad63e8611372"
+    },
+    {
+      "id": "1d8fbbc5-4999-41b7-a575-71cf2691c434",
+      "slug": "td-personifikace",
+      "kind": "term_definition",
+      "prompt": "Personifikace = ?",
+      "options": [
+        {
+          "id": "caadc487-4677-4151-a27c-c454d9843214",
+          "label": "přisouzení lidských vlastností neživému"
+        },
+        {
+          "id": "64d40176-ff51-4848-a37d-85db6475b79d",
+          "label": "záměna jména autora"
+        },
+        {
+          "id": "bc2aa2f5-1dc7-48f2-a357-9f6fd37940fb",
+          "label": "vynechání podmětu"
+        },
+        {
+          "id": "ba9bb542-83b8-4265-9b3b-3e3728c3d557",
+          "label": "zdvojení rýmu"
+        }
+      ],
+      "correctOptionId": "caadc487-4677-4151-a27c-c454d9843214"
+    },
+    {
+      "id": "9b7b3c54-6fb1-431c-9b9f-7d8a27a127a2",
+      "slug": "tf-macha-romantismus",
+      "kind": "true_false",
+      "prompt": "Mácha patří k romantismu.",
+      "options": [
+        {
+          "id": "d2106ee6-e616-42ca-adc0-35c67ab53319",
+          "label": "Pravda"
+        },
+        {
+          "id": "35529226-257d-4007-9695-5d7b4a17d7c5",
+          "label": "Nepravda"
+        }
+      ],
+      "correctOptionId": "d2106ee6-e616-42ca-adc0-35c67ab53319"
+    },
+    {
+      "id": "6ce97b1f-be59-4070-acb9-f4f7e57c7702",
+      "slug": "tf-neruda-kytice",
+      "kind": "true_false",
+      "prompt": "Neruda napsal Kytici.",
+      "options": [
+        {
+          "id": "f3cb2cb5-dfe9-41fa-803a-1156742ea372",
+          "label": "Pravda"
+        },
+        {
+          "id": "9ad7e2ae-9996-417f-bcb8-621bc0a62200",
+          "label": "Nepravda"
+        }
+      ],
+      "correctOptionId": "9ad7e2ae-9996-417f-bcb8-621bc0a62200",
+      "factHint": "Kytici napsal Erben."
+    },
+    {
+      "id": "b7184c65-fecd-4460-a9b0-902e5c0a56a9",
+      "slug": "tf-babicka-nemcova",
+      "kind": "true_false",
+      "prompt": "Babičku napsala Božena Němcová.",
+      "options": [
+        {
+          "id": "9fb4c393-230b-463a-aa0b-570d2ca14d6e",
+          "label": "Pravda"
+        },
+        {
+          "id": "e29fcc64-fea1-4eb5-971e-45149610e366",
+          "label": "Nepravda"
+        }
+      ],
+      "correctOptionId": "9fb4c393-230b-463a-aa0b-570d2ca14d6e"
+    },
+    {
+      "id": "6723be2b-0e3d-45a3-98c2-03ff05108b80",
+      "slug": "tf-maj-svatba",
+      "kind": "true_false",
+      "prompt": "Máj končí veselou svatbou.",
+      "options": [
+        {
+          "id": "50dcfa3c-fe72-45f8-95fc-97fec15d6e83",
+          "label": "Pravda"
+        },
+        {
+          "id": "b18cb50a-afba-44b8-9700-0e04e161181f",
+          "label": "Nepravda"
+        }
+      ],
+      "correctOptionId": "b18cb50a-afba-44b8-9700-0e04e161181f",
+      "factHint": "Máj je tragédie, ne happy end."
+    },
+    {
+      "id": "9b6fe413-76fc-4da2-8d3e-9924338b1b13",
+      "slug": "tf-goriot-balzac",
+      "kind": "true_false",
+      "prompt": "Otec Goriot je dílo Balzaca.",
+      "options": [
+        {
+          "id": "9be82102-ce72-42ce-a806-dbf481c3538c",
+          "label": "Pravda"
+        },
+        {
+          "id": "f98ff260-0b4e-444d-a4ea-7aa1eedf5211",
+          "label": "Nepravda"
+        }
+      ],
+      "correctOptionId": "9be82102-ce72-42ce-a806-dbf481c3538c"
+    },
+    {
+      "id": "5e1f0840-b655-4f3d-bbd5-4c4f22a73ffb",
+      "slug": "tf-raskolnikov-goriot",
+      "kind": "true_false",
+      "prompt": "Raskolnikov je postava Otce Goriota.",
+      "options": [
+        {
+          "id": "c2283d3e-ed16-42be-8bb1-935f191bf068",
+          "label": "Pravda"
+        },
+        {
+          "id": "1147bbf4-ba0a-4779-95c4-d49f85f22224",
+          "label": "Nepravda"
+        }
+      ],
+      "correctOptionId": "1147bbf4-ba0a-4779-95c4-d49f85f22224",
+      "factHint": "Raskolnikov = Zločin a trest."
+    },
+    {
+      "id": "37d32f27-bb11-4fc1-9027-88a1563ad5da",
+      "slug": "tf-obrozeni-19",
+      "kind": "true_false",
+      "prompt": "Národní obrození spadá kolem přelomu 18./19. stol.",
+      "options": [
+        {
+          "id": "9892983e-d8b0-4390-8b48-a8287f382a1d",
+          "label": "Pravda"
+        },
+        {
+          "id": "33b12102-6551-4123-8b8b-c2f3fa93bd5a",
+          "label": "Nepravda"
+        }
+      ],
+      "correctOptionId": "9892983e-d8b0-4390-8b48-a8287f382a1d"
+    },
+    {
+      "id": "c1cfa902-818e-4445-8346-30406cc0e3aa",
+      "slug": "tf-protektorat-1620",
+      "kind": "true_false",
+      "prompt": "Protektorát začal roku 1620.",
+      "options": [
+        {
+          "id": "6c951770-5601-4590-ae8f-22847bc11b3b",
+          "label": "Pravda"
+        },
+        {
+          "id": "1979a622-f64a-4714-9cf8-7e12c4298d1f",
+          "label": "Nepravda"
+        }
+      ],
+      "correctOptionId": "1979a622-f64a-4714-9cf8-7e12c4298d1f",
+      "factHint": "Protektorát = 1939–1945."
+    },
+    {
+      "id": "d8731ddd-7ded-44b3-87d9-82eca0b430be",
+      "slug": "tf-marysa-mrstikove",
+      "kind": "true_false",
+      "prompt": "Maryša je drama bratrů Mrštíků.",
+      "options": [
+        {
+          "id": "e0776e7d-ff6f-42ac-a8a2-d2dca6bef74d",
+          "label": "Pravda"
+        },
+        {
+          "id": "69b68d3b-b735-4c88-bd9b-62ea48ed31df",
+          "label": "Nepravda"
+        }
+      ],
+      "correctOptionId": "e0776e7d-ff6f-42ac-a8a2-d2dca6bef74d"
+    },
+    {
+      "id": "060634bc-9395-4c66-86cb-97eb6e7ca5aa",
+      "slug": "tf-realismus-detail",
+      "kind": "true_false",
+      "prompt": "Realismus často používá detailní popis prostředí.",
+      "options": [
+        {
+          "id": "c1d0cd66-160f-40ef-9566-759c3977b91e",
+          "label": "Pravda"
+        },
+        {
+          "id": "e3b5fc6b-1a21-4e7e-aaba-ec5e12a10967",
+          "label": "Nepravda"
+        }
+      ],
+      "correctOptionId": "c1d0cd66-160f-40ef-9566-759c3977b91e"
+    },
+    {
+      "id": "14a86f9c-ee79-4e29-b97c-2fa46e543f83",
+      "slug": "mt-romantismus",
+      "kind": "movement_trait",
+      "prompt": "Romantismus → ?",
+      "options": [
+        {
+          "id": "afd7d872-a725-47a5-b487-be803d64c7fa",
+          "label": "subjektivita a cit"
+        },
+        {
+          "id": "1010d86d-47d7-4bdb-8c8b-dfd3d1b2ec53",
+          "label": "determinismus prostředí"
+        },
+        {
+          "id": "4338ff8a-d9a5-4d05-a669-ee5e58f37f9d",
+          "label": "jen suchá statistika"
+        },
+        {
+          "id": "3e464e16-dbe0-49a9-a91e-768afa495223",
+          "label": "odmítnutí přírody"
+        }
+      ],
+      "correctOptionId": "afd7d872-a725-47a5-b487-be803d64c7fa"
+    },
+    {
+      "id": "e4699c14-25d4-49a1-a270-daf0aefa36ee",
+      "slug": "mt-realismus",
+      "kind": "movement_trait",
+      "prompt": "Realismus → ?",
+      "options": [
+        {
+          "id": "2798433d-fed9-4382-bab1-8c704c493b63",
+          "label": "typizace všedního života"
+        },
+        {
+          "id": "0c5ef450-780b-4dd4-b8f3-9c16bc43cc07",
+          "label": "jen snové vize bez společnosti"
+        },
+        {
+          "id": "5a64dfba-c562-4acf-8273-aba5d74d3d3e",
+          "label": "výhradně sonety"
+        },
+        {
+          "id": "5a949119-6bab-40b9-818b-febdf054e00a",
+          "label": "odmítnutí postav"
+        }
+      ],
+      "correctOptionId": "2798433d-fed9-4382-bab1-8c704c493b63"
+    },
+    {
+      "id": "a42674ed-fb9b-433f-8160-ab617529a4e5",
+      "slug": "mt-naturalismus",
+      "kind": "movement_trait",
+      "prompt": "Naturalismus → ?",
+      "options": [
+        {
+          "id": "6bc5def7-2ac3-4f69-9316-45c7fdfa6120",
+          "label": "determinismus prostředí"
+        },
+        {
+          "id": "927f93f2-4aa4-40e6-a755-5c11abc79ed5",
+          "label": "jen dvorská galantnost"
+        },
+        {
+          "id": "bb227f0e-a368-421d-9750-a4c93a7b9315",
+          "label": "odmítnutí detailu"
+        },
+        {
+          "id": "32db9f00-30d1-43f4-be0b-ba124ac22798",
+          "label": "výhradně pohádky"
+        }
+      ],
+      "correctOptionId": "6bc5def7-2ac3-4f69-9316-45c7fdfa6120"
+    },
+    {
+      "id": "6d8d7f1a-7468-482d-876a-d1eff6bdf9d6",
+      "slug": "mt-symbolismus",
+      "kind": "movement_trait",
+      "prompt": "Symbolismus → ?",
+      "options": [
+        {
+          "id": "69a0fb11-04d4-4965-8d2f-786133710814",
+          "label": "náznak a symbol"
+        },
+        {
+          "id": "b5d4156f-cadc-4ad6-8820-3f8d735de80b",
+          "label": "jen policejní zpráva"
+        },
+        {
+          "id": "4c41f67a-26c3-4c55-a478-619fb3138315",
+          "label": "odmítnutí verše"
+        },
+        {
+          "id": "f4e321c1-9b5a-4340-93ec-ae822c55744b",
+          "label": "výhradně komedie dell’arte"
+        }
+      ],
+      "correctOptionId": "69a0fb11-04d4-4965-8d2f-786133710814"
+    },
+    {
+      "id": "41898a0d-72c1-4b3e-8bbe-01cefccea807",
+      "slug": "mt-romantismus-ne",
+      "kind": "movement_trait",
+      "prompt": "Co NENÍ typické pro romantismus?",
+      "options": [
+        {
+          "id": "5fea50d1-518e-4ce3-8284-7c70d4909097",
+          "label": "dokumentární naturalismus Zoly"
+        },
+        {
+          "id": "e17f7f6c-84e7-450d-ae40-8eb7bacf16b5",
+          "label": "důraz na cit"
+        },
+        {
+          "id": "4fd3a83b-7520-4ff8-96e2-24209ab926da",
+          "label": "kontrast ideálu a reality"
+        },
+        {
+          "id": "758f502a-8078-4f92-a382-e08f70f01ac2",
+          "label": "subjektivní pohled"
+        }
+      ],
+      "correctOptionId": "5fea50d1-518e-4ce3-8284-7c70d4909097"
+    },
+    {
+      "id": "495ee51b-f582-4e18-addb-aa160ef8c3d6",
+      "slug": "mt-realismus-autori",
+      "kind": "movement_trait",
+      "prompt": "Realismus — typický autor?",
+      "options": [
+        {
+          "id": "9cdd0af1-e21b-424e-aa35-e23d6df0ac6c",
+          "label": "Balzac / Neruda"
+        },
+        {
+          "id": "850621a5-345b-4ef4-8093-3c52f77ce1a3",
+          "label": "Mácha"
+        },
+        {
+          "id": "6b19c849-79c6-49d5-a267-da3fc83cc1eb",
+          "label": "Homér"
+        },
+        {
+          "id": "47b07187-79a1-4d85-91c7-21bef9a6e8cb",
+          "label": "Mallarmé jen"
+        }
+      ],
+      "correctOptionId": "9cdd0af1-e21b-424e-aa35-e23d6df0ac6c"
+    },
+    {
+      "id": "7b3af991-f1ea-40fd-bb90-ddc20a39521c",
+      "slug": "mt-romantismus-autor",
+      "kind": "movement_trait",
+      "prompt": "Romantismus — typický český autor?",
+      "options": [
+        {
+          "id": "50ba1593-6f35-43bc-8ade-88199f4ecbef",
+          "label": "K. H. Mácha"
+        },
+        {
+          "id": "a0c67c48-848d-46fd-b13c-00a27d61c2cb",
+          "label": "Balzac"
+        },
+        {
+          "id": "7639903c-481d-4e80-a272-3f3f5bb6bf55",
+          "label": "Zola"
+        },
+        {
+          "id": "d3712a9a-fbd5-48fa-8b9b-771862405f6d",
+          "label": "Dostojevskij jen"
+        }
+      ],
+      "correctOptionId": "50ba1593-6f35-43bc-8ade-88199f4ecbef"
+    },
+    {
+      "id": "33e10d16-b6b2-42e4-a665-4e39e79cb765",
+      "slug": "mt-naturalismus-ne",
+      "kind": "movement_trait",
+      "prompt": "Naturalismus NENÍ hlavně o…",
+      "options": [
+        {
+          "id": "56238465-1280-4644-ab68-d7001034477a",
+          "label": "idyllickém venkovu bez konfliktů"
+        },
+        {
+          "id": "b35bbf53-a6e9-4f98-a47a-856dd311a716",
+          "label": "vlivu prostředí"
+        },
+        {
+          "id": "823a8a7a-139b-4416-95a1-9739904d06fa",
+          "label": "dědičnosti"
+        },
+        {
+          "id": "c519c72e-af55-41f2-96ec-cca98bcb5d5e",
+          "label": "tvrdším sociálním řezu"
+        }
+      ],
+      "correctOptionId": "56238465-1280-4644-ab68-d7001034477a"
+    }
+  ],
+  "createdAt": "2026-07-20T22:30:12.507Z",
+  "updatedAt": "2026-07-20T22:30:12.507Z"
+}

@@ -1,0 +1,492 @@
+{
+  "id": "7f7b4336-61de-43eb-813c-4231686f907b",
+  "slug": "literarni-pary",
+  "title": "Match Arena — literární páry",
+  "summary": "Spojuj autor↔dílo, dílo↔postava, autor↔země, směr↔znak, pojem↔definice a událost↔období. Po chybě vysvětlení; slabé páry jdou do review.",
+  "pairs": [
+    {
+      "id": "e1e5f004-c7c8-448b-ae0c-be01c2c75091",
+      "slug": "neruda-malostranske",
+      "kind": "author_work",
+      "left": {
+        "id": "c441a585-49dd-41bb-a0d2-bdb17ed81800",
+        "label": "Jan Neruda"
+      },
+      "right": {
+        "id": "8b1f0fb5-349c-4ee0-b9d7-206a9ab93dbd",
+        "label": "Povídky malostranské"
+      },
+      "explanation": "Neruda je autorem povídkového cyklu z Malé Strany (1877/1878) — typický realismus všedního života.",
+      "tags": [
+        "realismus"
+      ]
+    },
+    {
+      "id": "457c5f24-75d5-4222-b297-968f5e3955f7",
+      "slug": "havlicek-tyrolske",
+      "kind": "author_work",
+      "left": {
+        "id": "2ddd3056-a932-4753-9b5c-be2c4d2a0269",
+        "label": "Karel Havlíček Borovský"
+      },
+      "right": {
+        "id": "32169084-972c-4ee2-bf98-65af3a3af9b1",
+        "label": "Tyrolské elegie"
+      },
+      "explanation": "Havlíček napsal Tyrolské elegie jako satiru z Brixenu — politická poezie národního buditele.",
+      "tags": [
+        "satira"
+      ]
+    },
+    {
+      "id": "bdb28520-074d-4fa8-b0e7-69a9cc5e1f72",
+      "slug": "erben-kytice",
+      "kind": "author_work",
+      "left": {
+        "id": "61d60cf0-734a-4ea7-92ca-00625969230b",
+        "label": "K. J. Erben"
+      },
+      "right": {
+        "id": "bd991a29-5780-4535-aabe-b057ea28ee97",
+        "label": "Kytice"
+      },
+      "explanation": "Erben sestavil Kytici z lidových motivů — balady s mravním řádem a osudem.",
+      "tags": [
+        "romantismus"
+      ]
+    },
+    {
+      "id": "9f3481d8-4f71-4b5c-b41c-8a7c41ded0be",
+      "slug": "nemcova-babicka",
+      "kind": "author_work",
+      "left": {
+        "id": "340bd7bc-3893-42be-9c93-276c2a939400",
+        "label": "Božena Němcová"
+      },
+      "right": {
+        "id": "bfb13c40-9d5e-47e2-82b8-6e4b1c1b24d8",
+        "label": "Babička"
+      },
+      "explanation": "Němcová je autorkou Babičky (1855) — idylický obraz venkova s postavou Babičky.",
+      "tags": [
+        "realismus"
+      ]
+    },
+    {
+      "id": "645c7f72-9cda-48b4-a62c-3e79b960a1c8",
+      "slug": "babicka-viktorka",
+      "kind": "work_character",
+      "left": {
+        "id": "2c51395e-991b-4edb-a736-43c7f987a34b",
+        "label": "Babička"
+      },
+      "right": {
+        "id": "501a54fc-136d-43bd-8fa8-2561eb61d9b3",
+        "label": "Viktorka"
+      },
+      "explanation": "Viktorka je tragická postava Němcové Babičky — milostný příběh a společenské stigma.",
+      "tags": [
+        "postavy"
+      ]
+    },
+    {
+      "id": "3091693a-e967-463f-8fa8-41485a0a741e",
+      "slug": "maj-jarmila",
+      "kind": "work_character",
+      "left": {
+        "id": "7a03edb9-3eb1-416b-aa66-65cfef6fb888",
+        "label": "Máj"
+      },
+      "right": {
+        "id": "ddf988f6-0e72-4e11-85c7-5b63e0a806a2",
+        "label": "Jarmila"
+      },
+      "explanation": "Jarmila je milenka Viléma v Máchově Máji — romantická tragédie lásky a smrti.",
+      "tags": [
+        "romantismus"
+      ]
+    },
+    {
+      "id": "6eb89d44-20b2-4466-a087-14991db0af9b",
+      "slug": "krutava-marycka",
+      "kind": "work_character",
+      "left": {
+        "id": "45c37d57-c44a-4c2c-b280-c4eb8dc8cc2f",
+        "label": "Maryčka Magdónova"
+      },
+      "right": {
+        "id": "a5790b93-59aa-4234-a685-255c84cee25a",
+        "label": "Maryčka"
+      },
+      "explanation": "Bezručova ballada nese jméno Maryčky Magdónovy — sociální protest slezského lidu.",
+      "tags": [
+        "naturalismus"
+      ]
+    },
+    {
+      "id": "2a2c94b7-37a0-444c-9b0a-edad31d5f5d5",
+      "slug": "malostranske-pan-vysehradsky",
+      "kind": "work_character",
+      "left": {
+        "id": "19ebfb76-aa5b-415d-9c01-9800b606281f",
+        "label": "Povídky malostranské"
+      },
+      "right": {
+        "id": "c2f358a0-b589-4dc5-9554-71f4a31d5bcf",
+        "label": "pan Vojtíšek"
+      },
+      "explanation": "Pan Vojtíšek (a další malostranské typy) patří do Nerudova cyklu Povídky malostranské.",
+      "tags": [
+        "realismus"
+      ]
+    },
+    {
+      "id": "4d560583-6a8f-4cb3-a3a4-16fe08c111fc",
+      "slug": "goethe-nemecko",
+      "kind": "author_country",
+      "left": {
+        "id": "0583476a-ae74-46a1-9a8c-46b8daf7f1f0",
+        "label": "J. W. Goethe"
+      },
+      "right": {
+        "id": "c1c0cb57-2799-4344-ba96-82528eab2a28",
+        "label": "Německo"
+      },
+      "explanation": "Goethe je klíčová postava německé klasiky a světové literatury (Faust, Werther).",
+      "tags": [
+        "svet"
+      ]
+    },
+    {
+      "id": "a16952fc-b376-4c06-b849-144b4661ea76",
+      "slug": "pushkin-rusko",
+      "kind": "author_country",
+      "left": {
+        "id": "e60c4c73-8ea0-43e7-8387-fcc37aae508f",
+        "label": "A. S. Puškin"
+      },
+      "right": {
+        "id": "bae29839-2f69-48b5-9394-2598679071f8",
+        "label": "Rusko"
+      },
+      "explanation": "Puškin je zakladatel novodobé ruské literatury — Evžen Oněgin, pohádky, lyrika.",
+      "tags": [
+        "svet"
+      ]
+    },
+    {
+      "id": "18ca58f2-6e9c-4599-a177-ea9494db682f",
+      "slug": "shakespeare-anglie",
+      "kind": "author_country",
+      "left": {
+        "id": "24f554f9-fe15-4412-ba1e-469734726cc3",
+        "label": "William Shakespeare"
+      },
+      "right": {
+        "id": "28354403-3720-4e82-b964-9a4982492e09",
+        "label": "Anglie"
+      },
+      "explanation": "Shakespeare je anglický renesanční dramatik — Hamlet, Romeo a Julie, Macbeth.",
+      "tags": [
+        "svet"
+      ]
+    },
+    {
+      "id": "40201f40-15f6-4f17-8a57-424ce959531f",
+      "slug": "hugo-francie",
+      "kind": "author_country",
+      "left": {
+        "id": "3fbb50f6-11d3-4100-9cd2-a7a529658e0a",
+        "label": "Victor Hugo"
+      },
+      "right": {
+        "id": "8a0f6fe0-f73e-4caa-885a-8aab3d524b9b",
+        "label": "Francie"
+      },
+      "explanation": "Hugo je francouzský romantik — Chrám Matky Boží v Paříži, Bídníci.",
+      "tags": [
+        "svet"
+      ]
+    },
+    {
+      "id": "15c3044b-642f-41dd-abd2-7e079c4065a7",
+      "slug": "romantismus-subjektivita",
+      "kind": "movement_trait",
+      "left": {
+        "id": "046f0e2c-a2bd-4449-ac77-7033e6864dd4",
+        "label": "romantismus"
+      },
+      "right": {
+        "id": "2d835fca-33bf-43ab-9d09-fc180931e833",
+        "label": "subjektivita a cit"
+      },
+      "explanation": "Romantismus staví na subjektu, citu, kontrastu ideálu a reality (Mácha, Byron).",
+      "tags": [
+        "smer"
+      ]
+    },
+    {
+      "id": "ccb45130-fd35-40ee-a777-d4a28509f3f6",
+      "slug": "realismus-typizace",
+      "kind": "movement_trait",
+      "left": {
+        "id": "77059f4e-f74c-4eaf-ab55-4119ec54917a",
+        "label": "realismus"
+      },
+      "right": {
+        "id": "972062e3-8d14-4a25-a9a8-9502a0ef2217",
+        "label": "typizace všedního života"
+      },
+      "explanation": "Realismus zobrazuje společenské typy a všední život (Neruda, Tolstoj, Balzac).",
+      "tags": [
+        "smer"
+      ]
+    },
+    {
+      "id": "78c70a8e-4a2b-4fb1-9ad6-ccebb8124f4a",
+      "slug": "naturalismus-determinismus",
+      "kind": "movement_trait",
+      "left": {
+        "id": "f1a25f06-ca73-485a-a956-d58e76e361bf",
+        "label": "naturalismus"
+      },
+      "right": {
+        "id": "5fca0ac1-bf78-429d-897b-8114b778a732",
+        "label": "determinismus prostředí"
+      },
+      "explanation": "Naturalismus zdůrazňuje dědičnost a prostředí jako determinanty (Zola, Čapek-Chod).",
+      "tags": [
+        "smer"
+      ]
+    },
+    {
+      "id": "d2518d9b-0408-4bb4-9a1d-4596782e812a",
+      "slug": "symbolismus-naznak",
+      "kind": "movement_trait",
+      "left": {
+        "id": "936f6278-2c79-4777-89ae-2d256e3b575b",
+        "label": "symbolismus"
+      },
+      "right": {
+        "id": "1d9c5c6e-fd15-4aa4-bdb4-89dee2128842",
+        "label": "náznak a symbol"
+      },
+      "explanation": "Symbolismus pracuje s náznakem, symbolem a hudebností verše (Mallarmé, Březina).",
+      "tags": [
+        "smer"
+      ]
+    },
+    {
+      "id": "3cf379f5-26c2-4f0d-a343-c5bfc21a3875",
+      "slug": "metafora-def",
+      "kind": "term_definition",
+      "left": {
+        "id": "9f823d80-201e-41ef-a176-72ef41a70fc4",
+        "label": "metafora"
+      },
+      "right": {
+        "id": "44758590-bc2c-486f-9f78-d416f85c3047",
+        "label": "přenesené pojmenování na základě podobnosti"
+      },
+      "explanation": "Metafora přenáší význam podle podobnosti (např. „moře lidí“) — tropus.",
+      "tags": [
+        "poetika"
+      ]
+    },
+    {
+      "id": "7faad875-d29f-4a00-90a0-4d3763f4dc5f",
+      "slug": "epiteton-def",
+      "kind": "term_definition",
+      "left": {
+        "id": "d1ec4849-8308-4e7c-8d94-af93dc307f39",
+        "label": "epiteton"
+      },
+      "right": {
+        "id": "488d00ac-c0d5-4634-afd5-98d4ce0dba6e",
+        "label": "básnický přívlastek"
+      },
+      "explanation": "Epiteton je ozdobný / charakterizační přívlastek (např. zelený les, zlý osud).",
+      "tags": [
+        "poetika"
+      ]
+    },
+    {
+      "id": "5500f6d1-76d8-48fe-896b-5886dbfe6f95",
+      "slug": "synekdocha-def",
+      "kind": "term_definition",
+      "left": {
+        "id": "e734e7be-5cc2-4f81-b893-2d40dc5ae0cc",
+        "label": "synekdocha"
+      },
+      "right": {
+        "id": "d08b7ba4-5f23-4fa5-a609-8f84904f9025",
+        "label": "záměna části a celku"
+      },
+      "explanation": "Synekdocha zaměňuje část za celek nebo naopak („střecha nad hlavou“ = dům).",
+      "tags": [
+        "poetika"
+      ]
+    },
+    {
+      "id": "4c85f5ab-8213-4ba3-a417-638917c269e8",
+      "slug": "ironie-def",
+      "kind": "term_definition",
+      "left": {
+        "id": "893dcf12-56d9-4b79-b282-a7316fdb9028",
+        "label": "ironie"
+      },
+      "right": {
+        "id": "ab93f4a2-72b1-407c-a5c3-b7ae6e935164",
+        "label": "význam opačný než doslovný"
+      },
+      "explanation": "Ironie říká jedno a míní opak — často satira a odstup (Havlíček, Čapek).",
+      "tags": [
+        "poetika"
+      ]
+    },
+    {
+      "id": "6d5a5c46-18bc-4208-ba36-dd4db5544fc6",
+      "slug": "narodni-obrozeni-obdobi",
+      "kind": "event_period",
+      "left": {
+        "id": "c99face8-f529-48a0-a248-41be11c7840c",
+        "label": "národní obrození"
+      },
+      "right": {
+        "id": "67e04301-d303-4632-9204-4c8fb9935c03",
+        "label": "konec 18. – 1. pol. 19. stol."
+      },
+      "explanation": "Národní obrození je proces obnovy českého jazyka a kultury na přelomu 18./19. století.",
+      "tags": [
+        "historie"
+      ]
+    },
+    {
+      "id": "9aa5a863-0c22-412d-be89-6417cae11fcf",
+      "slug": "breznova-revoluce",
+      "kind": "event_period",
+      "left": {
+        "id": "3731d502-25e2-414c-b7c0-067a885770ce",
+        "label": "revoluce 1848"
+      },
+      "right": {
+        "id": "3dd0e700-e361-4dc6-9239-28361b23a868",
+        "label": "jaro národů (polovina 19. stol.)"
+      },
+      "explanation": "Revoluce 1848 (jaro národů) ovlivnila politiku i literaturu — Havlíček, Májovci později.",
+      "tags": [
+        "historie"
+      ]
+    },
+    {
+      "id": "7573be6c-3a32-4201-bf87-215bd21c0300",
+      "slug": "prvni-republika",
+      "kind": "event_period",
+      "left": {
+        "id": "582835b5-5e20-4c93-8873-265bc71db3d3",
+        "label": "vznik ČSR"
+      },
+      "right": {
+        "id": "807fbc24-42c3-4bea-ad91-aec617f179d9",
+        "label": "1918 (1. republika)"
+      },
+      "explanation": "Československo vzniklo 28. 10. 1918 — kontext legionářů, Čapka, meziválečné literatury.",
+      "tags": [
+        "historie"
+      ]
+    },
+    {
+      "id": "f768086b-5d16-485a-a0be-4018b26b3dbd",
+      "slug": "protektorat",
+      "kind": "event_period",
+      "left": {
+        "id": "9f124b29-cb00-4d1b-94aa-b77318041e3c",
+        "label": "protektorát Čechy a Morava"
+      },
+      "right": {
+        "id": "7d309cbe-c803-4fe3-b0b1-7c36eb851f6b",
+        "label": "1939–1945"
+      },
+      "explanation": "Protektorát 1939–1945 — cenzura, odboj, válečná a poválečná literatura.",
+      "tags": [
+        "historie"
+      ]
+    }
+  ],
+  "rounds": [
+    {
+      "id": "728c2063-0c7a-47e4-907b-8f3aefbfc6f4",
+      "slug": "kolo-autor-dilo",
+      "kind": "author_work",
+      "title": "Autor ↔ dílo",
+      "pairIds": [
+        "e1e5f004-c7c8-448b-ae0c-be01c2c75091",
+        "457c5f24-75d5-4222-b297-968f5e3955f7",
+        "bdb28520-074d-4fa8-b0e7-69a9cc5e1f72",
+        "9f3481d8-4f71-4b5c-b41c-8a7c41ded0be"
+      ]
+    },
+    {
+      "id": "ff9d13b5-9238-4f13-a432-77304873ccc4",
+      "slug": "kolo-dilo-postava",
+      "kind": "work_character",
+      "title": "Dílo ↔ postava",
+      "pairIds": [
+        "645c7f72-9cda-48b4-a62c-3e79b960a1c8",
+        "3091693a-e967-463f-8fa8-41485a0a741e",
+        "6eb89d44-20b2-4466-a087-14991db0af9b",
+        "2a2c94b7-37a0-444c-9b0a-edad31d5f5d5"
+      ]
+    },
+    {
+      "id": "112915b4-a4f6-4b0e-96ae-b6e791cdf035",
+      "slug": "kolo-autor-zeme",
+      "kind": "author_country",
+      "title": "Autor ↔ země",
+      "pairIds": [
+        "4d560583-6a8f-4cb3-a3a4-16fe08c111fc",
+        "a16952fc-b376-4c06-b849-144b4661ea76",
+        "18ca58f2-6e9c-4599-a177-ea9494db682f",
+        "40201f40-15f6-4f17-8a57-424ce959531f"
+      ]
+    },
+    {
+      "id": "385e333c-9bce-4305-9484-68a82b1fde36",
+      "slug": "kolo-smer-znak",
+      "kind": "movement_trait",
+      "title": "Směr ↔ znak",
+      "pairIds": [
+        "15c3044b-642f-41dd-abd2-7e079c4065a7",
+        "ccb45130-fd35-40ee-a777-d4a28509f3f6",
+        "78c70a8e-4a2b-4fb1-9ad6-ccebb8124f4a",
+        "d2518d9b-0408-4bb4-9a1d-4596782e812a"
+      ]
+    },
+    {
+      "id": "2f94aaaf-d172-4ada-90ae-7329018e73f4",
+      "slug": "kolo-pojem-definice",
+      "kind": "term_definition",
+      "title": "Pojem ↔ definice",
+      "pairIds": [
+        "3cf379f5-26c2-4f0d-a343-c5bfc21a3875",
+        "7faad875-d29f-4a00-90a0-4d3763f4dc5f",
+        "5500f6d1-76d8-48fe-896b-5886dbfe6f95",
+        "4c85f5ab-8213-4ba3-a417-638917c269e8"
+      ]
+    },
+    {
+      "id": "e12ecde0-455e-4f56-99b8-016bcd9a162f",
+      "slug": "kolo-udalost-obdobi",
+      "kind": "event_period",
+      "title": "Událost ↔ období",
+      "pairIds": [
+        "6d5a5c46-18bc-4208-ba36-dd4db5544fc6",
+        "9aa5a863-0c22-412d-be89-6417cae11fcf",
+        "7573be6c-3a32-4201-bf87-215bd21c0300",
+        "f768086b-5d16-485a-a0be-4018b26b3dbd"
+      ]
+    }
+  ],
+  "createdAt": "2026-07-20T22:15:24.749Z",
+  "updatedAt": "2026-07-20T22:15:24.749Z"
+}

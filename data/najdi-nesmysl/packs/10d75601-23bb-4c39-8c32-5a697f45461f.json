@@ -1,0 +1,579 @@
+{
+  "id": "10d75601-23bb-4c39-8c32-5a697f45461f",
+  "slug": "cjl-nesmysl",
+  "title": "Najdi nesmysl — ČJL",
+  "summary": "4 tvrzení: 3 pravda, 1 nesmysl. Odhal chybu, napiš proč, pak si přečti korektivní vysvětlení (autoři, díla, období, směry, postavy, žánry).",
+  "rounds": [
+    {
+      "id": "35acee9f-a296-4d9f-84da-521054850dc2",
+      "slug": "autor-macha-romantismus",
+      "category": "author",
+      "stem": "Které tvrzení o K. H. Máchovi je nesmysl?",
+      "statements": [
+        {
+          "id": "0baf4874-117d-4806-8ff3-a366b4901272",
+          "text": "Karel Hynek Mácha je autorem básnické skladby Máj.",
+          "isTrue": true
+        },
+        {
+          "id": "7c204d69-3dd7-41f9-aca6-78b607fab027",
+          "text": "Mácha patří k českému romantismu.",
+          "isTrue": true
+        },
+        {
+          "id": "5c2da34c-402a-4754-96d2-1480c28d2497",
+          "text": "Mácha napsal realistický román Babička.",
+          "isTrue": false
+        },
+        {
+          "id": "76ac5483-7439-4c22-8890-c9df3f8d6548",
+          "text": "V Máji vystupují Jarmila a Vilém.",
+          "isTrue": true
+        }
+      ],
+      "explanation": "Nesmysl je, že Mácha napsal Babičku — tu napsala Božena Němcová (1855), ne Mácha. Mácha je autor Máje a představitel českého romantismu; Jarmila a Vilém jsou postavy Máje. Nezaměňuj romantického básníka s realistickou prózou Němcové.",
+      "trueNotes": {
+        "0baf4874-117d-4806-8ff3-a366b4901272": "Máj (1836) je Máchovo stěžejní dílo.",
+        "7c204d69-3dd7-41f9-aca6-78b607fab027": "Subjektivita, cit, kontrast přírody a tragédie — typický romantismus.",
+        "76ac5483-7439-4c22-8890-c9df3f8d6548": "Tragická milenecká dvojice je jádrem děje Máje."
+      },
+      "tags": [
+        "macha",
+        "romantismus"
+      ]
+    },
+    {
+      "id": "45e832ed-0d18-4cde-8e4e-8d3d2103a13c",
+      "slug": "autor-neruda-realismus",
+      "category": "author",
+      "stem": "Které tvrzení o Janu Nerudovi je nesmysl?",
+      "statements": [
+        {
+          "id": "fd84b29d-bbee-4c2e-bfa8-fe5a1cbfe98f",
+          "text": "Jan Neruda napsal Povídky malostranské.",
+          "isTrue": true
+        },
+        {
+          "id": "2d452846-184c-44db-a2b6-1b593a61688e",
+          "text": "Neruda patří k májovcům / českému realismu.",
+          "isTrue": true
+        },
+        {
+          "id": "d331e3d5-8257-4d19-94c0-59bf6c006a00",
+          "text": "Neruda je autorem baladické Kytice z pověstí národních.",
+          "isTrue": false
+        },
+        {
+          "id": "2b246287-b83e-48d4-98fe-7ec68ee3713e",
+          "text": "V Povídkách malostranských se objevují typy malostranských obyvatel.",
+          "isTrue": true
+        }
+      ],
+      "explanation": "Kytici napsal K. J. Erben, ne Neruda. Neruda = Povídky malostranské a májovecký realismus. Erben = romantické balady s mravním řádem. Zaměnění autora Kytice za Nerudu je častý omyl — po kontrole si zapamatuj: Erben ↔ Kytice, Neruda ↔ Malá Strana.",
+      "trueNotes": {
+        "fd84b29d-bbee-4c2e-bfa8-fe5a1cbfe98f": "Cyklus povídek z Malé Strany — realistický obraz Prahy."
+      },
+      "tags": [
+        "neruda",
+        "erben"
+      ]
+    },
+    {
+      "id": "2933d96f-1f53-4746-9d45-f9365a79eda3",
+      "slug": "autor-havlicek-satira",
+      "category": "author",
+      "stem": "Které tvrzení je nesmysl?",
+      "statements": [
+        {
+          "id": "fed87119-d28b-4f38-90ac-89930a89cd7f",
+          "text": "Karel Havlíček Borovský napsal Tyrolské elegie.",
+          "isTrue": true
+        },
+        {
+          "id": "da3386f4-63a1-4628-844b-15b1d6172f9f",
+          "text": "Havlíček byl kritik a satira národního života.",
+          "isTrue": true
+        },
+        {
+          "id": "1df1d6d0-fec9-4cb7-b9e3-616bea684e55",
+          "text": "Havlíček je autorem básnické skladby Máj.",
+          "isTrue": false
+        },
+        {
+          "id": "d146464d-90f3-4e63-bad5-df665408354e",
+          "text": "Tyrolské elegie vznikly v souvislosti s Brixenem.",
+          "isTrue": true
+        }
+      ],
+      "explanation": "Nesmysl: Máj napsal Karel Hynek Mácha, ne Havlíček. Havlíček = Tyrolské elegie, satira, publicistika. Mácha = romantická skladba Máj. Po opravě si autory drž odděleně: Havlíček ↔ elegie/satira; Mácha ↔ Máj.",
+      "trueNotes": {},
+      "tags": [
+        "havlicek"
+      ]
+    },
+    {
+      "id": "12281738-cbcf-4699-9c0d-c6e61144a69b",
+      "slug": "dilo-maj-struktura",
+      "category": "work",
+      "stem": "Které tvrzení o Máji je nesmysl?",
+      "statements": [
+        {
+          "id": "06e19c95-c303-4306-92be-6612080a670e",
+          "text": "Máj má čtyři zpěvy a dvě intermezza.",
+          "isTrue": true
+        },
+        {
+          "id": "bb2118c7-14fb-433e-964e-411db68a144d",
+          "text": "V prvním zpěvu Jarmila skočí do jezera a utopí se.",
+          "isTrue": true
+        },
+        {
+          "id": "f020b9da-12f7-425b-a198-ce481c082e5d",
+          "text": "Máj končí veselou svatbou Viléma a Jarmily.",
+          "isTrue": false
+        },
+        {
+          "id": "46c7bd78-b917-4c9a-af7c-377207732c55",
+          "text": "Ve třetím zpěvu dochází k Vilémově popravě.",
+          "isTrue": true
+        }
+      ],
+      "explanation": "Máj nekončí svatbou — je to tragédie: Jarmila se utopí, Vilém je popraven; závěr patří poutníkovi/autorovi. Veselé happy end by popíralo romantickou tragiku. Zapamatuj si: Máj = smrt a vina, ne svatba.",
+      "trueNotes": {},
+      "tags": [
+        "maj"
+      ]
+    },
+    {
+      "id": "0b8de570-48b6-488c-9b66-10abc4619432",
+      "slug": "dilo-babicka-postavy",
+      "category": "work",
+      "stem": "Které tvrzení je nesmysl?",
+      "statements": [
+        {
+          "id": "63292d02-2b5b-42d2-a298-8e97cebc4bb7",
+          "text": "Babička je dílo Boženy Němcové.",
+          "isTrue": true
+        },
+        {
+          "id": "d44c2c74-c10d-4df2-b8e1-acff976d6e5a",
+          "text": "Viktorka je postava spojená s Babičkou.",
+          "isTrue": true
+        },
+        {
+          "id": "ca0db239-8574-41bf-9fa1-e14a79d58769",
+          "text": "Babička je naturalistický román o pařížské spodinině.",
+          "isTrue": false
+        },
+        {
+          "id": "99df6fb6-b098-4038-a672-3e15dfa61b0e",
+          "text": "Babička zobrazuje idylický obraz venkova.",
+          "isTrue": true
+        }
+      ],
+      "explanation": "Babička není naturalismus pařížské spodiny (to spíš Zola apod.) — je to česká próza Němcové s idylou venkova a postavou Viktoriky. Naturalismus = determinismus prostředí, často tvrdší sociální řezy. Po opravě: Babička = Němcová / venkov / Viktorka.",
+      "trueNotes": {},
+      "tags": [
+        "babicka"
+      ]
+    },
+    {
+      "id": "2eeeddc6-0df8-4467-9eb7-a0253a6d1fd6",
+      "slug": "dilo-zlocin-raskolnikov",
+      "category": "work",
+      "stem": "Které tvrzení je nesmysl?",
+      "statements": [
+        {
+          "id": "feecb828-567d-44fd-b034-c2c88f6822c2",
+          "text": "Zločin a trest napsal F. M. Dostojevskij.",
+          "isTrue": true
+        },
+        {
+          "id": "cc98d9e2-cdd8-44c5-85aa-f23500e63edb",
+          "text": "Raskolnikov zabije lichvářku a její sestru.",
+          "isTrue": true
+        },
+        {
+          "id": "5024d9b8-5dae-4ef9-9a55-d7347af25a45",
+          "text": "Raskolnikov je postava z Balzacova Otce Goriota.",
+          "isTrue": false
+        },
+        {
+          "id": "3d988d28-ebad-456d-ad6b-ae6dbbb0430f",
+          "text": "Soňa doprovází Raskolnikova na Sibiř.",
+          "isTrue": true
+        }
+      ],
+      "explanation": "Raskolnikov patří do Zločinu a trestu (Dostojevskij), ne do Otce Goriota (Balzac — Goriot, Rastignac). Zaměnění ruského psychologického románu s francouzským realismem je časté. Po vysvětlení: Raskolnikov ↔ Dostojevskij; Rastignac/Goriot ↔ Balzac.",
+      "trueNotes": {},
+      "tags": [
+        "dostojevskij"
+      ]
+    },
+    {
+      "id": "4dd2b945-2133-4a17-a7ed-edf29dd761f8",
+      "slug": "obdobi-narodni-obrozeni",
+      "category": "period",
+      "stem": "Které tvrzení je nesmysl?",
+      "statements": [
+        {
+          "id": "8291cbef-2c08-455e-b290-63cb17009d10",
+          "text": "Národní obrození spadá zhruba na konec 18. a 1. polovinu 19. století.",
+          "isTrue": true
+        },
+        {
+          "id": "f9e2af9a-dde2-4064-84fc-11bbefb10c5f",
+          "text": "Obrození souvisí s obnovou českého jazyka a kultury.",
+          "isTrue": true
+        },
+        {
+          "id": "4167a0f4-beaa-401e-a214-95bd94acb3e3",
+          "text": "Národní obrození začíná až po roce 1948 komunistickým převratem.",
+          "isTrue": false
+        },
+        {
+          "id": "1cd76939-65b6-4368-b517-b7f099038837",
+          "text": "Jungmann a Dobrovský patří do kontextu obrození.",
+          "isTrue": true
+        }
+      ],
+      "explanation": "Národní obrození není po roce 1948 — to je 20. století a politický převrat. Obrození = přelom 18./19. stol., jazyk a kultura (Dobrovský, Jungmann…). Rok 1948 si nepřeřazuj do obrozeneckého období.",
+      "trueNotes": {},
+      "tags": [
+        "obrozeni"
+      ]
+    },
+    {
+      "id": "ac513049-63de-4ce6-9592-d3c889fa0367",
+      "slug": "obdobi-protektorat",
+      "category": "period",
+      "stem": "Které tvrzení je nesmysl?",
+      "statements": [
+        {
+          "id": "56cb0722-1204-4bab-aad9-3f0a5071aa59",
+          "text": "Protektorát Čechy a Morava trval 1939–1945.",
+          "isTrue": true
+        },
+        {
+          "id": "567c3877-1113-4663-9117-38bbed589e60",
+          "text": "Vznik ČSR je rok 1918.",
+          "isTrue": true
+        },
+        {
+          "id": "9dcc6984-16d2-4431-9f96-7a16f433fe3f",
+          "text": "Protektorát začal hned po Bílé hoře roku 1620.",
+          "isTrue": false
+        },
+        {
+          "id": "8f3a01f5-d06d-4ef0-a988-e209433d3aa2",
+          "text": "Meziválečná 1. republika spadá mezi 1918 a 1938/39.",
+          "isTrue": true
+        }
+      ],
+      "explanation": "Protektorát není 1620 — Bílá hora je barokní/pobělohorský zlom. Protektorát = nacistická okupace 1939–1945. Drž odděleně: 1620 · 1918 · 1939–45.",
+      "trueNotes": {},
+      "tags": [
+        "protektorat"
+      ]
+    },
+    {
+      "id": "bab0f1f4-8acd-44a3-b81a-46538d28b1eb",
+      "slug": "smer-romantismus",
+      "category": "movement",
+      "stem": "Které tvrzení je nesmysl?",
+      "statements": [
+        {
+          "id": "b0b981d4-a2ce-4a63-9023-48aab37804d3",
+          "text": "Romantismus zdůrazňuje subjektivitu a cit.",
+          "isTrue": true
+        },
+        {
+          "id": "25a4c401-d435-4a14-8437-816bf615fdba",
+          "text": "Mácha je typický český romantik.",
+          "isTrue": true
+        },
+        {
+          "id": "ac813cad-6f3b-46ee-ad9e-09b47524cdfb",
+          "text": "Romantismus je totéž co naturalismus Emila Zoly.",
+          "isTrue": false
+        },
+        {
+          "id": "d28a4a68-a02f-41b2-9e78-7fddc9301208",
+          "text": "Romantismus často staví ideál proti realitě.",
+          "isTrue": true
+        }
+      ],
+      "explanation": "Romantismus ≠ naturalismus. Naturalismus (Zola) = determinismus prostředí a dědičnosti, dokumentární „experiment“. Romantismus = cit, subjekt, kontrast. Po opravě si směry nerozmazávej: romantismus / realismus / naturalismus jsou různé.",
+      "trueNotes": {},
+      "tags": [
+        "romantismus"
+      ]
+    },
+    {
+      "id": "9ccfd57d-fe2f-4d19-ae1c-361569fd6ce4",
+      "slug": "smer-realismus",
+      "category": "movement",
+      "stem": "Které tvrzení je nesmysl?",
+      "statements": [
+        {
+          "id": "04b2e2cb-e809-4a8a-a298-18e63e37affd",
+          "text": "Realismus typizuje všední život a společenské vrstvy.",
+          "isTrue": true
+        },
+        {
+          "id": "6947bd96-d71a-4cfa-85a4-820a4788a03b",
+          "text": "Balzac a Neruda patří do realistického kontextu.",
+          "isTrue": true
+        },
+        {
+          "id": "26d6becb-cc5a-49ed-be7b-9e2ca41afc29",
+          "text": "Realismus odmítá detailní popis prostředí a postav.",
+          "isTrue": false
+        },
+        {
+          "id": "77db665f-312b-41df-881c-68070cdc49aa",
+          "text": "Realismus často kriticky zobrazuje společnost.",
+          "isTrue": true
+        }
+      ],
+      "explanation": "Realismus právě na detailu prostředí a charakteristice postav stojí (Balzacovy popisy, Nerudovy typy). Tvrzení, že realismus detail odmítá, je nesmysl — to by spíš sedělo na jiné poetiky. Zapamatuj: realismus = typizace + detail + společenský řez.",
+      "trueNotes": {},
+      "tags": [
+        "realismus"
+      ]
+    },
+    {
+      "id": "83b92f8c-55ae-4fcc-97de-325172dc770e",
+      "slug": "smer-symbolismus",
+      "category": "movement",
+      "stem": "Které tvrzení je nesmysl?",
+      "statements": [
+        {
+          "id": "0c279968-dbec-48b9-9d49-502641ba13db",
+          "text": "Symbolismus pracuje s náznakem a symbolem.",
+          "isTrue": true
+        },
+        {
+          "id": "268e5217-2c27-4c1a-b345-50f5b7072177",
+          "text": "Symbolismus souvisí s hudebností verše.",
+          "isTrue": true
+        },
+        {
+          "id": "65e27356-45d1-4653-9ffa-1fc2c3a3b95f",
+          "text": "Symbolismus je totéž co realistická reportáž ze života dělníků.",
+          "isTrue": false
+        },
+        {
+          "id": "bcfdbaad-0309-41a6-80bb-855b8853c44e",
+          "text": "V české literatuře patří k symbolismu např. Otokar Březina.",
+          "isTrue": true
+        }
+      ],
+      "explanation": "Symbolismus není realistická reportáž — je to poetika náznaku, symbolu a hudebnosti (Březina, Mallarmé…). Reportážní sociální řez patří spíš k realismu/naturalismu. Po kole: symbolismus ≠ sociální dokument.",
+      "trueNotes": {},
+      "tags": [
+        "symbolismus"
+      ]
+    },
+    {
+      "id": "09de2e11-1e0d-4cc0-9717-27e31b983ec0",
+      "slug": "postava-viktorka",
+      "category": "character",
+      "stem": "Které tvrzení je nesmysl?",
+      "statements": [
+        {
+          "id": "40fd3a59-c704-4f1a-a1c9-70cb7683e833",
+          "text": "Viktorka je postava z Babičky Boženy Němcové.",
+          "isTrue": true
+        },
+        {
+          "id": "4a0d2f6d-59fa-4e8f-97fa-53e14e73d57f",
+          "text": "Viktorka je spojena s tragickým milostným příběhem.",
+          "isTrue": true
+        },
+        {
+          "id": "5aaceb5f-4e0f-4420-8ddb-fe774146d3dc",
+          "text": "Viktorka je dcerou Goriota v Balzacově románu.",
+          "isTrue": false
+        },
+        {
+          "id": "1e357920-daa1-47f6-8a78-88827539d9f0",
+          "text": "Babička patří do českého venkovského prostředí.",
+          "isTrue": true
+        }
+      ],
+      "explanation": "Viktorka není Goriotova dcera — Goriotovy dcery jsou Anastázie a Delfina (Otec Goriot). Viktorka = Babička / Němcová. Po opravě si postavy drž u správného díla.",
+      "trueNotes": {},
+      "tags": [
+        "viktorka"
+      ]
+    },
+    {
+      "id": "8235940c-6d15-4d72-8f33-6df488860230",
+      "slug": "postava-rastignac",
+      "category": "character",
+      "stem": "Které tvrzení je nesmysl?",
+      "statements": [
+        {
+          "id": "3598d01a-1b91-43ca-a10b-9ec6482d6918",
+          "text": "Rastignac je mladý student práv v Otci Goriotovi.",
+          "isTrue": true
+        },
+        {
+          "id": "b08ca15b-bf98-44c3-998b-7d274ebf32b0",
+          "text": "Rastignac se stará o umírajícího Goriota.",
+          "isTrue": true
+        },
+        {
+          "id": "735726b7-a77d-4387-a095-f9b3763bf19c",
+          "text": "Rastignac je poutník ve čtvrtém zpěvu Máje.",
+          "isTrue": false
+        },
+        {
+          "id": "33ba1d96-fee4-4845-b069-ad443ac60b38",
+          "text": "Pod vlivem prostředí Rastignac buduje kariéru bezohledněji.",
+          "isTrue": true
+        }
+      ],
+      "explanation": "Poutník ve 4. zpěvu Máje není Rastignac — to je Máchův závěr (ztotožnění s dějem). Rastignac = Balzac / Paříž / Goriot. Po vysvětlení: Mácha ≠ Balzacovy postavy.",
+      "trueNotes": {},
+      "tags": [
+        "rastignac"
+      ]
+    },
+    {
+      "id": "e5191fe2-823a-441a-93f7-49835d1f9538",
+      "slug": "postava-marysa",
+      "category": "character",
+      "stem": "Které tvrzení je nesmysl?",
+      "statements": [
+        {
+          "id": "0c3925ee-45cd-4bb9-939c-cc8237693612",
+          "text": "Maryša miluje Francka, ale je nucena vzít si Vávru.",
+          "isTrue": true
+        },
+        {
+          "id": "bf68ab75-8a12-4309-a850-6f845722b4fd",
+          "text": "Maryša je drama bratrů Mrštíků.",
+          "isTrue": true
+        },
+        {
+          "id": "133c85cd-b568-48ac-9b43-5e8b95463189",
+          "text": "Maryša je hlavní hrdinka Máchova Máje.",
+          "isTrue": false
+        },
+        {
+          "id": "5a1ee0e1-528c-41a3-b7bd-aff17a7dec89",
+          "text": "Maryša nakonec otráví Vávru a k činu se přizná.",
+          "isTrue": true
+        }
+      ],
+      "explanation": "Hrdinkou Máje je Jarmila, ne Maryša. Maryša = Mrštíkové, vesnické drama, Vávra/Francek. Po opravě: Jarmila ↔ Máj; Maryša ↔ Mrštíkové.",
+      "trueNotes": {},
+      "tags": [
+        "marysa"
+      ]
+    },
+    {
+      "id": "34d3c326-6c94-42bb-858d-abc376385389",
+      "slug": "zanr-balada",
+      "category": "genre",
+      "stem": "Které tvrzení je nesmysl?",
+      "statements": [
+        {
+          "id": "8bc0dcc8-5e33-448d-bf73-855e215bb692",
+          "text": "Balada je lyricko-epický útvar s často tragickým koncem.",
+          "isTrue": true
+        },
+        {
+          "id": "57bf4e87-c41e-4a59-bbbe-e0b20c10796e",
+          "text": "Erbenova Kytice obsahuje balady (např. Vodník, Polednice).",
+          "isTrue": true
+        },
+        {
+          "id": "247e6d5e-2d08-4118-ad27-b25cbd139990",
+          "text": "Balada je totéž co realistický společenský román o 2500 postavách.",
+          "isTrue": false
+        },
+        {
+          "id": "d6d94ce1-abdd-4a0f-8528-fdbaa7707c55",
+          "text": "Balady často pracují s lidovým motivem a mravním řádem.",
+          "isTrue": true
+        }
+      ],
+      "explanation": "Balada ≠ rozsáhlý společenský román (Lidská komedie / Balzac). Balada = kratší lyricko-epický, často temný děj (Kytice). Románový cyklus je jiný žánr. Po kole: balada / román nerozmazávej.",
+      "trueNotes": {},
+      "tags": [
+        "balada"
+      ]
+    },
+    {
+      "id": "b16ef7fb-7355-4083-b18d-70c8541c979c",
+      "slug": "zanr-drama",
+      "category": "genre",
+      "stem": "Které tvrzení je nesmysl?",
+      "statements": [
+        {
+          "id": "07f4534d-a5ac-4e40-9a29-f0b9447eafd6",
+          "text": "Drama je určeno především k jevištnímu provedení.",
+          "isTrue": true
+        },
+        {
+          "id": "d2ecf0f5-525a-4264-b6eb-f149620350df",
+          "text": "Maryša je sociální drama.",
+          "isTrue": true
+        },
+        {
+          "id": "6069bc06-5cc7-4bd7-986b-d59e57e54134",
+          "text": "Drama vždy znamená jen veselohru bez konfliktu.",
+          "isTrue": false
+        },
+        {
+          "id": "050b0add-5b2c-4c85-910b-9106e960f9dd",
+          "text": "Realistické drama 19. století často zobrazuje společenské napětí.",
+          "isTrue": true
+        }
+      ],
+      "explanation": "Drama není jen veselohra — zahrnuje tragédii, sociální drama, komedii… Maryša je konfliktní sociální drama, ne bezzáběrová veselohra. „Drama“ = dramatický druh, ne synonymum pro legraci.",
+      "trueNotes": {},
+      "tags": [
+        "drama"
+      ]
+    },
+    {
+      "id": "6d7f0250-64a2-414e-b262-5f0667edb8e1",
+      "slug": "zanr-roman",
+      "category": "genre",
+      "stem": "Které tvrzení je nesmysl?",
+      "statements": [
+        {
+          "id": "84757aa2-cd63-43ba-96e1-2eee81b7cc7a",
+          "text": "Román je rozsáhlý epický útvar v próze.",
+          "isTrue": true
+        },
+        {
+          "id": "4a0bd4c0-1d3a-4f9d-8138-68060f80d279",
+          "text": "Otec Goriot a Anna Karenina jsou romány.",
+          "isTrue": true
+        },
+        {
+          "id": "c21e6cb4-1ac2-4881-82b0-0d9939f8202e",
+          "text": "Román je vždy psán výhradně ve verších jako sonet.",
+          "isTrue": false
+        },
+        {
+          "id": "eefe43d9-366f-49a8-bc7c-a2952fe75ea6",
+          "text": "Psychologický román zkoumá vnitřní stavy postav.",
+          "isTrue": true
+        }
+      ],
+      "explanation": "Román není sonet ve verších — sonet je lyrická forma; román je typicky próza (Goriot, Karenina). Veršovaný epos/skladba (Máj) je jiná kategorie. Po opravě: román ≈ próza; sonet ≈ lyrika.",
+      "trueNotes": {},
+      "tags": [
+        "roman"
+      ]
+    }
+  ],
+  "createdAt": "2026-07-20T22:26:29.565Z",
+  "updatedAt": "2026-07-20T22:26:29.565Z"
+}

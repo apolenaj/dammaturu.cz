@@ -1,0 +1,485 @@
+{
+  "id": "f46ab976-e09d-52be-8805-ae361219db81",
+  "slug": "babicka",
+  "title": "Babička — active learning",
+  "author": "Božena Němcová",
+  "subtitle": "Obrazy z venkovského života",
+  "summary": "Karty, vztahy, pasti T/F, struktura, realismus×idealizace, oral builder — bez dlouhých odstavců.",
+  "sourceFilename": "Babička.docx",
+  "literaryWorkHref": "/app/learn/dilo/babicka",
+  "knowledgeUnits": [
+    {
+      "id": "499531eb-d388-5d93-ad89-66581d118126",
+      "slug": "charakter-dila",
+      "topic": "character_of_work",
+      "title": "Charakter: rozsáhlá povídka / nedějová próza",
+      "cardLine": "Obrazy z venkovského života · idyla · 1. pol. 19. stol.",
+      "statement": "rozsáhlá povídka nedějová próza idylicky zobrazuje život na venkově v 1. polovině 19. Století",
+      "synonyms": [
+        "rozsáhlá povídka",
+        "nedějová próza",
+        "obrazy z venkovského života",
+        "idyla",
+        "venkově"
+      ],
+      "evidence": {
+        "qaItemId": "6ad2eb8e69bc40d48584f2ae516eacf6",
+        "knowledgeUnitId": "storyrecon:babicka-charakter-dila",
+        "publishedStatement": "rozsáhlá povídka nedějová próza idylicky zobrazuje život na venkově v 1. polovině 19. Století",
+        "validationStatus": "verified_from_source",
+        "filename": "Babička.docx"
+      }
+    },
+    {
+      "id": "54e73fc5-ea3b-5955-aee1-6229b4ac4ab6",
+      "slug": "autobiografie",
+      "topic": "autobiography",
+      "title": "Částečně autobiografické (ne životopis)",
+      "cardLine": "Barunka = dětství · volné vzpomínky · Magdaléna Novotná",
+      "statement": "částečně autobiografické (ne životopisné) dílo – vzpomínky na vlastní dětství (postava Barunky)",
+      "synonyms": [
+        "autobiografické",
+        "barunky",
+        "dětství",
+        "magdaléna novotná",
+        "ne životopisné"
+      ],
+      "evidence": {
+        "qaItemId": "c12c873c319749f59fd0837414fbbf6b",
+        "knowledgeUnitId": "storyrecon:babicka-autobiografie",
+        "publishedStatement": "částečně autobiografické (ne životopisné) dílo – vzpomínky na vlastní dětství (postava Barunky)",
+        "validationStatus": "verified_from_source",
+        "filename": "Babička.docx"
+      }
+    },
+    {
+      "id": "5c20e18d-762b-5e86-9eb0-7c70188103f4",
+      "slug": "predloha-babicky",
+      "topic": "autobiography",
+      "title": "Předloha: Magdaléna Novotná",
+      "cardLine": "Skutečná babička Němcové",
+      "statement": "předlohou literární postavy babičky byla skutečná babička Němcové – Magdaléna Novotná",
+      "synonyms": [
+        "magdaléna novotná",
+        "předlohou",
+        "skutečná babička"
+      ],
+      "evidence": {
+        "qaItemId": "8c8f8583c0c64753ab8ec841e18bed6a",
+        "knowledgeUnitId": "storyrecon:babicka-predloha-babicky",
+        "publishedStatement": "předlohou literární postavy babičky byla skutečná babička Němcové – Magdaléna Novotná",
+        "validationStatus": "verified_from_source",
+        "filename": "Babička.docx"
+      }
+    },
+    {
+      "id": "29aaa410-f54e-5a37-aa89-0657bec0b20d",
+      "slug": "kompozice-obrazy",
+      "topic": "composition",
+      "title": "Kompozice: metoda obrazů + babička jako spojnice",
+      "cardLine": "Obrazy pospojené babičkou · 2 pásma · prolog + epilog",
+      "statement": "povídka je napsána metodou obrazů, které jsou pospojovány ústřední postavou – babičkou",
+      "synonyms": [
+        "metoda obrazů",
+        "ústřední postavou",
+        "kompozice",
+        "prolog",
+        "epilog"
+      ],
+      "evidence": {
+        "qaItemId": "960414d34fc9405ab1255f3c43d3c060",
+        "knowledgeUnitId": "storyrecon:babicka-kompozice-obrazy",
+        "publishedStatement": "povídka je napsána metodou obrazů, které jsou pospojovány ústřední postavou – babičkou",
+        "validationStatus": "verified_from_source",
+        "filename": "Babička.docx"
+      }
+    },
+    {
+      "id": "493d1ef3-cb4f-53b8-add3-a0e948933551",
+      "slug": "dve-pasma",
+      "topic": "composition",
+      "title": "Dvě pásma děje",
+      "cardLine": "1) příjezd + všední den · 2) rodina v ročních obdobích",
+      "statement": "hlavní dějová osnova se skládá ze dvou pásem",
+      "synonyms": [
+        "dvou pásem",
+        "první část",
+        "druhá část",
+        "ročních období"
+      ],
+      "evidence": {
+        "qaItemId": "8147805151054a3fa2d525e8cf5208cc",
+        "knowledgeUnitId": "storyrecon:babicka-dve-pasma",
+        "publishedStatement": "hlavní dějová osnova se skládá ze dvou pásem",
+        "validationStatus": "verified_from_source",
+        "filename": "Babička.docx"
+      }
+    },
+    {
+      "id": "d0f0b414-7b71-5d3f-ac0f-e1d7519593d8",
+      "slug": "stare-belidlo",
+      "topic": "stare_belidlo",
+      "title": "Staré bělidlo — prostor posledních let",
+      "cardLine": "Poslední léta na Starém bělidle · Ratibořice",
+      "statement": "poslední léta života na Starém bělidle",
+      "synonyms": [
+        "starém bělidle",
+        "staré bělidlo",
+        "ratibořic",
+        "bělidlo"
+      ],
+      "evidence": {
+        "qaItemId": "dd1c8a95b14244acb92064719513c195",
+        "knowledgeUnitId": "storyrecon:babicka-stare-belidlo",
+        "publishedStatement": "poslední léta života na Starém bělidle",
+        "validationStatus": "verified_from_source",
+        "filename": "Babička.docx"
+      }
+    },
+    {
+      "id": "273b4711-0399-580d-bde8-66392cb6b2a5",
+      "slug": "postavy-babicka",
+      "topic": "characters",
+      "title": "Babička — harmonie, moudrost, ideál",
+      "cardLine": "Venkovská žena · soulad · studnice lidové moudrosti",
+      "statement": "babička venkovská žena se starosvětským chápáním světa ztělesnění harmonie",
+      "synonyms": [
+        "harmonie",
+        "studnice lidové moudrosti",
+        "ideálně dokonalého",
+        "venkovská žena"
+      ],
+      "evidence": {
+        "qaItemId": "e9d60beca1bc4cfba78cb250a4b36be6",
+        "knowledgeUnitId": "storyrecon:babicka-postavy-babicka",
+        "publishedStatement": "babička venkovská žena se starosvětským chápáním světa ztělesnění harmonie",
+        "validationStatus": "verified_from_source",
+        "filename": "Babička.docx"
+      }
+    },
+    {
+      "id": "b25fa223-a0ea-5332-9008-904ebf01cb2d",
+      "slug": "kontrast-prostredi",
+      "topic": "social_contrast",
+      "title": "Kontrast venkov × panský stav",
+      "cardLine": "Konfrontace dvou prostředí · rozdíly zmírněny láskou",
+      "statement": "postavy jsou vzájemně kontrastní konfrontace dvou společenských prostředí",
+      "synonyms": [
+        "kontrastní",
+        "společenských prostředí",
+        "sociální rozdíly",
+        "venkovanů",
+        "šlechtického"
+      ],
+      "evidence": {
+        "qaItemId": "5958a066f807462781d087f9e4f421f5",
+        "knowledgeUnitId": "storyrecon:babicka-kontrast-prostredi",
+        "publishedStatement": "postavy jsou vzájemně kontrastní konfrontace dvou společenských prostředí",
+        "validationStatus": "verified_from_source",
+        "filename": "Babička.docx"
+      }
+    },
+    {
+      "id": "3d421720-5d57-59e5-b000-232cd76e9b0e",
+      "slug": "jazyk",
+      "topic": "language",
+      "title": "Jazyk: střídmý, lidový, archaický",
+      "cardLine": "Bez metafor · nářečí · mluvená řeč",
+      "statement": "Jazyk střídmý, bez užití metafor, časté archaické, nářeční výrazy",
+      "synonyms": [
+        "střídmý",
+        "bez užití metafor",
+        "archaické",
+        "nářeční",
+        "mluvené řeči"
+      ],
+      "evidence": {
+        "qaItemId": "61b78dd6f3664139b1756a9836e72919",
+        "knowledgeUnitId": "storyrecon:babicka-jazyk",
+        "publishedStatement": "Jazyk střídmý, bez užití metafor, časté archaické, nářeční výrazy",
+        "validationStatus": "verified_from_source",
+        "filename": "Babička.docx"
+      }
+    },
+    {
+      "id": "16f85b46-60a0-5b4f-a238-54a19f270c5e",
+      "slug": "realismus-idealizace",
+      "topic": "realism_idealization",
+      "title": "Realistické + v mnoha směrech zidealizované",
+      "cardLine": "Popis venkova realita · vztahy / kněžna / harmonie ideál",
+      "statement": "realistické dílo (popis, zobrazení venkovského života) v mnoha směrech zidealizované (vztahy mezi lidmi, postava kněžny, harmonie člověka s přírodou aj.)",
+      "synonyms": [
+        "realistické",
+        "zidealizované",
+        "harmonie",
+        "kněžny",
+        "venkovského života"
+      ],
+      "evidence": {
+        "qaItemId": "df8befb2d2a94fab92387693be583648",
+        "knowledgeUnitId": "storyrecon:babicka-realismus-idealizace",
+        "publishedStatement": "realistické dílo (popis, zobrazení venkovského života) v mnoha směrech zidealizované (vztahy mezi lidmi, postava kněžny, harmonie člověka s přírodou aj.)",
+        "validationStatus": "verified_from_source",
+        "filename": "Babička.docx"
+      }
+    }
+  ],
+  "characterCards": [
+    {
+      "id": "ch-babicka",
+      "name": "Babička",
+      "socialSphere": "venkov",
+      "tags": [
+        "harmonie",
+        "moudrost",
+        "tradice",
+        "ústřední"
+      ],
+      "roleLine": "Venkovská žena · ztělesnění harmonie",
+      "kuSlug": "postavy-babicka"
+    },
+    {
+      "id": "ch-barunka",
+      "name": "Barunka",
+      "socialSphere": "venkov",
+      "tags": [
+        "vnučka",
+        "dětství",
+        "autobiografie"
+      ],
+      "roleLine": "Vnouče · stopa autorčina dětství",
+      "kuSlug": "autobiografie"
+    },
+    {
+      "id": "ch-tereza",
+      "name": "Tereza Prošková",
+      "socialSphere": "venkov",
+      "tags": [
+        "dcera",
+        "Staré bělidlo",
+        "rodina"
+      ],
+      "roleLine": "Dcera · zve babičku na bělidlo",
+      "kuSlug": "stare-belidlo"
+    },
+    {
+      "id": "ch-viktorka",
+      "name": "Viktorka",
+      "socialSphere": "mez",
+      "tags": [
+        "bláznivá",
+        "tragédie",
+        "kontrast"
+      ],
+      "roleLine": "Bláznivá Viktorka — stín idyly",
+      "kuSlug": "kontrast-prostredi"
+    },
+    {
+      "id": "ch-kneznna",
+      "name": "Kněžna Zaháňská",
+      "socialSphere": "pansky",
+      "tags": [
+        "zámek",
+        "šlechta",
+        "idealizace"
+      ],
+      "roleLine": "Panský stav · vztah zmírněný pochopením",
+      "kuSlug": "kontrast-prostredi"
+    },
+    {
+      "id": "ch-hortensie",
+      "name": "Komtesa Hortensie",
+      "socialSphere": "pansky",
+      "tags": [
+        "šlechta",
+        "zámek"
+      ],
+      "roleLine": "Šlechtický okruh Ratibořic",
+      "kuSlug": "kontrast-prostredi"
+    }
+  ],
+  "relationshipEdges": [
+    {
+      "id": "rel-bab-bar",
+      "fromCharacterId": "ch-babicka",
+      "toCharacterId": "ch-barunka",
+      "label": "babička ↔ vnučka"
+    },
+    {
+      "id": "rel-bab-ter",
+      "fromCharacterId": "ch-babicka",
+      "toCharacterId": "ch-tereza",
+      "label": "matka ↔ dcera (pozvání)"
+    },
+    {
+      "id": "rel-bab-kne",
+      "fromCharacterId": "ch-babicka",
+      "toCharacterId": "ch-kneznna",
+      "label": "venkov ↔ kněžna (úcta)"
+    },
+    {
+      "id": "rel-bab-vik",
+      "fromCharacterId": "ch-babicka",
+      "toCharacterId": "ch-viktorka",
+      "label": "harmonie ↔ tragédie"
+    },
+    {
+      "id": "rel-kne-hor",
+      "fromCharacterId": "ch-kneznna",
+      "toCharacterId": "ch-hortensie",
+      "label": "panský okruh"
+    }
+  ],
+  "trueFalseTraps": [
+    {
+      "id": "tf-1",
+      "claim": "Babička je přesný životopis Němcové.",
+      "isTrue": false,
+      "trapHint": "SOURCE: částečně autobiografické (ne životopisné).",
+      "kuSlug": "autobiografie"
+    },
+    {
+      "id": "tf-2",
+      "claim": "Povídka je napsána metodou obrazů spojených babičkou.",
+      "isTrue": true,
+      "trapHint": "Ano — kompozice obrazů + ústřední postava.",
+      "kuSlug": "kompozice-obrazy"
+    },
+    {
+      "id": "tf-3",
+      "claim": "Děj se odehrává hlavně v Praze u šlechty.",
+      "isTrue": false,
+      "trapHint": "Poslední léta na Starém bělidle / Ratibořice.",
+      "kuSlug": "stare-belidlo"
+    },
+    {
+      "id": "tf-4",
+      "claim": "Dílo je realistické a zároveň v mnoha směrech zidealizované.",
+      "isTrue": true,
+      "trapHint": "Popis venkova × idealizace vztahů / kněžny / harmonie.",
+      "kuSlug": "realismus-idealizace"
+    },
+    {
+      "id": "tf-5",
+      "claim": "Jazyk je plný metafor a básnických ozdob.",
+      "isTrue": false,
+      "trapHint": "SOURCE: střídmý, bez užití metafor.",
+      "kuSlug": "jazyk"
+    },
+    {
+      "id": "tf-6",
+      "claim": "Postavy venkova a panské sféry jsou vzájemně kontrastní.",
+      "isTrue": true,
+      "trapHint": "Konfrontace dvou společenských prostředí.",
+      "kuSlug": "kontrast-prostredi"
+    },
+    {
+      "id": "tf-7",
+      "claim": "Hlavním tématem jsou detailní osudy babičky od narození.",
+      "isTrue": false,
+      "trapHint": "Tématem je postoj, jednání a názory — ne celé životní osudy.",
+      "kuSlug": "charakter-dila"
+    }
+  ],
+  "storyStructure": [
+    {
+      "id": "st-prolog",
+      "label": "Prolog — vzpomínka na babičku s odstupem",
+      "correctOrder": 0,
+      "kuSlug": "kompozice-obrazy"
+    },
+    {
+      "id": "st-pasmo1",
+      "label": "1. pásmo — příjezd na Staré bělidlo, všední den",
+      "correctOrder": 1,
+      "kuSlug": "dve-pasma"
+    },
+    {
+      "id": "st-pasmo2",
+      "label": "2. pásmo — rodina v ročních obdobích a zvycích",
+      "correctOrder": 2,
+      "kuSlug": "dve-pasma"
+    },
+    {
+      "id": "st-epilog",
+      "label": "Epilog — poslední dny a smrt babičky",
+      "correctOrder": 3,
+      "kuSlug": "kompozice-obrazy"
+    }
+  ],
+  "realismChallenge": [
+    {
+      "id": "ri-1",
+      "statement": "Popis venkovského života a všední práce",
+      "answer": "realisticke",
+      "explain": "SOURCE: realistické = popis / zobrazení venkova.",
+      "kuSlug": "realismus-idealizace"
+    },
+    {
+      "id": "ri-2",
+      "statement": "Vztahy mezi lidmi jako čistá harmonie",
+      "answer": "idealizovane",
+      "explain": "SOURCE: zidealizované vztahy mezi lidmi.",
+      "kuSlug": "realismus-idealizace"
+    },
+    {
+      "id": "ri-3",
+      "statement": "Postava kněžny (ideální vztah k lidu)",
+      "answer": "idealizovane",
+      "explain": "SOURCE výslovně: postava kněžny zidealizovaná.",
+      "kuSlug": "realismus-idealizace"
+    },
+    {
+      "id": "ri-4",
+      "statement": "Harmonie člověka s přírodou",
+      "answer": "idealizovane",
+      "explain": "SOURCE: harmonie člověka s přírodou = idealizace.",
+      "kuSlug": "realismus-idealizace"
+    },
+    {
+      "id": "ri-5",
+      "statement": "Registrace sociálních rozdílů (venkov × panstvo)",
+      "answer": "realisticke",
+      "explain": "Němcová rozdíly vidí — realistický prvek kontrastu.",
+      "kuSlug": "kontrast-prostredi"
+    },
+    {
+      "id": "ri-6",
+      "statement": "Babička jako vzor ideálně dokonalého člověka",
+      "answer": "idealizovane",
+      "explain": "SOURCE: vzor ideálně dokonalého člověka.",
+      "kuSlug": "postavy-babicka"
+    }
+  ],
+  "oralBuilder": {
+    "id": "oral-babicka",
+    "titleCs": "Oral answer builder",
+    "prompt": "Sestav ústní odpověď: charakter díla, autobiografie, kompozice / bělidlo, postavy, kontrast, jazyk, realismus×idealizace.",
+    "checklistKuSlugs": [
+      "charakter-dila",
+      "autobiografie",
+      "kompozice-obrazy",
+      "stare-belidlo",
+      "postavy-babicka",
+      "kontrast-prostredi",
+      "jazyk",
+      "realismus-idealizace"
+    ],
+    "excellentAnswer": "Babička Boženy Němcové je rozsáhlá povídka / nedějová próza — obrazy z venkovského života. Částečně autobiografické (Barunka), předloha Magdaléna Novotná. Kompozice metodou obrazů spojených babičkou; Staré bělidlo; prolog a epilog, dvě pásma. Babička = harmonie a lidová moudrost. Kontrast venkova a panského stavu. Jazyk střídmý, bez metafor, archaismy a nářečí. Realistické zobrazení venkova, ale vztahy, kněžna a harmonie jsou zidealizované.",
+    "builderChips": [
+      "rozsáhlá povídka",
+      "nedějová próza",
+      "metoda obrazů",
+      "Staré bělidlo",
+      "Barunka",
+      "Magdaléna Novotná",
+      "venkov × kněžna",
+      "střídmý jazyk",
+      "bez metafor",
+      "realistické + zidealizované"
+    ]
+  },
+  "requiresVerifiedOnly": true,
+  "createdAt": "2026-07-20T12:00:00.000Z",
+  "updatedAt": "2026-07-20T12:00:00.000Z"
+}
