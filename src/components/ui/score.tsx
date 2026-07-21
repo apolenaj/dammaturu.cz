@@ -73,7 +73,10 @@ export function Score({
 
   return (
     <div
-      className={cn("inline-flex flex-col items-center gap-2", className)}
+      className={cn(
+        "inline-flex flex-col items-center gap-2.5 animate-in-rise",
+        className,
+      )}
       role="img"
       aria-label={`${label}: ${Math.round(pct)} procent${mastery ? `, úroveň ${masteryLabel[mastery]}` : ""}`}
     >
@@ -92,7 +95,10 @@ export function Score({
             cy="50"
             r={r}
             fill="none"
-            className={strokeClass}
+            className={cn(
+              strokeClass,
+              "transition-[stroke-dashoffset] duration-slow ease-out",
+            )}
             strokeWidth={conf.stroke}
             strokeLinecap="round"
             strokeDasharray={c}
@@ -102,7 +108,7 @@ export function Score({
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span
             className={cn(
-              "font-display font-semibold tabular-nums text-fg",
+              "font-display font-semibold tabular-nums tracking-tight text-fg",
               conf.text,
             )}
           >
@@ -114,7 +120,7 @@ export function Score({
         </div>
       </div>
       <div className="text-center">
-        <p className="text-body-sm font-medium text-fg">{label}</p>
+        <p className="text-body-sm font-semibold text-fg">{label}</p>
         {mastery ? (
           <p className={cn("text-caption font-semibold", masteryColor[mastery])}>
             {masteryLabel[mastery]}

@@ -21,8 +21,7 @@ export default async function MixedReviewPage() {
         </Link>
         <Card>
           <CardDescription>
-            Žádný spaced pack. Spusť{" "}
-            <code className="text-body-sm">npm run seed:spaced-repetition</code>.
+Tento obsah zatím není k dispozici. Zkus jinou aktivitu nebo se vrať později.
           </CardDescription>
         </Card>
       </div>

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { LogoutButton } from "@/components/profile/logout-button";
+import { BillingPanel } from "@/components/billing/billing-panel";
+import { AppPageHeader } from "@/components/shell/app-screen";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -11,6 +13,7 @@ import {
   subjectLabels,
   studyModeLabels,
 } from "@/domain/onboarding/schema";
+import { getBillingOverviewAction } from "@/server/actions/billing";
 import { getCurrentLearnerAction } from "@/server/actions/onboarding";
 
 export const metadata: Metadata = { title: "Profil" };
@@ -20,15 +23,24 @@ export default async function ProfilePage() {
   if (!learner) redirect("/onboarding");
 
   const { profile, studyPlan, updatedAt } = learner;
+  const billing = await getBillingOverviewAction();
 
   return (
     <div className="mx-auto w-full max-w-xl space-y-6">
-      <div>
-        <h1 className="font-display text-display-md text-fg">Profil</h1>
-        <p className="mt-2 text-body-md text-fg-secondary">
-          Personalizovaný profil z onboardingu. Můžeš ho kdykoli upravit.
-        </p>
-      </div>
+      <AppPageHeader
+        title="Profil"
+        purpose="Účet, předplatné a nastavení studia. Maturitní dokumenty patří do Profilu maturity."
+        primaryAction={{
+          label: "Profil maturity",
+          href: "/app/exam-profile",
+        }}
+        secondaryAction={{
+          label: "Upravit onboarding",
+          href: "/onboarding?edit=1",
+        }}
+      />
+
+      {billing ? <BillingPanel overview={billing} /> : null}
 
       <Card>
         <CardHeader>
@@ -41,7 +53,7 @@ export default async function ProfilePage() {
             {new Date(updatedAt).toLocaleString("cs-CZ")}
           </CardDescription>
         </CardHeader>
-        <dl className="space-y-3 text-body-sm">
+        <dl className="space-y-3 px-6 pb-6 text-body-sm">
           <div>
             <dt className="text-fg-muted">Cílové datum</dt>
             <dd className="font-semibold text-fg">{profile.targetDate}</dd>
@@ -72,12 +84,6 @@ export default async function ProfilePage() {
             </dd>
           </div>
           <div>
-            <dt className="text-fg-muted">Diagnostika</dt>
-            <dd className="font-semibold text-fg">
-              {profile.wantsDiagnostic ? "Chci udělat" : "Zatím ne"}
-            </dd>
-          </div>
-          <div>
             <dt className="text-fg-muted">Study plan</dt>
             <dd className="font-semibold text-fg">
               {studyPlan.daysRemaining} dní do cíle · první mise:{" "}
@@ -89,14 +95,8 @@ export default async function ProfilePage() {
 
       <div className="flex flex-wrap gap-3">
         <Link
-          href="/onboarding?edit=1"
-          className="inline-flex min-h-11 items-center rounded-md bg-action px-4 text-body-sm font-semibold text-fg-on-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-        >
-          Upravit onboarding
-        </Link>
-        <Link
           href="/app/plan"
-          className="inline-flex min-h-11 items-center rounded-md border border-border px-4 text-body-sm font-semibold text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          className="inline-flex min-h-11 items-center rounded-md border border-border px-4 text-body-sm font-semibold text-fg"
         >
           Zobrazit plán
         </Link>

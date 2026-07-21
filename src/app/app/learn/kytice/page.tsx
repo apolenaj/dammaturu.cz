@@ -19,8 +19,7 @@ export default async function KyticeExperiencePage() {
         <h1 className="font-display text-display-md text-fg">Kytice</h1>
         <Card>
           <CardDescription>
-            Experience ještě není nasazená. Spusť{" "}
-            <code className="text-body-sm">npm run seed:kytice</code> (vyžaduje
+Tento obsah zatím není k dispozici. Zkus jinou aktivitu nebo se vrať později.
             ingest Kytice.docx).
           </CardDescription>
         </Card>

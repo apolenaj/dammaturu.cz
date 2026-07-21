@@ -4,8 +4,10 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { loadDemoReadinessAction } from "@/server/actions/readiness";
 import {
+  confidenceLabelsCs,
   formatWeekDeltaCs,
   readinessToScoreMastery,
+  type DimensionReadiness,
   type ReadinessSnapshot,
 } from "@/domain/learning/readiness";
 import { Alert } from "@/components/ui/alert";
@@ -52,10 +54,10 @@ export function ReadinessHub({
         <header className="space-y-2">
           <Badge tone="brand">Připravenost</Badge>
           <h1 className="font-display text-display-md text-fg">
-            Celková připravenost
+            Maturita Score
           </h1>
           <p className="text-body-md text-fg-secondary">
-            Metrika z mastery coverage učiva — ne predikce úspěchu u maturity.
+            Evidence-based odhad z cvičení — ne predikce úspěchu u maturity.
           </p>
         </header>
         {error ? (
@@ -66,7 +68,7 @@ export function ReadinessHub({
         <Alert title="Zatím bez dat" tone="info">
           {hasBook
             ? "Kniha existuje, ale snapshot chybí."
-            : "Procvičuj (testy, review, flashcards) — připravenost se plní z reálné evidence, ne z ukázky."}
+            : "Procvičuj (testy, review, materiály) — skóre se plní jen z reálné evidence."}
         </Alert>
         <Link
           href="/app/dashboard"
@@ -84,50 +86,102 @@ export function ReadinessHub({
     );
   }
 
+  const confident = snapshot.overall.scorePct != null;
+  const displayPct = snapshot.overall.scorePct;
+
   return (
     <div className="mx-auto w-full max-w-3xl space-y-8">
       <header className="space-y-3 text-center sm:text-left">
         <Badge tone="brand">Připravenost</Badge>
         <h1 className="font-display text-display-md text-fg">
-          Celková připravenost
+          Maturita Score
         </h1>
         <p className="text-body-sm text-fg-secondary">
-          Vážené mastery coverage — ne „šance složit maturitu“.
+          Šest dimenzí z reálné evidence. Bez dostatku pokusů číslo neukazujeme.
         </p>
       </header>
 
       <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start sm:gap-8">
-        <Score
-          value={snapshot.overallPct}
-          label="CELKOVÁ PŘIPRAVENOST"
-          mastery={readinessToScoreMastery(snapshot.overallPct)}
-          size="lg"
-        />
+        {confident && displayPct != null ? (
+          <Score
+            value={displayPct}
+            label="MATURITA SCORE"
+            mastery={readinessToScoreMastery(displayPct)}
+            size="lg"
+          />
+        ) : (
+          <div
+            className="flex h-32 w-32 flex-col items-center justify-center rounded-full border-2 border-dashed border-border bg-subtle/40"
+            role="img"
+            aria-label="Nedostatek evidence pro spolehlivé skóre"
+          >
+            <span className="font-display text-2xl text-fg-muted">—</span>
+            <span className="mt-1 px-2 text-center text-caption text-fg-muted">
+              Zatím ne
+            </span>
+          </div>
+        )}
         <div className="space-y-3 text-center sm:pt-4 sm:text-left">
-          <p className="font-display text-2xl tabular-nums text-fg">
-            {snapshot.overallPct} %
-          </p>
+          {confident && displayPct != null ? (
+            <p className="font-display text-2xl tabular-nums text-fg">
+              {displayPct} %
+            </p>
+          ) : (
+            <p className="font-display text-lg text-fg">
+              Spolehlivý odhad zatím není
+            </p>
+          )}
           <Badge
             tone={
-              snapshot.weekDeltaPct > 0
+              snapshot.trend === "improving"
                 ? "success"
-                : snapshot.weekDeltaPct < 0
-                  ? "warning"
+                : snapshot.trend === "declining"
+                  ? "danger"
                   : "neutral"
             }
           >
-            {formatWeekDeltaCs(snapshot.weekDeltaPct)}
+            Trend: {snapshot.trendLabelCs}
+            {snapshot.trendDeltaPct != null
+              ? ` (${snapshot.trendDeltaPct > 0 ? "+" : ""}${snapshot.trendDeltaPct})`
+              : ""}
           </Badge>
-          {snapshot.lowEvidence ? (
-            <p className="text-caption text-fg-muted">
-              Některé KU mají málo graded evidence — ber čísla opatrně.
+          <Badge
+            tone={
+              snapshot.overall.confidence === "high"
+                ? "success"
+                : snapshot.overall.confidence === "moderate"
+                  ? "info"
+                  : snapshot.overall.confidence === "low"
+                    ? "warning"
+                    : "neutral"
+            }
+          >
+            {confidenceLabelsCs[snapshot.overall.confidence]}
+          </Badge>
+          {snapshot.weekDeltaPct !== 0 ? (
+            <p className="text-body-sm text-fg-secondary">
+              {formatWeekDeltaCs(snapshot.weekDeltaPct)}
             </p>
           ) : null}
+          <p className="text-body-sm text-fg-secondary">
+            {snapshot.overall.messageCs}
+          </p>
         </div>
       </div>
 
       <section className="space-y-3">
-        <h2 className="font-display text-xl text-fg">Oblasti</h2>
+        <h2 className="font-display text-xl text-fg">Dimenze</h2>
+        <ul className="space-y-3">
+          {snapshot.dimensions.map((dim) => (
+            <li key={dim.id}>
+              <DimensionRow dim={dim} />
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="font-display text-xl text-fg">Oblasti učiva</h2>
         <ul className="space-y-3">
           {snapshot.areas.map((area) => (
             <li key={area.id}>
@@ -143,30 +197,7 @@ export function ReadinessHub({
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-display text-xl text-fg">3 silné oblasti</h2>
-        <ul className="space-y-2">
-          {snapshot.strongAreas.map((a) => (
-            <li
-              key={`strong-${a.id}`}
-              className="rounded-xl border border-border bg-subtle px-3 py-3"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="font-display text-body-md text-fg">
-                  {a.labelCs}
-                </span>
-                <Badge tone="success">{a.pct} %</Badge>
-              </div>
-              <p className="mt-1 text-body-sm text-fg-secondary">{a.reasonCs}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="space-y-3">
         <h2 className="font-display text-xl text-fg">3 největší slabiny</h2>
-        <p className="text-body-sm text-fg-secondary">
-          Klepni a hned spusť cílenou session.
-        </p>
         <ul className="space-y-2">
           {snapshot.weakAreas.map((a) => (
             <li key={`weak-${a.id}`}>
@@ -192,6 +223,31 @@ export function ReadinessHub({
         </ul>
       </section>
 
+      {snapshot.history.length > 1 ? (
+        <section className="space-y-2">
+          <h2 className="font-display text-xl text-fg">Historie odhadů</h2>
+          <p className="text-caption text-fg-muted">
+            Ukládáme denní snímky — jen z reálné evidence (formule{" "}
+            {snapshot.formulaVersion}).
+          </p>
+          <ul className="space-y-1 text-body-sm text-fg-secondary">
+            {snapshot.history.slice(-7).map((h) => (
+              <li key={h.at} className="flex flex-wrap gap-2">
+                <span className="tabular-nums text-fg-muted">
+                  {new Date(h.at).toLocaleDateString("cs-CZ")}
+                </span>
+                <span>
+                  {h.overallPct != null
+                    ? `${h.overallPct} %`
+                    : "bez spolehlivého %"}
+                </span>
+                <Badge tone="neutral">{h.trend}</Badge>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       <Alert title="Co to znamená" tone="info">
         {snapshot.disclaimerCs}
       </Alert>
@@ -201,6 +257,57 @@ export function ReadinessHub({
           {error}
         </Alert>
       ) : null}
+    </div>
+  );
+}
+
+function DimensionRow({ dim }: { dim: DimensionReadiness }) {
+  const showPct = dim.scorePct != null;
+  return (
+    <div className="rounded-xl border border-border bg-canvas px-3 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="text-body-md font-semibold text-fg">{dim.labelCs}</span>
+        {showPct ? (
+          <span className="tabular-nums text-body-md text-fg">
+            {dim.scorePct} %
+          </span>
+        ) : (
+          <Badge tone="neutral">Málo dat</Badge>
+        )}
+      </div>
+      {showPct ? (
+        <div
+          className="mt-2 h-2 overflow-hidden rounded-full bg-subtle"
+          role="meter"
+          aria-valuenow={dim.scorePct ?? 0}
+          aria-valuemin={0}
+          aria-valuemax={100}
+        >
+          <div
+            className={`h-full rounded-full ${
+              (dim.scorePct ?? 0) >= 75
+                ? "bg-success"
+                : (dim.scorePct ?? 0) >= 55
+                  ? "bg-accent"
+                  : "bg-warning"
+            }`}
+            style={{
+              width: `${Math.max(2, Math.min(100, dim.scorePct ?? 0))}%`,
+            }}
+          />
+        </div>
+      ) : null}
+      <p className="mt-2 text-body-sm text-fg-secondary">{dim.messageCs}</p>
+      <p className="text-caption text-fg-muted">
+        Evidence: {dim.evidenceCount}/{dim.evidenceRequired} ·{" "}
+        {confidenceLabelsCs[dim.confidence]}
+      </p>
+      <Link
+        href={dim.sessionHref}
+        className="mt-2 inline-flex text-body-sm font-semibold text-action hover:underline"
+      >
+        Doplnit podklady →
+      </Link>
     </div>
   );
 }

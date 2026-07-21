@@ -273,14 +273,15 @@ export function ActiveRecallPlayer({
               }}
               rows={6}
               placeholder="Piš vlastními slovy…"
-              className="w-full rounded-xl border border-border bg-subtle/40 px-3 py-3 text-body-md text-fg placeholder:text-fg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              className="w-full rounded-xl border border-border bg-subtle/40 px-3 py-3 text-base text-fg placeholder:text-fg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
             />
           </label>
 
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             {speechSupported ? (
               <Button
                 type="button"
+                className="min-h-11"
                 variant={listening ? "danger" : "secondary"}
                 onClick={() => (listening ? stopListening() : startListening())}
               >
@@ -288,7 +289,7 @@ export function ActiveRecallPlayer({
               </Button>
             ) : (
               <p className="text-caption text-fg-muted">
-                Speech input na tomto zařízení není k dispozici — použij text.
+                Hlas na tomto zařízení nejde — piš text (funguje všude).
               </p>
             )}
             {inputMode === "speech" ? (
@@ -296,15 +297,17 @@ export function ActiveRecallPlayer({
             ) : null}
           </div>
 
-          <Button
-            className="mt-4"
-            fullWidth
-            size="lg"
-            onClick={submit}
-            disabled={pending}
-          >
-            Odeslat a vyhodnotit
-          </Button>
+          <div className="sticky-study-cta mt-4">
+            <Button
+              fullWidth
+              size="lg"
+              className="min-h-12"
+              onClick={submit}
+              disabled={pending}
+            >
+              Odeslat a vyhodnotit
+            </Button>
+          </div>
         </section>
       ) : (
         <GradePanel grade={grade} onNext={next} pending={pending} />

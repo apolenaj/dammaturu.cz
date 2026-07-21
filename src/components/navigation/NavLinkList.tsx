@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AppNavIconGlyph } from "@/components/navigation/app-nav-icon";
 import { cn } from "@/lib/cn";
 import { isNavActive, type NavItem } from "@/lib/navigation";
 
@@ -24,15 +25,23 @@ export function NavLinkList({
 }: NavLinkListProps) {
   const pathname = usePathname();
 
+  if (items.length === 0) return null;
+
   return (
     <ul
       className={cn(
         orientation === "horizontal"
           ? "flex items-center gap-1"
           : "flex flex-col gap-1",
-        variant === "bottom" && "grid w-full grid-cols-5 gap-0",
+        variant === "bottom" &&
+          "grid w-full gap-0",
         className,
       )}
+      style={
+        variant === "bottom"
+          ? { gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }
+          : undefined
+      }
       role="list"
     >
       {items.map((item) => {
@@ -42,7 +51,10 @@ export function NavLinkList({
           : item.label;
 
         return (
-          <li key={item.href} className={variant === "bottom" ? "min-w-0" : undefined}>
+          <li
+            key={item.href}
+            className={variant === "bottom" ? "min-w-0" : undefined}
+          >
             <Link
               href={item.href}
               onClick={onNavigate}
@@ -50,8 +62,8 @@ export function NavLinkList({
               className={cn(
                 "flex items-center rounded-lg text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand",
                 variant === "bottom" &&
-                  "min-h-12 flex-col justify-center gap-0.5 px-1 py-1.5 text-[11px] leading-tight",
-                variant === "sidebar" && "min-h-11 gap-2 px-3 py-2",
+                  "min-h-12 touch-manipulation flex-col justify-center gap-0.5 px-0.5 py-1.5 text-[10px] font-semibold leading-tight tracking-tight",
+                variant === "sidebar" && "min-h-11 gap-2.5 px-3 py-2",
                 variant === "top" && "min-h-10 px-3 py-2",
                 variant === "admin" && "min-h-11 px-3 py-2",
                 active
@@ -61,17 +73,38 @@ export function NavLinkList({
             >
               {variant === "bottom" ? (
                 <>
-                  <span
-                    className={cn(
-                      "h-1 w-1 rounded-full",
-                      active ? "bg-brand" : "bg-transparent",
-                    )}
-                    aria-hidden
-                  />
+                  {item.icon ? (
+                    <AppNavIconGlyph
+                      icon={item.icon}
+                      className={cn(
+                        "h-[1.35rem] w-[1.35rem]",
+                        active ? "text-brand" : "text-ink-muted",
+                      )}
+                    />
+                  ) : (
+                    <span
+                      className={cn(
+                        "h-1 w-1 rounded-full",
+                        active ? "bg-brand" : "bg-transparent",
+                      )}
+                      aria-hidden
+                    />
+                  )}
                   <span className="truncate">{label}</span>
                 </>
               ) : (
-                <span>{label}</span>
+                <>
+                  {item.icon && variant === "sidebar" ? (
+                    <AppNavIconGlyph
+                      icon={item.icon}
+                      className={cn(
+                        "h-4 w-4",
+                        active ? "text-brand" : "text-ink-muted",
+                      )}
+                    />
+                  ) : null}
+                  <span className="truncate">{label}</span>
+                </>
               )}
             </Link>
           </li>

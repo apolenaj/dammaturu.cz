@@ -21,6 +21,11 @@ import { Skeleton, SkeletonCard } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/toast";
 import { BrandMark } from "@/components/brand/BrandMark";
+import {
+  CelebrateMoment,
+  ProgressSteps,
+  StreakPill,
+} from "@/components/ui/celebrate";
 
 function Section({
   title,
@@ -74,12 +79,12 @@ export function DesignSystemShowcase() {
       <main id="main-content" className="mx-auto max-w-5xl px-4 sm:px-6">
         <div className="py-10">
           <p className="text-overline text-action">DESIGN SYSTEM</p>
-          <h1 className="mt-2 font-display text-display-lg text-fg">
+          <h1 className="mt-2 font-display text-display-lg tracking-tight text-fg text-balance">
             DámMaturu UI
           </h1>
           <p className="mt-3 max-w-2xl text-body-lg text-fg-secondary">
-            Sebevědomý EdTech: důvěra, energie, pocit postupu. Bez infantilních
-            motivů, AI neonů a fake futurismu.
+            Calm · confident · motivating · fast. Duolingo-level friendliness,
+            Linear-level polish — bez infantilních motivů a AI neonů.
           </p>
         </div>
 
@@ -208,32 +213,66 @@ export function DesignSystemShowcase() {
             <Badge tone="danger">Danger</Badge>
             <Badge tone="info">Info</Badge>
           </div>
-          <Card className="mt-4 max-w-md">
-            <CardHeader>
-              <CardTitle>Dnešní mise</CardTitle>
-              <CardDescription>
-                Karta jen tam, kde nese interakci nebo jasný blok obsahu.
-              </CardDescription>
-            </CardHeader>
-            <CardFooter>
-              <Button size="sm">Začít</Button>
-              <Button size="sm" variant="ghost">
-                Později
-              </Button>
-            </CardFooter>
-          </Card>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Default card</CardTitle>
+                <CardDescription>
+                  Konzistentní radius, border, soft shadow.
+                </CardDescription>
+              </CardHeader>
+              <CardFooter>
+                <Button size="sm">Začít</Button>
+                <Button size="sm" variant="ghost">
+                  Později
+                </Button>
+              </CardFooter>
+            </Card>
+            <Card variant="interactive">
+              <CardHeader>
+                <CardTitle>Interactive</CardTitle>
+                <CardDescription>
+                  Hover lift — jen kde dává smysl kliknout.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
         </Section>
 
-        <Section title="Progress · score">
+        <Section title="Progress · score · celebrate">
           <div className="grid gap-8 sm:grid-cols-2">
             <div className="space-y-4">
               <Progress label="Mastery packu" value={62} showValue />
               <Progress label="Due reviews" value={30} tone="accent" showValue />
-              <Progress label="Chyby k opravě" value={18} tone="danger" size="sm" />
+              <Progress
+                label="Mise hotová"
+                value={100}
+                tone="success"
+                showValue
+                celebrate
+              />
             </div>
             <div className="flex flex-wrap gap-6">
               <Score value={72} mastery="stable" />
               <Score value={41} size="sm" label="Dnes" mastery="fragile" />
+            </div>
+          </div>
+          <div className="mt-6 space-y-4">
+            <CelebrateMoment
+              title="Dnešní mise hotová"
+              description="Klídný celebrate — motivace bez infantilních efektů."
+              actionLabel="Pokračovat"
+              actionHref="/app/dashboard"
+            />
+            <div className="flex flex-wrap items-center gap-3">
+              <StreakPill days={7} />
+              <ProgressSteps
+                steps={[
+                  { id: "1", label: "Review", done: true },
+                  { id: "2", label: "Učit", current: true },
+                  { id: "3", label: "Test" },
+                ]}
+              />
             </div>
           </div>
         </Section>

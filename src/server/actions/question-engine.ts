@@ -8,14 +8,10 @@ import type {
   QuestionProgress,
   StudentAnswer,
 } from "@/domain/learning/question-engine";
-import {
-  defaultWhyWrong,
-  inferErrorType,
-} from "@/domain/learning/error-memory";
 import { getLearnerIdFromCookies } from "@/server/learner-session";
 import { recordLearningEvent } from "@/server/learning-analytics/store";
+import { recordProductEvent } from "@/server/product-analytics/store";
 import { recordReadinessPractice } from "@/server/readiness/record-practice";
-import { recordLearnerError } from "@/server/error-memory/store";
 import { markTodayMissionStepFromActivity } from "@/server/daily-dashboard/mission-progress";
 import {
   getLearner,
@@ -103,6 +99,27 @@ export async function submitQuestionAttemptAction(input: {
       itemId: input.questionId,
       correct,
     });
+    await recordProductEvent({
+      learnerKey: learnerId,
+      event: "study_session_started",
+      featureId: "question_engine",
+    });
+    await recordProductEvent({
+      learnerKey: learnerId,
+      event: "question_answered",
+      featureId: "question_engine",
+      topicSlug: pack.slug,
+      correct,
+      count: 1,
+    });
+    if (!correct) {
+      await recordProductEvent({
+        learnerKey: learnerId,
+        event: "weak_topic_seen",
+        topicSlug: pack.slug,
+        count: 1,
+      });
+    }
     await recordLearningEvent({
       learnerKey: learnerId,
       event: correct ? "answer_correct" : "answer_incorrect",
@@ -117,34 +134,52 @@ export async function submitQuestionAttemptAction(input: {
         id: ku.id,
         title: ku.title,
       })),
-      correctness,
+      correctness:
+        grade.openEvaluation?.masteryCorrectness ?? correctness,
       kind: isDiagnostic ? "diagnostic" : "practice",
+      difficulty: question.difficulty,
     });
+
+    if (grade.openEvaluation) {
+      const { storeOpenAnswerEvaluation } = await import(
+        "@/server/open-answer-eval/store"
+      );
+      const text =
+        input.answer.kind === "short_answer" ||
+        input.answer.kind === "long_answer"
+          ? input.answer.text
+          : summarizeStudentAnswer(input.answer);
+      await storeOpenAnswerEvaluation({
+        learnerId,
+        source: "question_engine",
+        packSlug: pack.slug,
+        questionId: question.id,
+        knowledgeUnitIds: grade.knowledgeUnits.map((ku) => ku.id),
+        studentAnswer: text,
+        evaluation: grade.openEvaluation,
+        difficulty: question.difficulty,
+      });
+    }
 
     if (grade.result === "incorrect" || grade.result === "partial") {
       const ku = grade.knowledgeUnits[0];
-      const errorType = inferErrorType({
-        question: question.stem,
-        correctConcept: grade.expectedSummary.slice(0, 200),
-        knowledgeSlug: ku?.title ?? pack.slug,
-      });
-      await recordLearnerError({
+      const { ingestMeaningfulMistake } = await import(
+        "@/server/error-memory/ingest"
+      );
+      await ingestMeaningfulMistake({
         learnerId,
         question: question.stem.slice(0, 400),
         studentAnswer: summarizeStudentAnswer(input.answer),
         correctConcept: grade.expectedSummary.slice(0, 400),
-        whyWrong: defaultWhyWrong({
-          errorType,
-          studentAnswer: summarizeStudentAnswer(input.answer),
-          correctConcept: grade.expectedSummary.slice(0, 200),
-        }),
         knowledgeUnit: {
           id: ku?.id,
           slug: slugifyKu(ku?.id ?? ku?.title ?? pack.slug),
           title: (ku?.title ?? pack.title).slice(0, 160),
         },
-        errorType,
         source: "question_engine",
+        result: grade.result,
+        coverage: grade.openEvaluation?.coverage,
+        whatWasWrong: grade.openEvaluation?.whatWasWrong,
       });
     }
 

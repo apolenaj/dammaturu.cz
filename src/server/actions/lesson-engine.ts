@@ -137,6 +137,19 @@ export async function lessonPlayerAction(input: {
           masteryScore: afterScore,
           masteryDelta: afterScore - beforeScore,
         });
+        const { recordProductEvent } = await import(
+          "@/server/product-analytics/store"
+        );
+        const delta = afterScore - beforeScore;
+        if (delta !== 0) {
+          await recordProductEvent({
+            learnerKey: learnerId,
+            event: "mastery_improved",
+            topicSlug: lesson.slug,
+            masteryDelta: delta,
+            featureId: "lesson",
+          });
+        }
       }
     }
 

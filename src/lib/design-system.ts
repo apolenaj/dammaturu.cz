@@ -1,33 +1,38 @@
 /**
- * DámMaturu design system — semantic token names & usage notes.
- * Runtime values live in `src/app/globals.css` (:root / .dark).
+ * DámMaturu design system — semantic helpers & usage notes.
+ * Runtime tokens: `src/app/globals.css` (:root / .dark).
+ * Tailwind map: `tailwind.config.ts`.
  */
 
 export const typographyScale = {
-  display: "font-display text-4xl sm:text-5xl font-semibold tracking-tight",
-  h1: "font-display text-3xl sm:text-4xl font-semibold tracking-tight",
-  h2: "font-display text-2xl font-semibold tracking-tight",
-  h3: "font-display text-xl font-semibold tracking-tight",
-  h4: "font-sans text-lg font-semibold tracking-tight",
-  body: "font-sans text-base leading-relaxed",
-  bodySm: "font-sans text-sm leading-relaxed",
-  caption: "font-sans text-xs leading-snug",
-  overline: "font-sans text-[11px] font-semibold uppercase tracking-wider",
-  label: "font-sans text-sm font-medium",
+  displayLg: "font-display text-display-lg tracking-tight text-balance",
+  displayMd: "font-display text-display-md tracking-tight text-balance",
+  displaySm: "font-display text-display-sm tracking-tight text-balance",
+  titleLg: "font-display text-title-lg tracking-tight",
+  titleMd: "font-display text-title-md tracking-tight",
+  titleSm: "font-display text-title-sm tracking-tight",
+  bodyLg: "font-sans text-body-lg text-fg-secondary",
+  bodyMd: "font-sans text-body-md text-fg-secondary",
+  bodySm: "font-sans text-body-sm text-fg-muted",
+  caption: "font-sans text-caption font-medium text-fg-muted",
+  overline:
+    "font-sans text-overline font-semibold uppercase tracking-[0.1em] text-action",
+  label: "font-sans text-body-sm font-semibold text-fg",
 } as const;
 
+/** 4px rhythm — prefer these for vertical stacks. */
 export const spacingScale = {
   0: "0",
-  1: "0.25rem", // 4
-  2: "0.5rem", // 8
-  3: "0.75rem", // 12
-  4: "1rem", // 16
-  5: "1.25rem", // 20
-  6: "1.5rem", // 24
-  8: "2rem", // 32
-  10: "2.5rem", // 40
-  12: "3rem", // 48
-  16: "4rem", // 64
+  1: "0.25rem",
+  2: "0.5rem",
+  3: "0.75rem",
+  4: "1rem",
+  5: "1.25rem",
+  6: "1.5rem",
+  8: "2rem",
+  10: "2.5rem",
+  12: "3rem",
+  16: "4rem",
 } as const;
 
 export const radiusScale = {
@@ -35,5 +40,31 @@ export const radiusScale = {
   md: "var(--radius-md)",
   lg: "var(--radius-lg)",
   xl: "var(--radius-xl)",
+  "2xl": "var(--radius-2xl)",
   full: "9999px",
 } as const;
+
+export const elevationScale = {
+  xs: "shadow-xs",
+  sm: "shadow-sm",
+  md: "shadow-md",
+  lg: "shadow-lg",
+  lift: "shadow-lift",
+} as const;
+
+export const motionClasses = {
+  press: "transition duration-fast ease-out active:scale-[0.985]",
+  rise: "animate-rise-in",
+  pop: "animate-pop-in",
+  interactiveCard:
+    "transition duration-base ease-out hover:-translate-y-px hover:shadow-md",
+} as const;
+
+/** Product feel north star — keep UI decisions aligned. */
+export const designPrinciples = [
+  "motivating",
+  "fast",
+  "modern",
+  "calm",
+  "confident",
+] as const;

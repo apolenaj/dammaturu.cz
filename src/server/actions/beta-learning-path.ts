@@ -7,7 +7,6 @@ import {
   type BetaLearningPath,
   type DiagnosticSnapshot,
 } from "@/domain/learning/beta-learning-path";
-import { betaConfig } from "@/domain/learning/beta-profile";
 import { getLearnerIdFromCookies } from "@/server/learner-session";
 import { getLearner } from "@/server/learner-store";
 import { getDefaultCurriculumPack } from "@/server/curriculum/store";
@@ -31,7 +30,9 @@ export async function getBetaLearningPathAction(): Promise<{
     getReadinessSnapshotForLearner({ learnerId }),
   ]);
 
-  if (!learner || !pack) return { path: null, learnerId };
+  if (!learner || !pack || !learner.profile.targetDate) {
+    return { path: null, learnerId };
+  }
 
   const diagnostic = buildDiagnosticFromLearner({
     wantsDiagnostic: learner.profile.wantsDiagnostic,
@@ -46,7 +47,7 @@ export async function getBetaLearningPathAction(): Promise<{
   const path = buildBetaLearningPath({
     pack,
     diagnostic,
-    targetDate: learner.profile.targetDate || betaConfig.targetDate,
+    targetDate: learner.profile.targetDate,
   });
 
   track("beta_learning_path_generated", {

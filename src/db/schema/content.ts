@@ -1,9 +1,12 @@
+/**
+ * Content spine — Subject → Curriculum → Topic → KnowledgeUnit + provenance.
+ * Kept from 0001/0002; extended for locale, ownership, study materials.
+ */
 import { sql } from "drizzle-orm";
 import {
   boolean,
   integer,
   numeric,
-  pgEnum,
   pgTable,
   primaryKey,
   text,
@@ -13,78 +16,15 @@ import {
   varchar,
   index,
 } from "drizzle-orm/pg-core";
-
-export const publishStatusEnum = pgEnum("publish_status", [
-  "draft",
-  "needs_review",
-  "published",
-  "archived",
-]);
-
-export const kuKindEnum = pgEnum("ku_kind", [
-  "fact",
-  "concept",
-  "person",
-  "work",
-  "event",
-  "term",
-  "other",
-]);
-
-export const examRelevanceEnum = pgEnum("exam_relevance", [
-  "none",
-  "low",
-  "medium",
-  "high",
-  "critical",
-]);
-
-export const relationshipTypeEnum = pgEnum("relationship_type", [
-  "prerequisite",
-  "related",
-  "part_of",
-  "contrasts_with",
-  "example_of",
-  "authored",
-  "occurs_in",
-  "defined_as",
-  "caused_by",
-  "influenced",
-]);
-
-export const questionTypeEnum = pgEnum("question_type", [
-  "mcq",
-  "multi_select",
-  "short_answer",
-  "cloze",
-  "true_false",
-  "oral_prompt",
-  "ordering",
-]);
-
-export const masteryLevelEnum = pgEnum("mastery_level", [
-  "unknown",
-  "exposed",
-  "recall_fragile",
-  "recall_stable",
-  "proficient",
-  "mastered",
-]);
-
-export const examFormatEnum = pgEnum("exam_format", [
-  "oral",
-  "written",
-  "either",
-]);
-
-const timestamps = {
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-};
+import {
+  examFormatEnum,
+  examRelevanceEnum,
+  kuKindEnum,
+  publishStatusEnum,
+  questionTypeEnum,
+  relationshipTypeEnum,
+  timestamps,
+} from "@/db/schema/enums";
 
 export const subjects = pgTable(
   "subjects",
@@ -93,10 +33,17 @@ export const subjects = pgTable(
     slug: varchar("slug", { length: 120 }).notNull(),
     title: varchar("title", { length: 200 }).notNull(),
     description: text("description"),
+    /** BCP-47-ish language of primary content (cs, en, …). */
+    languageCode: varchar("language_code", { length: 8 }).notNull().default("cs"),
+    /** ISO 3166-1 alpha-2 — future expansion beyond CZ. */
+    countryCode: varchar("country_code", { length: 2 }).notNull().default("CZ"),
     status: publishStatusEnum("status").notNull().default("draft"),
     ...timestamps,
   },
-  (t) => [uniqueIndex("subjects_slug_uidx").on(t.slug)],
+  (t) => [
+    uniqueIndex("subjects_slug_uidx").on(t.slug),
+    index("subjects_country_lang_idx").on(t.countryCode, t.languageCode),
+  ],
 );
 
 export const curricula = pgTable(
@@ -109,7 +56,9 @@ export const curricula = pgTable(
     slug: varchar("slug", { length: 120 }).notNull(),
     title: varchar("title", { length: 200 }).notNull(),
     description: text("description"),
+    /** Soft label; prefer exams.id via exam_id when set. */
     targetExam: varchar("target_exam", { length: 120 }),
+    examId: uuid("exam_id"),
     status: publishStatusEnum("status").notNull().default("draft"),
     version: integer("version").notNull().default(1),
     ...timestamps,
@@ -117,10 +66,10 @@ export const curricula = pgTable(
   (t) => [
     uniqueIndex("curricula_subject_slug_uidx").on(t.subjectId, t.slug),
     index("curricula_subject_idx").on(t.subjectId),
+    index("curricula_exam_idx").on(t.examId),
   ],
 );
 
-/** Curriculum module (e.g. A. Jazyk, B. Literární směry). */
 export const modules = pgTable(
   "modules",
   {
@@ -161,7 +110,6 @@ export const topics = pgTable(
       .notNull()
       .default("medium"),
     status: publishStatusEnum("status").notNull().default("draft"),
-    /** Filenames from content/source-materials linked to this topic. */
     sourceFilenames: text("source_filenames")
       .array()
       .notNull()
@@ -175,7 +123,6 @@ export const topics = pgTable(
   ],
 );
 
-/** Topic dependency graph — learning order edges. */
 export const topicPrerequisites = pgTable(
   "topic_prerequisites",
   {
@@ -374,6 +321,10 @@ export const relationships = pgTable(
   ],
 );
 
+/**
+ * Document (product name) = source_documents.
+ * Extended with ownership / language; StudyMaterial wraps catalog metadata.
+ */
 export const sourceDocuments = pgTable(
   "source_documents",
   {
@@ -385,6 +336,9 @@ export const sourceDocuments = pgTable(
     mimeType: varchar("mime_type", { length: 120 }),
     wordCountEst: integer("word_count_est"),
     ownershipNote: varchar("ownership_note", { length: 500 }),
+    languageCode: varchar("language_code", { length: 8 }).notNull().default("cs"),
+    /** Optional link to study_materials (set after material row exists). */
+    studyMaterialId: uuid("study_material_id"),
     importedAt: timestamp("imported_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -392,9 +346,11 @@ export const sourceDocuments = pgTable(
   (t) => [
     uniqueIndex("source_documents_sha_uidx").on(t.contentSha256),
     uniqueIndex("source_documents_path_uidx").on(t.storagePath),
+    index("source_documents_material_idx").on(t.studyMaterialId),
   ],
 );
 
+/** DocumentChunk (product name) = source_chunks. */
 export const sourceChunks = pgTable(
   "source_chunks",
   {
@@ -482,6 +438,7 @@ export const questions = pgTable(
     status: publishStatusEnum("status").notNull().default("draft"),
     difficulty: integer("difficulty"),
     estimatedSeconds: integer("estimated_seconds"),
+    languageCode: varchar("language_code", { length: 8 }).notNull().default("cs"),
     ...timestamps,
   },
   (t) => [index("questions_status_idx").on(t.status)],
@@ -584,33 +541,4 @@ export const examQuestions = pgTable(
     notes: text("notes"),
   },
   (t) => [uniqueIndex("exam_questions_question_uidx").on(t.questionId)],
-);
-
-export const masteryStates = pgTable(
-  "mastery_states",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    learnerId: varchar("learner_id", { length: 64 }).notNull(),
-    knowledgeUnitId: uuid("knowledge_unit_id")
-      .notNull()
-      .references(() => knowledgeUnits.id, { onDelete: "cascade" }),
-    level: masteryLevelEnum("level").notNull().default("unknown"),
-    stability: numeric("stability", { precision: 10, scale: 4 }),
-    difficulty: numeric("difficulty", { precision: 10, scale: 4 }),
-    dueAt: timestamp("due_at", { withTimezone: true }),
-    lastAttemptAt: timestamp("last_attempt_at", { withTimezone: true }),
-    correctStreak: integer("correct_streak").notNull().default(0),
-    lapses: integer("lapses").notNull().default(0),
-    evidenceCount: integer("evidence_count").notNull().default(0),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
-  },
-  (t) => [
-    uniqueIndex("mastery_states_learner_ku_uidx").on(
-      t.learnerId,
-      t.knowledgeUnitId,
-    ),
-    index("mastery_states_due_idx").on(t.learnerId, t.dueAt),
-  ],
 );

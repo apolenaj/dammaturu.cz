@@ -2,9 +2,9 @@ import { z } from "zod";
 
 /**
  * Deadline-aware study planner (D-038).
- * Beta target: 2026-08-31.
+ * Always uses the student's real exam `targetDate` — never a hardcoded beta deadline.
  * Phases: Coverage → Consolidation → Exam readiness → Final review.
- * Missed days → recalculate; never overwhelm with unrealistic backlog.
+ * Missed days / mastery / materials / date change → recalculate; never dump unreal backlog.
  */
 
 export const plannerPhases = [
@@ -43,12 +43,12 @@ export const plannerPhaseFocusCs: Record<PlannerPhase, string> = {
 
 /** Tunable caps — prevent unreal backlog after missed days. */
 export const plannerConfig = {
-  /** Default beta exam date. */
-  betaTargetDate: "2026-08-31",
   /** Fraction of remaining calendar days kept as buffer (min 3, max 10). */
   bufferFraction: 0.12,
   bufferDaysMin: 3,
   bufferDaysMax: 10,
+  /** Default study days per week when learner didn't specify. */
+  defaultAvailableDaysPerWeek: 5,
   /** Phase share of study days (sums to 1). */
   phaseShares: {
     coverage: 0.4,
@@ -79,13 +79,16 @@ export const plannerConfig = {
 } as const;
 
 export const plannerInputsSchema = z.object({
+  /** Student's real exam date (ISO). Required — no product default. */
   targetDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   dailyMinutes: z.number().int().min(10).max(240),
-  /** Topic / KU count in curriculum. */
+  /** How many days/week the student can study (3–7). */
+  availableDaysPerWeek: z.number().int().min(3).max(7).default(5),
+  /** Topic / KU count in curriculum (+ materials contribution). */
   contentUnits: z.number().int().min(1).max(500),
-  /** 1 easy … 5 hard. */
-  difficultyIndex: z.number().min(1).max(5),
-  /** Current mastery coverage 0–100. */
+  /** 1 easy … 5 hard. Optional — estimated when omitted. */
+  difficultyIndex: z.number().min(1).max(5).optional(),
+  /** Current mastery / readiness coverage 0–100. */
   masteryPct: z.number().min(0).max(100),
   /** Spaced items currently due. */
   dueReviews: z.number().int().min(0).max(2000),
@@ -93,6 +96,9 @@ export const plannerInputsSchema = z.object({
   missedDays: z.number().int().min(0).max(365),
   /** Self-reported readiness 1–5 (onboarding). */
   readinessFeeling: z.number().int().min(1).max(5).optional(),
+  /** Ready uploaded materials (affects content + risks). */
+  materialsReadyCount: z.number().int().min(0).max(500).optional(),
+  materialsKnowledgePoints: z.number().int().min(0).max(50_000).optional(),
 });
 
 export type PlannerInputs = z.infer<typeof plannerInputsSchema>;
@@ -126,6 +132,7 @@ export type DeadlinePlan = {
   computedAt: string;
   daysRemaining: number;
   bufferDays: number;
+  availableDaysPerWeek: number;
   studyDays: number;
   /** Total available study minutes until deadline (study days × daily). */
   availableMinutes: number;
@@ -137,6 +144,8 @@ export type DeadlinePlan = {
   dueReviews: number;
   reviewsNeeded: number;
   missedDays: number;
+  materialsReadyCount: number;
+  materialsKnowledgePoints: number;
   currentPhase: PlannerPhase;
   currentPhaseLabelCs: string;
   phases: PhaseWindow[];
@@ -166,6 +175,69 @@ function addDays(dateKey: string, days: number): string {
   const d = new Date(`${dateKey}T12:00:00`);
   d.setDate(d.getDate() + days);
   return toDateKey(d);
+}
+
+export function addDaysToDateKey(dateKey: string, days: number): string {
+  return addDays(dateKey, days);
+}
+
+export function toPlannerDateKey(d: Date): string {
+  return toDateKey(d);
+}
+
+/**
+ * Which calendar days count as study days given days/week availability.
+ * 7 = every day, 6 = Mon–Sat, 5 = Mon–Fri, 4 = Mon–Thu, 3 = Mon/Wed/Fri.
+ */
+export function isAvailableStudyDay(
+  date: Date,
+  availableDaysPerWeek: number,
+): boolean {
+  const dow = date.getDay(); // 0 = Sun … 6 = Sat
+  const n = Math.min(7, Math.max(3, Math.floor(availableDaysPerWeek)));
+  if (n >= 7) return true;
+  if (n >= 6) return dow !== 0;
+  if (n >= 5) return dow >= 1 && dow <= 5;
+  if (n >= 4) return dow >= 1 && dow <= 4;
+  return dow === 1 || dow === 3 || dow === 5;
+}
+
+/** Count study-day slots between today (inclusive) and target (exclusive of after-target). */
+export function countAvailableStudyDays(input: {
+  todayKey: string;
+  targetDate: string;
+  availableDaysPerWeek: number;
+}): number {
+  const daysRemaining = daysBetween(
+    new Date(`${input.todayKey}T12:00:00`),
+    new Date(`${input.targetDate}T12:00:00`),
+  );
+  if (daysRemaining <= 0) return 0;
+  let count = 0;
+  for (let i = 0; i < daysRemaining; i++) {
+    const key = addDays(input.todayKey, i);
+    const d = new Date(`${key}T12:00:00`);
+    if (isAvailableStudyDay(d, input.availableDaysPerWeek)) count += 1;
+  }
+  return count;
+}
+
+/**
+ * Derive days/week from study mode when learner has no explicit setting.
+ */
+export function resolveAvailableDaysPerWeek(input: {
+  studyMode?: "standard" | "intensive";
+  availableDaysPerWeek?: number;
+}): number {
+  if (
+    input.availableDaysPerWeek != null &&
+    input.availableDaysPerWeek >= 3 &&
+    input.availableDaysPerWeek <= 7
+  ) {
+    return input.availableDaysPerWeek;
+  }
+  if (input.studyMode === "intensive") return 6;
+  return plannerConfig.defaultAvailableDaysPerWeek;
 }
 
 export function computeBufferDays(daysRemaining: number): number {
@@ -482,6 +554,7 @@ export function assessFeasibility(input: {
 
 /**
  * Main entry: build full deadline-aware plan snapshot.
+ * `targetDate` must be the student's exam date — never invent one.
  */
 export function buildDeadlinePlan(
   raw: PlannerInputs,
@@ -491,29 +564,49 @@ export function buildDeadlinePlan(
   const todayKey = toDateKey(now);
   const target = new Date(`${input.targetDate}T12:00:00`);
   const daysRemaining = daysBetween(now, target);
+  const availableDaysPerWeek =
+    input.availableDaysPerWeek ?? plannerConfig.defaultAvailableDaysPerWeek;
+
+  const materialsReadyCount = input.materialsReadyCount ?? 0;
+  const materialsKnowledgePoints = input.materialsKnowledgePoints ?? 0;
+  // Uploaded materials expand the effective content surface (realistic demand)
+  const materialUnits = Math.min(
+    40,
+    Math.ceil(materialsKnowledgePoints / 12),
+  );
+  const effectiveContentUnits = Math.min(
+    500,
+    input.contentUnits + materialUnits,
+  );
+
+  const rawStudySlots = countAvailableStudyDays({
+    todayKey,
+    targetDate: input.targetDate,
+    availableDaysPerWeek,
+  });
   const bufferDays = Math.min(
     computeBufferDays(daysRemaining),
-    Math.max(0, daysRemaining - 1),
+    Math.max(0, rawStudySlots > 0 ? rawStudySlots - 1 : 0),
   );
-  const studyDays = Math.max(0, daysRemaining - bufferDays);
+  const studyDays = Math.max(0, rawStudySlots - bufferDays);
   const availableMinutes = studyDays * input.dailyMinutes;
 
   const difficultyIndex =
-    input.difficultyIndex ||
+    input.difficultyIndex ??
     estimateDifficultyIndex({
       readinessFeeling: input.readinessFeeling,
       masteryPct: input.masteryPct,
-      contentUnits: input.contentUnits,
+      contentUnits: effectiveContentUnits,
     });
 
   const reviewsNeeded = estimateReviewsNeeded({
-    contentUnits: input.contentUnits,
+    contentUnits: effectiveContentUnits,
     masteryPct: input.masteryPct,
     dueReviews: input.dueReviews,
   });
 
   const requiredMinutes = estimateRequiredMinutes({
-    contentUnits: input.contentUnits,
+    contentUnits: effectiveContentUnits,
     masteryPct: input.masteryPct,
     reviewsNeeded,
     difficultyIndex,
@@ -533,7 +626,7 @@ export function buildDeadlinePlan(
     dailyMinutes: input.dailyMinutes,
     missedDays: input.missedDays,
     dueReviews: input.dueReviews,
-    contentUnits: input.contentUnits,
+    contentUnits: effectiveContentUnits,
     masteryPct: input.masteryPct,
     difficultyIndex,
   });
@@ -546,12 +639,15 @@ export function buildDeadlinePlan(
   });
 
   const summaryLinesCs = [
-    `Obsah: ${input.contentUnits} jednotek (topics/KU).`,
+    `Cíl: ${input.targetDate} (tvoje datum maturity — ne produktový default).`,
+    `Obsah: ${effectiveContentUnits} jednotek (kurikulum${
+      materialUnits > 0 ? ` + ${materialUnits} z materiálů` : ""
+    }).`,
     `Odhadovaná obtížnost: ${difficultyIndex}/5.`,
-    `Aktuální mastery: ${Math.round(input.masteryPct)} %.`,
-    `Dostupný čas: ${availableMinutes} min (${studyDays} studijních dní × ${input.dailyMinutes} min).`,
+    `Aktuální připravenost: ${Math.round(input.masteryPct)} %.`,
+    `Dostupné dny: ${availableDaysPerWeek}/týden → ${studyDays} studijních (+ ${bufferDays} buffer).`,
+    `Dostupný čas: ${availableMinutes} min (${studyDays} × ${input.dailyMinutes} min).`,
     `Potřebná opakování: ~${reviewsNeeded} (due ${input.dueReviews} + mezery).`,
-    `Rezervní dny: ${bufferDays}.`,
   ];
 
   return {
@@ -559,15 +655,18 @@ export function buildDeadlinePlan(
     computedAt: now.toISOString(),
     daysRemaining,
     bufferDays,
+    availableDaysPerWeek,
     studyDays,
     availableMinutes,
     requiredMinutes,
-    contentUnits: input.contentUnits,
+    contentUnits: effectiveContentUnits,
     difficultyIndex,
     masteryPct: input.masteryPct,
     dueReviews: input.dueReviews,
     reviewsNeeded,
     missedDays: input.missedDays,
+    materialsReadyCount,
+    materialsKnowledgePoints,
     currentPhase,
     currentPhaseLabelCs: plannerPhaseLabelsCs[currentPhase],
     phases,

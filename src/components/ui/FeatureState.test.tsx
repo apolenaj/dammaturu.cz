@@ -35,6 +35,7 @@ describe("FeatureState accessibility", () => {
       screen.getByRole("heading", { level: 1, name: "Opakovat" }),
     ).toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent(/Scheduler/);
+    expect(screen.getByText(/Co dál/i)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Zpět na Dnes" })).toHaveAttribute(
       "href",
       "/app/dashboard",

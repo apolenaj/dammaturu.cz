@@ -3,18 +3,18 @@
 import { useMemo, useState, useTransition } from "react";
 import {
   gradeMistakePracticeAction,
-  loadDemoMistakesAction,
   startMistakePracticeAction,
 } from "@/server/actions/error-memory";
 import {
-  errorTypeLabelsCs,
-  listOpenMemories,
-  listResolvedMemories,
-  resolvedStatusLabelsCs,
+  listActiveMemories,
+  listMasteredMemories,
+  mistakeClassLabelsCs,
+  mistakeStatusLabelsCs,
   type ErrorMemory,
   type ErrorMemoryBook,
-  type ErrorType,
+  type MistakeClass,
   type MistakePracticeSession,
+  type MistakeStatus,
   type MistakesHubSummary,
   type PracticeGrade,
 } from "@/domain/learning/error-memory";
@@ -45,22 +45,8 @@ export function MistakesHub({
     return book.memories.find((m) => m.id === id) ?? null;
   }, [session, book]);
 
-  const open = book ? listOpenMemories(book) : [];
-  const resolved = book ? listResolvedMemories(book) : [];
-
-  function loadDemo() {
-    if (!learnerId) return;
-    setError(null);
-    startTransition(async () => {
-      const res = await loadDemoMistakesAction();
-      if (!res.ok) {
-        setError(res.error);
-        return;
-      }
-      setBook(res.book);
-      setSummary(res.summary);
-    });
-  }
+  const active = book ? listActiveMemories(book) : [];
+  const mastered = book ? listMasteredMemories(book) : [];
 
   function startPractice() {
     if (!learnerId) {
@@ -95,9 +81,6 @@ export function MistakesHub({
       setBook(res.book);
       setSummary(res.summary);
       setRevealed(false);
-      if (res.completed) {
-        // keep completed session for summary screen
-      }
     });
   }
 
@@ -109,8 +92,8 @@ export function MistakesHub({
           Procvičení chyb dokončeno
         </h1>
         <p className="text-body-md text-fg-secondary">
-          {session.grades.length} položek. Po opakovaném úspěchu se chyba označí
-          jako vyřešená — historie zůstává.
+          {session.grades.length} položek. Po opakovaném úspěchu se chyba posune
+          na Zvládnutá — historie zůstává.
         </p>
         {summary ? (
           <Alert title="Stav" tone="info">
@@ -125,8 +108,13 @@ export function MistakesHub({
         >
           Zpět na přehled
         </Button>
-        {summary && summary.openCount > 0 ? (
-          <Button fullWidth variant="secondary" onClick={startPractice} disabled={pending}>
+        {summary && summary.activeCount > 0 ? (
+          <Button
+            fullWidth
+            variant="secondary"
+            onClick={startPractice}
+            disabled={pending}
+          >
             Procvičit znovu
           </Button>
         ) : null}
@@ -143,8 +131,9 @@ export function MistakesHub({
             {session.cursor + 1} / {session.queue.length}
           </span>
           <Badge tone="neutral">
-            {errorTypeLabelsCs[current.errorType]}
+            {mistakeClassLabelsCs[current.errorType]}
           </Badge>
+          <StatusBadge status={current.status} />
         </div>
 
         <h1 className="font-display text-display-md text-fg">
@@ -179,6 +168,10 @@ export function MistakesHub({
                 <p className="text-caption text-fg-muted">Proč to bylo špatně</p>
                 <p className="text-body-md text-fg-secondary">{current.whyWrong}</p>
               </div>
+              <p className="text-caption text-fg-muted">
+                Výskytů: {current.occurrenceCount} · Pokusů o nápravu:{" "}
+                {current.recoveryAttempts}
+              </p>
             </div>
           )}
         </div>
@@ -214,8 +207,8 @@ export function MistakesHub({
         <Badge tone="warning">Moje chyby</Badge>
         <h1 className="font-display text-display-md text-fg">Moje chyby</h1>
         <p className="text-body-md text-fg-secondary">
-          Významné chyby se uloží jako ErrorMemory. Procvičuj slabiny, dokud se
-          neoznačí jako vyřešené — historie zůstane.
+          Ukládáme jen skutečné chyby z testů, mixed review a studia z materiálů.
+          Žádná ukázková data — jen to, co jsi opravdu odpověděl špatně.
         </p>
       </header>
 
@@ -237,57 +230,46 @@ export function MistakesHub({
         </Alert>
       ) : null}
 
-      {summary && summary.openCount > 0 ? (
-        <TypeBreakdown byType={summary.byType} />
+      {summary && summary.activeCount > 0 ? (
+        <>
+          <StatusBreakdown byStatus={summary.byStatus} />
+          <TypeBreakdown byType={summary.byType} />
+        </>
       ) : null}
 
       <Button
         fullWidth
-        disabled={pending || !learnerId || open.length === 0}
+        disabled={pending || !learnerId || active.length === 0}
         onClick={startPractice}
       >
         Procvičit moje chyby
       </Button>
 
-      {open.length === 0 &&
-      learnerId &&
-      process.env.NODE_ENV !== "production" &&
-      process.env.NEXT_PUBLIC_ENABLE_DEMO_DATA === "1" ? (
-        <Button
-          fullWidth
-          variant="secondary"
-          disabled={pending}
-          onClick={loadDemo}
-        >
-          [Dev] Načíst ukázkové chyby
-        </Button>
-      ) : null}
-
       <section className="space-y-3">
         <h2 className="font-display text-xl text-fg">
-          Otevřené ({open.length})
+          Aktivní ({active.length})
         </h2>
-        {open.length === 0 ? (
+        {active.length === 0 ? (
           <p className="text-body-sm text-fg-muted">
-            Žádné otevřené chyby. Ukládají se automaticky z testů (špatná
-            odpověď) a z mixed review (hodnocení „Znovu“).
+            Žádné aktivní chyby. Objeví se po špatné nebo částečné odpovědi v
+            testech, mixed review („Znovu“) a studiu z materiálů.
           </p>
         ) : (
           <ul className="space-y-2">
-            {open.map((m) => (
+            {active.map((m) => (
               <MemoryRow key={m.id} memory={m} />
             ))}
           </ul>
         )}
       </section>
 
-      {resolved.length > 0 ? (
+      {mastered.length > 0 ? (
         <section className="space-y-3">
           <h2 className="font-display text-xl text-fg">
-            Historie — vyřešené ({resolved.length})
+            Zvládnuté ({mastered.length})
           </h2>
           <ul className="space-y-2">
-            {resolved.slice(0, 12).map((m) => (
+            {mastered.slice(0, 12).map((m) => (
               <MemoryRow key={m.id} memory={m} />
             ))}
           </ul>
@@ -297,8 +279,52 @@ export function MistakesHub({
   );
 }
 
-function TypeBreakdown({ byType }: { byType: Record<ErrorType, number> }) {
-  const rows = (Object.entries(byType) as [ErrorType, number][]).filter(
+function StatusBadge({ status }: { status: MistakeStatus }) {
+  const tone =
+    status === "mastered"
+      ? "success"
+      : status === "improving"
+        ? "info"
+        : status === "weak"
+          ? "danger"
+          : "warning";
+  return <Badge tone={tone}>{mistakeStatusLabelsCs[status]}</Badge>;
+}
+
+function StatusBreakdown({
+  byStatus,
+}: {
+  byStatus: Record<MistakeStatus, number>;
+}) {
+  const rows = (Object.entries(byStatus) as [MistakeStatus, number][]).filter(
+    ([, n]) => n > 0,
+  );
+  if (rows.length === 0) return null;
+  return (
+    <ul className="flex flex-wrap gap-2">
+      {rows.map(([status, n]) => (
+        <li key={status}>
+          <Badge
+            tone={
+              status === "mastered"
+                ? "success"
+                : status === "improving"
+                  ? "info"
+                  : status === "weak"
+                    ? "danger"
+                    : "warning"
+            }
+          >
+            {mistakeStatusLabelsCs[status]} · {n}
+          </Badge>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function TypeBreakdown({ byType }: { byType: Record<MistakeClass, number> }) {
+  const rows = (Object.entries(byType) as [MistakeClass, number][]).filter(
     ([, n]) => n > 0,
   );
   if (rows.length === 0) return null;
@@ -307,7 +333,7 @@ function TypeBreakdown({ byType }: { byType: Record<ErrorType, number> }) {
       {rows.map(([type, n]) => (
         <li key={type}>
           <Badge tone="neutral">
-            {errorTypeLabelsCs[type]} · {n}
+            {mistakeClassLabelsCs[type]} · {n}
           </Badge>
         </li>
       ))}
@@ -319,12 +345,14 @@ function MemoryRow({ memory }: { memory: ErrorMemory }) {
   return (
     <li className="rounded-xl border border-border bg-subtle px-3 py-3">
       <div className="flex flex-wrap items-center gap-2">
-        <Badge tone={memory.resolvedStatus === "resolved" ? "success" : "warning"}>
-          {resolvedStatusLabelsCs[memory.resolvedStatus]}
-        </Badge>
-        <Badge tone="neutral">{errorTypeLabelsCs[memory.errorType]}</Badge>
+        <StatusBadge status={memory.status} />
+        <Badge tone="neutral">{mistakeClassLabelsCs[memory.errorType]}</Badge>
         <span className="text-caption text-fg-muted">
-          {new Date(memory.date).toLocaleDateString("cs-CZ")}
+          {memory.occurrenceCount}× · náprava {memory.recoveryAttempts}×
+        </span>
+        <span className="text-caption text-fg-muted">
+          naposledy{" "}
+          {new Date(memory.lastOccurredAt).toLocaleDateString("cs-CZ")}
         </span>
       </div>
       <p className="mt-2 font-display text-body-md text-fg">{memory.question}</p>

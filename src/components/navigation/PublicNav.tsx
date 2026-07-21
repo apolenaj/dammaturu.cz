@@ -44,11 +44,11 @@ export function PublicNav() {
                 Přihlášení
               </Link>
               <Link
-                href="/onboarding"
+                href="/registrace"
                 className="min-h-11 rounded-md bg-action px-3 py-2 text-center text-sm font-semibold text-fg-on-brand"
                 onClick={() => setOpen(false)}
               >
-                Zjistit připravenost
+                Registrace
               </Link>
             </div>
           </div>

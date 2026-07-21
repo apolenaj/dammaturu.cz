@@ -43,6 +43,7 @@ next-env.d.ts
 
 # learner persistence (file store until Supabase)
 /data/learners/
+/data/auth-local/
 /data/ingestion/documents/
 /data/ingestion/audit-log.jsonl
 /data/ingestion/index.json
@@ -69,4 +70,14 @@ next-env.d.ts
 /data/beta-feedback/
 /data/progress-gamification/
 /data/mock-exam/
+/data/cermat-prep/
 /data/content-studio/
+/data/learner-materials/
+/data/product-analytics/
+/data/feature-flags.json
+/data/billing/
+/data/launch-gate/
+/data/literature-maturity/
+/data/materials-study/
+/data/open-answer-evals/
+/data/school-exam-profiles/

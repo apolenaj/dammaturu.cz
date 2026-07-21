@@ -13,7 +13,7 @@ export function LogoutButton() {
       onClick={() => start(() => logoutLearnerAction())}
       className="inline-flex min-h-11 items-center rounded-md border border-border px-4 text-body-sm font-semibold text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:opacity-60"
     >
-      {pending ? "Odhlašuji…" : "Odhlásit (smazat session)"}
+      {pending ? "Odhlašuji…" : "Odhlásit se"}
     </button>
   );
 }

@@ -4,8 +4,15 @@ import {
   emptyStreak,
 } from "@/domain/learning/daily-dashboard";
 import {
+  applyReadinessBaselines,
   applyTopicCompletionsFromAreas,
   buildProgressMotivationView,
+  celebrateMilestoneUnlocks,
+  celebrateMissionDay,
+  celebrateMockExam,
+  celebrateStreakMarks,
+  celebrateTopicCompletions,
+  celebrateWeeklyGoalIfMet,
   dateKeysInWeek,
   evaluateUnlockedMilestones,
   mergeMilestoneUnlocks,
@@ -13,6 +20,7 @@ import {
   recordMockExamInState,
   syncStreakBest,
   weekStartDateKey,
+  type LearningCelebration,
   type ProgressMotivationView,
 } from "@/domain/learning/progress-gamification";
 import {
@@ -42,14 +50,24 @@ export async function countWeeklyMissionDays(
   return n;
 }
 
+export type ProgressSyncResult = {
+  view: ProgressMotivationView;
+  celebrations: LearningCelebration[];
+};
+
+/**
+ * Sync motivation state from real signals.
+ * Awards secondary XP only for real events — never writes readiness scores.
+ */
 export async function syncProgressMotivation(input: {
   learnerId: string;
   daysRemaining: number;
   now?: Date;
   awardMissionDayXp?: boolean;
-}): Promise<ProgressMotivationView> {
+}): Promise<ProgressSyncResult> {
   const now = input.now ?? new Date();
   const nowIso = now.toISOString();
+  const celebrations: LearningCelebration[] = [];
   let state = await getOrCreateProgressState(input.learnerId, nowIso);
 
   const readiness = await getReadinessSnapshotForLearner({
@@ -67,16 +85,30 @@ export async function syncProgressMotivation(input: {
       labelCs: a.labelCs,
       pct: a.pct,
     })) ?? [];
+  const overallPct = readiness?.snapshot.overallPct ?? null;
 
-  state = applyTopicCompletionsFromAreas(state, areaPcts, nowIso);
+  const topics = applyTopicCompletionsFromAreas(state, areaPcts, nowIso);
+  state = topics.state;
+  celebrations.push(...celebrateTopicCompletions(topics.justCompleted));
+
+  const readinessDiff = applyReadinessBaselines(state, {
+    overallPct,
+    areas: areaPcts,
+    nowIso,
+  });
+  state = readinessDiff.state;
+  celebrations.push(...readinessDiff.celebrations);
+
   state = syncStreakBest(state, streak.longestStreak, nowIso);
 
+  const awardedMission =
+    Boolean(input.awardMissionDayXp) &&
+    state.lastMissionXpDateKey !== dateKeyFromDate(now);
   if (input.awardMissionDayXp) {
-    state = recordMissionDayXp(
-      state,
-      dateKeyFromDate(now),
-      nowIso,
-    );
+    state = recordMissionDayXp(state, dateKeyFromDate(now), nowIso);
+    if (awardedMission) {
+      celebrations.push(celebrateMissionDay(dateKeyFromDate(now)));
+    }
   }
 
   const packs = await listSpeedRoundPacks();
@@ -100,13 +132,34 @@ export async function syncProgressMotivation(input: {
 
   const eligible = evaluateUnlockedMilestones({
     masteredKuCount,
-    readinessOverallPct: readiness?.snapshot.overallPct ?? 0,
+    readinessOverallPct: overallPct ?? 0,
     areaPcts,
     currentStreak: streak.currentStreak,
     longestStreak: streak.longestStreak,
     mockExamCompletions: state.mockExamCompletions,
   });
-  state = mergeMilestoneUnlocks(state, eligible, nowIso).state;
+  const unlocked = mergeMilestoneUnlocks(state, eligible, nowIso);
+  state = unlocked.state;
+  celebrations.push(...celebrateMilestoneUnlocks(unlocked.justUnlocked));
+
+  const streakMarks = celebrateStreakMarks(
+    state,
+    streak.currentStreak,
+    nowIso,
+  );
+  state = streakMarks.state;
+  celebrations.push(...streakMarks.celebrations);
+
+  const weeklyDays = await countWeeklyMissionDays(input.learnerId, now);
+  const weekly = celebrateWeeklyGoalIfMet(
+    state,
+    weeklyDays,
+    weekStartDateKey(now),
+    nowIso,
+  );
+  state = weekly.state;
+  celebrations.push(...weekly.celebrations);
+
   await saveProgressState(state);
 
   const day = await getDailyMissionDay(
@@ -118,32 +171,47 @@ export async function syncProgressMotivation(input: {
   const dailyCompleted =
     Boolean(day?.completedAt) || (day ? allStepsDone(day.steps) : false);
 
-  return buildProgressMotivationView({
+  const view = buildProgressMotivationView({
     daysRemaining: input.daysRemaining,
-    readinessPct: readiness?.snapshot.overallPct ?? null,
+    readinessPct: overallPct,
     masteredKuCount,
     dailyCompleted,
     dailyStepsDone: stepsDone,
     dailyStepsTotal: stepsTotal,
-    weeklyMissionDays: await countWeeklyMissionDays(input.learnerId, now),
+    weeklyMissionDays: weeklyDays,
     currentStreak: streak.currentStreak,
     longestStreak: streak.longestStreak,
     state,
+    celebrations,
   });
+
+  return { view, celebrations };
 }
 
 export async function recordMockExamCompletion(input: {
   learnerId: string;
   score: number;
   topicSlug: string;
-}): Promise<void> {
+}): Promise<{ celebrations: LearningCelebration[] }> {
   const nowIso = new Date().toISOString();
+  const celebrations: LearningCelebration[] = [];
   let state = await getOrCreateProgressState(input.learnerId, nowIso);
-  state = recordMockExamInState(state, {
+  const wasFirst = state.mockExamCompletions === 0;
+  const recorded = recordMockExamInState(state, {
     score: input.score,
     topicSlug: input.topicSlug,
     nowIso,
-  }).state;
+  });
+  state = recorded.state;
+  celebrations.push(
+    ...celebrateMockExam({
+      isFirst: wasFirst,
+      isPersonalBest: recorded.isPersonalBest,
+      score: input.score,
+      topicSlug: input.topicSlug,
+      nowIso,
+    }),
+  );
 
   const readiness = await getReadinessSnapshotForLearner({
     learnerId: input.learnerId,
@@ -166,6 +234,9 @@ export async function recordMockExamCompletion(input: {
     longestStreak: streak.longestStreak,
     mockExamCompletions: state.mockExamCompletions,
   });
-  state = mergeMilestoneUnlocks(state, eligible, nowIso).state;
+  const unlocked = mergeMilestoneUnlocks(state, eligible, nowIso);
+  state = unlocked.state;
+  celebrations.push(...celebrateMilestoneUnlocks(unlocked.justUnlocked));
   await saveProgressState(state);
+  return { celebrations };
 }

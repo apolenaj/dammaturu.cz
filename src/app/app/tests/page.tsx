@@ -8,6 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { AppPageHeader } from "@/components/shell/app-screen";
+import { EmptyState } from "@/components/ui/empty-state";
 import { getCurrentLearnerAction } from "@/server/actions/onboarding";
 import { listQuestionPacks } from "@/server/question-engine/store";
 import { getLearner } from "@/server/learner-store";
@@ -31,16 +33,26 @@ export default async function TestsPage({ searchParams }: PageProps) {
   const record = learnerId ? await getLearner(learnerId) : null;
   const baselineDone = Boolean(record?.diagnosticBaseline);
   const primaryPack = packs[0] ?? null;
+  const primaryHref = primaryPack
+    ? diagnostic
+      ? `/app/tests/otazky/${primaryPack.slug}?diagnostic=1`
+      : `/app/tests/otazky/${primaryPack.slug}`
+    : "/app/cermat";
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6 px-1">
-      <div>
-        <h1 className="font-display text-display-md text-fg">Testy</h1>
-        <p className="mt-2 text-body-md text-fg-secondary">
-          Question Engine — po každé odpovědi vysvětlení, ne jen
-          zelená/červená. Chyby se ukládají do Moje chyby.
-        </p>
-      </div>
+      <AppPageHeader
+        title="Testy"
+        purpose="Ověř znalosti s vysvětlením po odpovědi. Chyby jdou do Moje chyby."
+        primaryAction={{
+          label: primaryPack ? "Spustit test" : "CERMAT trénink",
+          href: primaryHref,
+        }}
+        secondaryAction={{
+          label: "Moje chyby",
+          href: "/app/mistakes",
+        }}
+      />
 
       {diagnostic ? (
         <Alert
@@ -67,20 +79,19 @@ export default async function TestsPage({ searchParams }: PageProps) {
           ) : learner ? (
             <>
               {learner.profile.displayName}, spusť diagnostiku níže (min. 8
-              otázek). Výsledky nastaví baseline a pomohou upravit plán do 31.
-              srpna.
+              otázek). Výsledky nastaví baseline a pomohou upravit plán.
               {primaryPack ? (
                 <div className="mt-3">
                   <Link
                     href={`/app/tests/otazky/${primaryPack.slug}?diagnostic=1`}
-                    className="inline-flex min-h-11 items-center justify-center rounded-md bg-action px-5 text-body-sm font-semibold uppercase tracking-wide text-fg-on-brand"
+                    className="inline-flex min-h-11 items-center justify-center rounded-md bg-action px-5 text-body-sm font-semibold text-fg-on-brand"
                   >
                     Spustit diagnostiku
                   </Link>
                 </div>
               ) : (
                 <p className="mt-2 text-body-sm">
-                  Question pack chybí — kontaktuj admina (obsah není nasazený).
+                  Pack otázek zatím není nasazený — zkus CERMAT trénink.
                 </p>
               )}
             </>
@@ -96,17 +107,36 @@ export default async function TestsPage({ searchParams }: PageProps) {
         </Alert>
       ) : null}
 
+      <Card>
+        <CardHeader>
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <div>
+              <CardTitle>
+                <Link href="/app/cermat" className="hover:text-action">
+                  CERMAT ČJL — didaktický trénink
+                </Link>
+              </CardTitle>
+              <CardDescription className="mt-1">
+                Kategorie didaktického testu · časovaná simulace · slabiny.
+                Cvičné exam-style položky, ne oficiální CERMAT.
+              </CardDescription>
+            </div>
+            <Badge tone="brand">CERMAT</Badge>
+          </div>
+        </CardHeader>
+      </Card>
+
       <section className="space-y-3">
         <h2 className="font-display text-xl font-semibold text-fg">
           Question packs
         </h2>
         {packs.length === 0 ? (
-          <Card>
-            <CardDescription>
-              Obsah testů není nasazený. Napiš adminovi — nespouštěj seed příkazy
-              sama.
-            </CardDescription>
-          </Card>
+          <EmptyState
+            title="Zatím žádný pack"
+            description="Obsah testů ještě není nasazený. Mezitím můžeš trénovat CERMAT kategorie."
+            actionLabel="Otevřít CERMAT"
+            actionHref="/app/cermat"
+          />
         ) : (
           packs.map((pack) => {
             const kinds = new Set(pack.questions.map((q) => q.kind));

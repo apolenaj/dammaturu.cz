@@ -29,8 +29,7 @@ export default async function LiteraryWorksIndexPage() {
       {items.length === 0 ? (
         <Card>
           <CardDescription>
-            Zatím žádná díla. Spusť{" "}
-            <code className="text-body-sm">npm run seed:literary-works</code>.
+Tento obsah zatím není k dispozici. Zkus jinou aktivitu nebo se vrať později.
           </CardDescription>
         </Card>
       ) : (

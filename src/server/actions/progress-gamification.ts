@@ -1,10 +1,14 @@
 "use server";
 
 import { track } from "@/lib/analytics";
-import type { ProgressMotivationView } from "@/domain/learning/progress-gamification";
+import type {
+  LearningCelebration,
+  ProgressMotivationView,
+} from "@/domain/learning/progress-gamification";
 import { getLearnerIdFromCookies } from "@/server/learner-session";
 import { getLearner } from "@/server/learner-store";
 import { recordLearningEvent } from "@/server/learning-analytics/store";
+import { recordProductEvent } from "@/server/product-analytics/store";
 import {
   recordMockExamCompletion,
   syncProgressMotivation,
@@ -25,13 +29,14 @@ function daysRemainingForLearner(
 
 export async function getProgressMotivationAction(): Promise<{
   view: ProgressMotivationView | null;
+  celebrations: LearningCelebration[];
 }> {
   const learnerId = await getLearnerIdFromCookies();
-  if (!learnerId) return { view: null };
+  if (!learnerId) return { view: null, celebrations: [] };
   const learner = await getLearner(learnerId);
-  if (!learner) return { view: null };
+  if (!learner) return { view: null, celebrations: [] };
 
-  const view = await syncProgressMotivation({
+  const { view, celebrations } = await syncProgressMotivation({
     learnerId,
     daysRemaining: daysRemainingForLearner(learner.profile.targetDate),
   });
@@ -39,14 +44,18 @@ export async function getProgressMotivationAction(): Promise<{
     readiness: view.readinessPct,
     streak: view.streak.current,
     milestones: view.milestones.filter((m) => m.unlocked).length,
+    celebrations: celebrations.length,
   });
-  return { view };
+  return { view, celebrations };
 }
 
 export async function recordMockExamProgressAction(input: {
   score: number;
   topicSlug: string;
-}): Promise<{ ok: true } | { ok: false; error: string }> {
+}): Promise<
+  | { ok: true; celebrations: LearningCelebration[] }
+  | { ok: false; error: string }
+> {
   const learnerId = await getLearnerIdFromCookies();
   if (!learnerId) return { ok: false, error: "Nejsi přihlášen/a (onboarding)." };
   if (
@@ -57,7 +66,7 @@ export async function recordMockExamProgressAction(input: {
   ) {
     return { ok: false, error: "Neplatný výsledek simulace." };
   }
-  await recordMockExamCompletion({
+  const { celebrations } = await recordMockExamCompletion({
     learnerId,
     score: Math.round(input.score),
     topicSlug: input.topicSlug.slice(0, 120),
@@ -65,6 +74,7 @@ export async function recordMockExamProgressAction(input: {
   track("mock_exam_recorded_for_progress", {
     score: Math.round(input.score),
     topic: input.topicSlug,
+    celebrations: celebrations.length,
   });
   await recordLearningEvent({
     learnerKey: learnerId,
@@ -73,6 +83,18 @@ export async function recordMockExamProgressAction(input: {
     topicSlug: input.topicSlug.slice(0, 120),
     simulationScore: Math.round(input.score),
     minutes: 30,
+  });
+  await recordProductEvent({
+    learnerKey: learnerId,
+    event: "mock_exam_completed",
+    topicSlug: input.topicSlug.slice(0, 120),
+    minutes: 30,
+  });
+  await recordProductEvent({
+    learnerKey: learnerId,
+    event: "study_minutes",
+    minutes: 30,
+    featureId: "mock_exam",
   });
   const { mapToExperimentMethod } = await import(
     "@/server/beta-experiment/map-method"
@@ -90,5 +112,5 @@ export async function recordMockExamProgressAction(input: {
     kind: "practice",
     oralScore: input.score,
   });
-  return { ok: true };
+  return { ok: true, celebrations };
 }

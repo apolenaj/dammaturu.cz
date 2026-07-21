@@ -41,7 +41,7 @@ export function BetaFeedbackWidget() {
   }
 
   return (
-    <div className="fixed bottom-20 right-3 z-40 max-w-[min(100vw-1.5rem,22rem)] lg:bottom-6">
+    <div className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-3 z-30 max-w-[min(100vw-1.5rem,20rem)] lg:bottom-6">
       {!open ? (
         <button
           type="button"
@@ -49,7 +49,7 @@ export function BetaFeedbackWidget() {
             setOpen(true);
             setSent(false);
           }}
-          className="rounded-full border border-border bg-canvas px-4 py-2.5 text-body-sm font-semibold text-fg shadow-md hover:bg-subtle"
+          className="min-h-11 touch-manipulation rounded-full border border-border bg-canvas px-4 py-2.5 text-body-sm font-semibold text-fg shadow-md hover:bg-subtle"
         >
           Feedback
         </button>
@@ -109,7 +109,7 @@ export function BetaFeedbackWidget() {
                     onChange={(e) =>
                       setForm((f) => ({ ...f, [key]: e.target.value }))
                     }
-                    className="w-full rounded-md border border-border bg-surface px-2 py-1.5 text-body-sm text-fg"
+                    className="w-full rounded-md border border-border bg-surface px-2 py-2 text-base text-fg"
                   />
                 </label>
               ))}

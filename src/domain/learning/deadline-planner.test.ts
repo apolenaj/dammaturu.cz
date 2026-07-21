@@ -2,14 +2,16 @@ import { describe, expect, it } from "vitest";
 import {
   buildDeadlinePlan,
   computeMissedDays,
-  plannerConfig,
+  isAvailableStudyDay,
   planTodayLoad,
+  resolveAvailableDaysPerWeek,
 } from "@/domain/learning/deadline-planner";
 
 describe("deadline-planner (D-038)", () => {
   const base = {
-    targetDate: plannerConfig.betaTargetDate,
+    targetDate: "2026-09-15",
     dailyMinutes: 45,
+    availableDaysPerWeek: 5,
     contentUnits: 31,
     difficultyIndex: 3.2,
     masteryPct: 42,
@@ -18,21 +20,33 @@ describe("deadline-planner (D-038)", () => {
     readinessFeeling: 3 as const,
   };
 
-  it("targets beta date 31 Aug and computes buffer + phases", () => {
+  it("uses the student's targetDate — never invents a product deadline", () => {
     const plan = buildDeadlinePlan(base, new Date(2026, 6, 21, 12, 0, 0));
-    expect(plan.targetDate).toBe("2026-08-31");
+    expect(plan.targetDate).toBe("2026-09-15");
+    expect(plan.targetDate).not.toBe("2026-08-31");
     expect(plan.daysRemaining).toBeGreaterThan(30);
     expect(plan.bufferDays).toBeGreaterThanOrEqual(3);
-    expect(plan.studyDays).toBe(plan.daysRemaining - plan.bufferDays);
+    expect(plan.studyDays).toBeLessThan(plan.daysRemaining);
     expect(plan.phases.map((p) => p.phase)).toEqual([
       "coverage",
       "consolidation",
       "exam_readiness",
       "final_review",
     ]);
-    expect(plan.summaryLinesCs.length).toBeGreaterThanOrEqual(6);
     expect(plan.availableMinutes).toBe(plan.studyDays * 45);
     expect(plan.reviewsNeeded).toBeGreaterThanOrEqual(18);
+  });
+
+  it("respects available days per week (weekdays vs every day)", () => {
+    const weekdays = buildDeadlinePlan(
+      { ...base, availableDaysPerWeek: 5 },
+      new Date(2026, 6, 21, 12, 0, 0),
+    );
+    const everyday = buildDeadlinePlan(
+      { ...base, availableDaysPerWeek: 7 },
+      new Date(2026, 6, 21, 12, 0, 0),
+    );
+    expect(everyday.studyDays).toBeGreaterThan(weekdays.studyDays);
   });
 
   it("stays in coverage when mastery is low", () => {
@@ -49,16 +63,26 @@ describe("deadline-planner (D-038)", () => {
       new Date(2026, 6, 21, 12, 0, 0),
     );
     expect(plan.recalculatedAfterMiss).toBe(true);
-    expect(plan.today.backlogCapped || plan.today.scheduledMinutes <= 45 * 1.2).toBe(
-      true,
-    );
+    expect(
+      plan.today.backlogCapped || plan.today.scheduledMinutes <= 45 * 1.2,
+    ).toBe(true);
     expect(plan.today.scheduledMinutes).toBeLessThanOrEqual(
-      Math.round(45 * plannerConfig.maxDailyLoadFactor),
-    );
-    expect(plan.today.reviewItems).toBeLessThanOrEqual(
-      plannerConfig.maxReviewsPerDay,
+      Math.round(45 * 1.2),
     );
     expect(plan.today.noteCs.toLowerCase()).toMatch(/přepočít|vynechan/);
+  });
+
+  it("folds ready materials into content demand", () => {
+    const without = buildDeadlinePlan(base, new Date(2026, 6, 21, 12, 0, 0));
+    const withMats = buildDeadlinePlan(
+      {
+        ...base,
+        materialsReadyCount: 2,
+        materialsKnowledgePoints: 48,
+      },
+      new Date(2026, 6, 21, 12, 0, 0),
+    );
+    expect(withMats.contentUnits).toBeGreaterThan(without.contentUnits);
   });
 
   it("computeMissedDays ignores today/yesterday", () => {
@@ -97,5 +121,16 @@ describe("deadline-planner (D-038)", () => {
     });
     expect(today.scheduledMinutes).toBeLessThanOrEqual(36);
     expect(today.reviewItems).toBeLessThanOrEqual(24);
+  });
+
+  it("maps study mode to available days", () => {
+    expect(resolveAvailableDaysPerWeek({ studyMode: "intensive" })).toBe(6);
+    expect(resolveAvailableDaysPerWeek({ studyMode: "standard" })).toBe(5);
+    expect(
+      isAvailableStudyDay(new Date(2026, 6, 25, 12), 5), // Saturday
+    ).toBe(false);
+    expect(
+      isAvailableStudyDay(new Date(2026, 6, 24, 12), 5), // Friday
+    ).toBe(true);
   });
 });

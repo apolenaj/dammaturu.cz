@@ -1,59 +1,55 @@
 # INFORMATION_ARCHITECTURE — DámMaturu.cz
 
-> Stav k: 2026-07-20. Implementováno ve `src/app` + `src/lib/navigation.ts`.
+> Stav k: 2026-07-21. Implementováno ve `src/app` + `src/lib/navigation.ts` (D-057).
 
-## Mapa
+## Princip
 
-### PUBLIC
-| Route | Stav |
-|-------|------|
-| `/` | ready — brand hero |
-| `/jak-to-funguje` | ready |
-| `/predmety` | scaffolded (FeatureState) |
-| `/maturitni-priprava` | ready |
-| `/cenik` | scaffolded |
-| `/o-projektu` | ready |
-| `/prihlaseni` | blocked (auth chybí) |
-| `/registrace` | blocked (auth chybí) |
+Navigace kolem **student jobs-to-be-done**. Chrome je krátký; hlubší nástroje žijí uvnitř hubů (Učit se / Testy / Profil / Plán). Nikdy neukazuj `scaffolded` / `blocked` v navigaci.
 
-### APP (`/app/*`, LearnerAppShell)
-| Route | Nav | Stav |
-|-------|-----|------|
-| `/app` | → redirect `/app/dashboard` | |
-| `/app/dashboard` | Primární: Dnes | ready (daily plan CTA) |
-| `/app/learn` | Primární: Učit se | ready |
-| `/app/learn/dilo` | (hub) | ready (literární díla D-042) |
-| `/app/learn/dilo/[slug]` | (detail) | ready (generický rozbor) |
-| `/app/learn/kytice` | (speciál) | ready (13 balad D-043) |
-| `/app/learn/maj` | (speciál) | ready (exam prep D-044) |
-| `/app/learn/babicka` | (speciál) | ready (experience D-045) |
-| `/app/review` | Primární: Opakovat | scaffolded |
-| `/app/tests` | Primární: Testy | scaffolded |
-| `/app/progress` | Primární: Pokrok / Připravenost | ready |
-| `/app/plan` | Sekundární | ready (beta path D-040 + deadline D-038) |
-| `/app/zachran-me` | Sekundární | ready (Priority Plan D-041) |
-| `/app/topics` | Sekundární | scaffolded |
-| `/app/mistakes` | Sekundární | ready (ErrorMemory) |
-| `/app/simulation` | Sekundární | ready (Zkouška nanečisto D-046) |
-| `/app/profile` | Sekundární | scaffolded |
+## APP chrome
 
-### ADMIN (`/admin/*`, AdminShell)
-| Route | Stav |
-|-------|------|
-| `/admin` | → redirect `/admin/content` |
-| `/admin/content` | ready (Content Studio D-048) |
-| `/admin/sources` | scaffolded |
-| `/admin/questions` | scaffolded |
-| `/admin/reviews` | scaffolded |
-| `/admin/users` | blocked |
-| `/admin/analytics` | ready (learning analytics D-049 + beta PO D-039) |
+### Primární (5) — sidebar „Hlavní“ + mobile bottom nav
+| Route | Label |
+|-------|-------|
+| `/app/dashboard` | Dnes |
+| `/app/learn` | Učit se |
+| `/app/materials` | Moje materiály |
+| `/app/tests` | Testy |
+| `/app/progress` | Pokrok |
+
+### Sekundární (5) — sidebar „Další“ + mobile „Víc“
+| Route | Label |
+|-------|-------|
+| `/app/review` | Opakování |
+| `/app/mistakes` | Moje chyby |
+| `/app/plan` | Plán |
+| `/app/simulation` | Zkouška nanečisto |
+| `/app/profile` | Profil |
+
+### Hub-only (ne v chrome)
+| Route | Vstup |
+|-------|-------|
+| `/app/minute` | Dnes → „1 minuta učení“ (bus-friendly, D-059) |
+| `/app/literature`, `/app/topics`, `/app/cermat`, `/app/zachran-me` | Učit se → Maturitní nástroje |
+| `/app/exam-profile` | Profil → Profil maturity |
+| `/app/progress/experiment` | Pokrok |
 
 ## Shell
 
 - Desktop (≥ lg): sidebar — Hlavní (5) + Další (5)
-- Mobile: sticky header + „Víc“ (sekundární) + fixed bottom nav (5)
-- Admin: sidebar desktop / horizontal scroll nav mobile
+- Mobile: sticky header (safe-area top) + „Víc“ + fixed bottom nav ≥44px (safe-area bottom)
+- Overflow-x clip; sticky study CTAs above bottom nav
+- PWA: installable standalone (`manifest` + `sw.js`)
+- Admin: jen `ready` položky (`getVisibleAdminNav`)
+
+## Screen contract
+
+Každý learner hub: **účel** + **jedna primární akce** (`AppPageHeader`) + užitečný empty / loading / error (`EmptyState`, `AppLoadingState`, `AppErrorState`).
 
 ## Feature states
 
-`ready` | `scaffolded` | `blocked` — žádný fake obsah, žádná mrtvá CTA na neexistující funkci.
+`ready` | `scaffolded` | `blocked` — žádný fake obsah, žádná mrtvá CTA. Chrome filtruje přes `filterReadyNav`.
+
+## PUBLIC / ADMIN
+
+Viz `routeCatalog` v `src/lib/navigation.ts` (auth ready; admin questions scaffolded, users blocked).

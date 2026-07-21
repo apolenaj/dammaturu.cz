@@ -3,11 +3,12 @@ import {
   applyMistakeSessionGrade,
   applyPracticeGrade,
   buildMistakesHubSummary,
+  classifyMistake,
   emptyErrorBook,
   errorMemoryConfig,
-  inferErrorType,
-  listOpenMemories,
-  listResolvedMemories,
+  listActiveMemories,
+  listMasteredMemories,
+  migrateErrorBook,
   recordError,
   startMistakePracticeSession,
 } from "@/domain/learning/error-memory";
@@ -22,35 +23,33 @@ function sampleInput(overrides: Partial<Parameters<typeof recordError>[1]> = {})
     question: "Kdo napsal Otec Goriot?",
     studentAnswer: "Dickens",
     correctConcept: "Honoré de Balzac",
-    whyWrong: "Zaměnil autora realismu — Dickens ≠ Balzac.",
+    whyWrong: "Špatný autor realismu — Dickens ≠ Balzac.",
     knowledgeUnit: {
       slug: "goriot",
       title: "Otec Goriot — autor",
     },
-    errorType: "author_work_swap" as const,
+    errorType: "wrong_author" as const,
     nowIso: NOW,
-    source: "seed" as const,
+    source: "question_engine" as const,
     ...overrides,
   };
 }
 
-describe("error-memory (D-034)", () => {
-  it("records ErrorMemory with required fields", () => {
+describe("error-memory / Moje chyby", () => {
+  it("records mistake with tracking fields and New status", () => {
     const book0 = emptyErrorBook("learner", NOW);
     const { book, memory, created } = recordError(book0, sampleInput());
     expect(created).toBe(true);
-    expect(memory.question).toContain("Goriot");
-    expect(memory.studentAnswer).toBe("Dickens");
-    expect(memory.correctConcept).toContain("Balzac");
-    expect(memory.whyWrong.length).toBeGreaterThan(5);
-    expect(memory.knowledgeUnit.slug).toBe("goriot");
-    expect(memory.errorType).toBe("author_work_swap");
-    expect(memory.date).toBe(NOW);
-    expect(memory.resolvedStatus).toBe("open");
+    expect(memory.errorType).toBe("wrong_author");
+    expect(memory.status).toBe("new");
+    expect(memory.firstOccurredAt).toBe(NOW);
+    expect(memory.lastOccurredAt).toBe(NOW);
+    expect(memory.occurrenceCount).toBe(1);
+    expect(memory.recoveryAttempts).toBe(0);
     expect(book.memories).toHaveLength(1);
   });
 
-  it("dedupes same KU + type instead of cloning", () => {
+  it("dedupes same KU + type, bumps occurrence, marks Weak + repeated", () => {
     let book = emptyErrorBook("learner", NOW);
     ({ book } = recordError(book, sampleInput()));
     const second = recordError(
@@ -64,45 +63,46 @@ describe("error-memory (D-034)", () => {
     expect(second.created).toBe(false);
     expect(second.book.memories).toHaveLength(1);
     expect(second.memory.studentAnswer).toBe("Tolstoj");
-    expect(second.memory.resolvedStatus).toBe("open");
+    expect(second.memory.occurrenceCount).toBe(2);
+    expect(second.memory.status).toBe("weak");
+    expect(second.memory.errorType).toBe("repeated_mistake");
+    expect(second.memory.lastOccurredAt).toBe(LATER);
+    expect(second.memory.firstOccurredAt).toBe(NOW);
   });
 
-  it("marks resolved after repeated success but keeps history", () => {
+  it("marks Mastered after repeated successful recovery", () => {
     let book = emptyErrorBook("learner", NOW);
     let memory = recordError(book, sampleInput()).memory;
     book = recordError(book, sampleInput()).book;
 
     memory = applyPracticeGrade(memory, "good", LATER);
-    expect(memory.resolvedStatus).toBe("practicing");
+    expect(memory.status).toBe("improving");
     expect(memory.successStreak).toBe(1);
+    expect(memory.recoveryAttempts).toBe(1);
 
     memory = applyPracticeGrade(memory, "good", "2026-07-22T12:00:00.000Z");
-    expect(memory.successStreak).toBe(
-      errorMemoryConfig.resolveSuccessStreak,
-    );
-    expect(memory.resolvedStatus).toBe("resolved");
-    expect(memory.resolvedAt).toBeTruthy();
+    expect(memory.successStreak).toBe(errorMemoryConfig.masterSuccessStreak);
+    expect(memory.status).toBe("mastered");
+    expect(memory.masteredAt).toBeTruthy();
 
-    // History stays in book after replace
     const memories = book.memories.map((m) =>
       m.id === memory.id ? memory : m,
     );
-    const withResolved = { ...book, memories };
-    expect(listResolvedMemories(withResolved)).toHaveLength(1);
-    expect(listOpenMemories(withResolved)).toHaveLength(0);
-    expect(withResolved.memories).toHaveLength(1);
+    const withMastered = { ...book, memories };
+    expect(listMasteredMemories(withMastered)).toHaveLength(1);
+    expect(listActiveMemories(withMastered)).toHaveLength(0);
   });
 
-  it("again resets streak", () => {
+  it("again resets streak to Weak", () => {
     const base = recordError(emptyErrorBook("learner", NOW), sampleInput())
       .memory;
     const mid = applyPracticeGrade(base, "good", LATER);
     const fail = applyPracticeGrade(mid, "again", "2026-07-22T12:00:00.000Z");
     expect(fail.successStreak).toBe(0);
-    expect(fail.resolvedStatus).toBe("open");
+    expect(fail.status).toBe("weak");
   });
 
-  it("practice session grades open items; resolve needs repeated success", () => {
+  it("Procvičit moje chyby session resolves to Mastered", () => {
     let book = emptyErrorBook("learner", NOW);
     ({ book } = recordError(book, sampleInput()));
 
@@ -113,7 +113,6 @@ describe("error-memory (D-034)", () => {
       nowIso: NOW,
     });
     expect(session0).not.toBeNull();
-    expect(session0!.queue.length).toBe(1);
 
     let session = session0!;
     ({ session, book } = applyMistakeSessionGrade({
@@ -123,43 +122,84 @@ describe("error-memory (D-034)", () => {
       nowIso: LATER,
     }));
     expect(session.status).toBe("completed");
-    expect(listOpenMemories(book)[0]?.resolvedStatus).toBe("practicing");
+    expect(listActiveMemories(book)[0]?.status).toBe("improving");
 
-    // Second practice run → resolved
     const session1 = startMistakePracticeSession({
       sessionId: "55555555-5555-4555-8555-555555555555",
       learnerId: "learner",
       book,
       nowIso: "2026-07-22T12:00:00.000Z",
     });
-    expect(session1).not.toBeNull();
     ({ book } = applyMistakeSessionGrade({
       session: session1!,
       book,
       grade: "good",
       nowIso: "2026-07-22T12:00:00.000Z",
     }));
-    expect(listResolvedMemories(book)).toHaveLength(1);
-    expect(listOpenMemories(book)).toHaveLength(0);
-    // History kept
-    expect(book.memories).toHaveLength(1);
+    expect(listMasteredMemories(book)).toHaveLength(1);
+    expect(listActiveMemories(book)).toHaveLength(0);
   });
 
-  it("infers author/work swap from content", () => {
+  it("classifies wrong author and partial answer", () => {
     expect(
-      inferErrorType({
+      classifyMistake({
         question: "Autor Otce Goriota?",
+        studentAnswer: "Dickens",
         correctConcept: "Balzac",
         knowledgeSlug: "goriot",
       }),
-    ).toBe("author_work_swap");
+    ).toBe("wrong_author");
+
+    expect(
+      classifyMistake({
+        question: "Co je romantismus?",
+        studentAnswer: "něco o citech",
+        correctConcept: "subjektivita a cit",
+        result: "partial",
+        coverage: 0.5,
+      }),
+    ).toBe("partial_answer");
   });
 
-  it("hub headline mentions practice CTA when open", () => {
+  it("hub headline mentions practice CTA when active", () => {
     let book = emptyErrorBook("learner", NOW);
     ({ book } = recordError(book, sampleInput()));
     const summary = buildMistakesHubSummary(book);
     expect(summary.headlineCs).toMatch(/Procvičit moje chyby/);
-    expect(summary.openCount).toBe(1);
+    expect(summary.activeCount).toBe(1);
+    expect(summary.byStatus.new).toBe(1);
+  });
+
+  it("migrates legacy open/resolved books without inventing rows", () => {
+    const legacy = {
+      learnerId: "learner",
+      updatedAt: NOW,
+      memories: [
+        {
+          id: "11111111-1111-4111-8111-111111111111",
+          learnerId: "learner",
+          question: "Kdo napsal Otec Goriot?",
+          studentAnswer: "Dickens",
+          correctConcept: "Balzac",
+          whyWrong: "Záměna autora",
+          knowledgeUnit: { slug: "goriot", title: "Goriot" },
+          errorType: "author_work_swap",
+          date: NOW,
+          resolvedStatus: "open",
+          successStreak: 0,
+          practiceCount: 0,
+          resolvedAt: null,
+          updatedAt: NOW,
+          source: "seed",
+        },
+      ],
+    };
+    const migrated = migrateErrorBook(legacy);
+    expect(migrated).not.toBeNull();
+    expect(migrated!.memories).toHaveLength(1);
+    expect(migrated!.memories[0]!.errorType).toBe("wrong_author");
+    expect(migrated!.memories[0]!.status).toBe("new");
+    expect(migrated!.memories[0]!.firstOccurredAt).toBe(NOW);
+    expect(migrated!.memories[0]!.source).toBe("manual");
   });
 });

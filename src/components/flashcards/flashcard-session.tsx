@@ -66,7 +66,7 @@ export function FlashcardReviewHub({
         return;
       }
       if (res.session.queue.length === 0) {
-        setError("Teď nic není due. Zkus později — scheduler čeká.");
+        setError("Teď nic k opakování. Vrať se později — appka ví, kdy to přijde.");
         return;
       }
       setSummary(null);
@@ -100,8 +100,8 @@ export function FlashcardReviewHub({
         <Badge tone="brand">Flashcards</Badge>
         <h1 className="font-display text-display-md text-fg">Opakovat</h1>
         <p className="text-body-sm text-fg-secondary">
-          Odpověz v hlavě → otoč → ohodnoť. Známka řídí SM-2 plánování další
-          karty.
+          Odpověz v hlavě → otoč → ohodnoť. Appka podle toho naplánuje, kdy se
+          karta vrátí — nejdřív to, na čem začínáš zapomínat.
         </p>
       </header>
 
@@ -113,13 +113,13 @@ export function FlashcardReviewHub({
 
       {!learnerId ? (
         <Alert title="Onboarding" tone="info">
-          Pro ukládání schedule dokonči onboarding.
+          Pro ukládání opakování dokonči onboarding.
         </Alert>
       ) : null}
 
       {decks.length === 0 ? (
         <Alert title="Žádný balíček" tone="neutral">
-          Spusť <code className="text-body-sm">npm run seed:flashcards</code>.
+          Tento obsah zatím není k dispozici. Zkus jinou aktivitu nebo se vrať později.
         </Alert>
       ) : (
         decks.map((deck) => {
@@ -154,9 +154,12 @@ export function FlashcardReviewHub({
         })
       )}
 
-      <p className="px-1 text-caption text-fg-muted">
+      <p className="hidden px-1 text-caption text-fg-muted sm:block">
         Zkratky: mezerník = otočit · 1 / 2 / 3 = Nevěděl · Téměř · Věděl. Mobil:
         swipe po otočení.
+      </p>
+      <p className="px-1 text-caption text-fg-muted sm:hidden">
+        Klepni na kartu · po otočení swipe ← / ↑ / → nebo tlačítka níže.
       </p>
     </div>
   );
@@ -312,9 +315,9 @@ function FlashcardSessionPlayer({
   const nextDue = schedule.byCardId[card.id]?.dueAt;
 
   return (
-    <div className="mx-auto flex w-full max-w-lg flex-col gap-4 px-3 pb-[env(safe-area-inset-bottom)] sm:px-0">
+    <div className="mx-auto flex w-full max-w-lg flex-col gap-4 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
       <div className="flex items-center justify-between gap-2">
-        <Button variant="ghost" size="sm" onClick={onExit}>
+        <Button variant="ghost" size="sm" className="min-h-11" onClick={onExit}>
           Ukončit
         </Button>
         <p className="text-caption text-fg-muted">
@@ -349,7 +352,7 @@ function FlashcardSessionPlayer({
             "relative flex min-h-[280px] w-full flex-col justify-between rounded-2xl border border-border bg-surface p-5 text-left shadow-md transition active:scale-[0.99] sm:min-h-[320px]",
             flipped && "ring-2 ring-action/30",
           )}
-          aria-label={flipped ? "Odpověď odkryta" : "Klepni nebo mezerník pro otočení"}
+          aria-label={flipped ? "Odpověď odkryta" : "Klepni pro otočení"}
         >
           <div className="flex flex-wrap gap-2">
             <Badge tone="accent">{flashcardTypeLabelsCs[card.type]}</Badge>
@@ -375,7 +378,12 @@ function FlashcardSessionPlayer({
             ) : null}
           </div>
 
-          <p className="mt-6 text-caption text-fg-muted">
+          <p className="mt-6 text-caption text-fg-muted sm:hidden">
+            {flipped
+              ? "Ohodnoť tlačítky nebo swipe ← / ↑ / →"
+              : "Klepnutí nebo swipe ↑ = otočit"}
+          </p>
+          <p className="mt-6 hidden text-caption text-fg-muted sm:block">
             {flipped
               ? "Ohodnoť: 1 / 2 / 3 · nebo swipe ← / ↑ / →"
               : "Mezerník / klepnutí / swipe ↑ = otočit"}
@@ -390,11 +398,13 @@ function FlashcardSessionPlayer({
       ) : null}
 
       {!flipped ? (
-        <Button fullWidth size="lg" onClick={flip}>
-          Ukázat odpověď
-        </Button>
+        <div className="sticky-study-cta lg:static">
+          <Button fullWidth size="lg" className="min-h-12" onClick={flip}>
+            Ukázat odpověď
+          </Button>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+        <div className="sticky-study-cta grid grid-cols-1 gap-2 sm:grid-cols-3 lg:static lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
           <GradeButton
             tone="danger"
             shortcut="1"
@@ -460,7 +470,7 @@ function GradeButton({
       )}
     >
       <span>{label}</span>
-      <span className="text-caption opacity-70">{shortcut}</span>
+      <span className="hidden text-caption opacity-70 sm:inline">{shortcut}</span>
     </button>
   );
 }

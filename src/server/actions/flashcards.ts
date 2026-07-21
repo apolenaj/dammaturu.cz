@@ -14,6 +14,7 @@ import {
 import { flashcardGradeToRating } from "@/domain/learning/learning-analytics";
 import { getLearnerIdFromCookies } from "@/server/learner-session";
 import { recordLearningEvent } from "@/server/learning-analytics/store";
+import { recordProductEvent } from "@/server/product-analytics/store";
 import { recordReadinessPractice } from "@/server/readiness/record-practice";
 import { markTodayMissionStepFromActivity } from "@/server/daily-dashboard/mission-progress";
 import {
@@ -83,6 +84,11 @@ export async function startFlashcardSessionAction(input: {
     track("flashcard_session_started", {
       deckSlug: deck.slug,
       queue: session.queue.length,
+    });
+    await recordProductEvent({
+      learnerKey: learnerId,
+      event: "study_session_started",
+      featureId: "flashcards",
     });
     revalidatePath("/app/review");
     return { ok: true, session, schedule, deck };

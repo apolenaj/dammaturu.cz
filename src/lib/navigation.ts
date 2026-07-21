@@ -3,7 +3,21 @@ export type NavItem = {
   label: string;
   /** Short label for bottom nav */
   shortLabel?: string;
+  /** Optional icon key for bottom nav */
+  icon?: AppNavIcon;
 };
+
+export type AppNavIcon =
+  | "today"
+  | "learn"
+  | "materials"
+  | "tests"
+  | "progress"
+  | "review"
+  | "mistakes"
+  | "plan"
+  | "simulation"
+  | "profile";
 
 export type FeatureAvailability =
   | "ready"
@@ -28,23 +42,79 @@ export const publicNav: NavItem[] = [
   { href: "/o-projektu", label: "O projektu" },
 ];
 
-/** Primary student navigation — max 5 for mobile bottom bar */
+/**
+ * Primary student JTBD — exactly 5 for mobile bottom bar.
+ * Dnes → Učit se → Moje materiály → Testy → Pokrok
+ */
 export const appPrimaryNav: NavItem[] = [
-  { href: "/app/dashboard", label: "Dnes", shortLabel: "Dnes" },
-  { href: "/app/learn", label: "Učit se", shortLabel: "Učit" },
-  { href: "/app/review", label: "Opakovat", shortLabel: "Opak." },
-  { href: "/app/tests", label: "Testy", shortLabel: "Testy" },
-  { href: "/app/progress", label: "Pokrok", shortLabel: "Pokrok" },
+  {
+    href: "/app/dashboard",
+    label: "Dnes",
+    shortLabel: "Dnes",
+    icon: "today",
+  },
+  {
+    href: "/app/learn",
+    label: "Učit se",
+    shortLabel: "Učit",
+    icon: "learn",
+  },
+  {
+    href: "/app/materials",
+    label: "Moje materiály",
+    shortLabel: "Materiály",
+    icon: "materials",
+  },
+  {
+    href: "/app/tests",
+    label: "Testy",
+    shortLabel: "Testy",
+    icon: "tests",
+  },
+  {
+    href: "/app/progress",
+    label: "Pokrok",
+    shortLabel: "Pokrok",
+    icon: "progress",
+  },
 ];
 
-/** Secondary — sidebar / more menu, not in bottom bar */
+/**
+ * Secondary JTBD — “Víc” / sidebar only.
+ * Deep tools (CERMAT, literatura, témata, Zachraň mě, profil maturity)
+ * live under Učit se / Testy / Plán / Profil — not in chrome.
+ */
 export const appSecondaryNav: NavItem[] = [
-  { href: "/app/plan", label: "Plán" },
-  { href: "/app/zachran-me", label: "Zachraň mě" },
-  { href: "/app/topics", label: "Témata" },
-  { href: "/app/mistakes", label: "Moje chyby" },
-  { href: "/app/simulation", label: "Simulace" },
-  { href: "/app/profile", label: "Profil" },
+  {
+    href: "/app/review",
+    label: "Opakování",
+    shortLabel: "Opak.",
+    icon: "review",
+  },
+  {
+    href: "/app/mistakes",
+    label: "Moje chyby",
+    shortLabel: "Chyby",
+    icon: "mistakes",
+  },
+  {
+    href: "/app/plan",
+    label: "Plán",
+    shortLabel: "Plán",
+    icon: "plan",
+  },
+  {
+    href: "/app/simulation",
+    label: "Zkouška nanečisto",
+    shortLabel: "Zkouška",
+    icon: "simulation",
+  },
+  {
+    href: "/app/profile",
+    label: "Profil",
+    shortLabel: "Profil",
+    icon: "profile",
+  },
 ];
 
 export const adminNav: NavItem[] = [
@@ -55,6 +125,7 @@ export const adminNav: NavItem[] = [
   { href: "/admin/users", label: "Uživatelé" },
   { href: "/admin/analytics", label: "Analytika" },
 ];
+
 
 export const routeCatalog: RouteMeta[] = [
   {
@@ -76,91 +147,117 @@ export const routeCatalog: RouteMeta[] = [
     title: "Předměty",
     description: "Přehled předmětových balíčků.",
     availability: "scaffolded",
-    nextStep: "Beta startuje s ČJL. Další předměty až po ověřeném pack modelu.",
+    nextStep: "Teď je v beta Čeština. Další předměty přidáme později.",
   },
   {
     href: "/maturitni-priprava",
     title: "Maturitní příprava",
     description: "Jak systém připravuje na maturitu.",
     availability: "ready",
-    nextStep: "Produktový popis promise.",
+    nextStep: "Zjisti, jak tě systém dovede k maturitě.",
   },
   {
     href: "/cenik",
     title: "Ceník",
-    description: "Ceny a plány.",
-    availability: "scaffolded",
-    nextStep: "Billing ještě není zapojený. Beta je řízená pozvánkou.",
+    description: "FREE · SMART · AI PRO · MATURITA MAX.",
+    availability: "ready",
+    nextStep: "Vyber plán a pokračuj v přípravě.",
   },
   {
     href: "/o-projektu",
     title: "O projektu",
     description: "Proč DámMaturu vzniká.",
     availability: "ready",
-    nextStep: "Veřejný kontext projektu.",
+    nextStep: "Přečti si, proč DámMaturu vzniká.",
   },
   {
     href: "/prihlaseni",
     title: "Přihlášení",
-    description: "Soft resume session cookie (bez e-mail Auth).",
+    description: "Přihlášení e-mailem a heslem.",
     availability: "ready",
-    nextStep: "Cookie session resume; plný Auth (Supabase) později.",
+    nextStep: "Přihlas se a pokračuj ve studiu.",
   },
   {
     href: "/registrace",
     title: "Registrace",
-    description: "Přesměrování na onboarding.",
+    description: "Vytvoření účtu (e-mail/heslo) → onboarding.",
     availability: "ready",
-    nextStep: "Auth přijde později; teď onboarding vytvoří persistentní profil.",
+    nextStep: "Vytvoř účet a nastav si maturitní profil.",
   },
   {
     href: "/onboarding",
     title: "Onboarding",
     description: "Profil, cíl, předměty, time budget a první study plan.",
     availability: "ready",
-    nextStep: "Hotovo — persistentní learner store + study plan.",
+    nextStep: "Dokonči profil — pak uvidíš dnešní misi.",
+  },
+  {
+    href: "/app/materials",
+    title: "Moje materiály",
+    description:
+      "Nahrání vlastních PDF/DOCX/TXT, stav zpracování, přejmenování a smazání.",
+    availability: "ready",
+    nextStep: "Nahraj PDF, DOCX nebo TXT — po zpracování můžeš studovat z vlastních textů.",
   },
   {
     href: "/app/dashboard",
     title: "Dnes",
-    description: "Jeden plán, jedna CTA — student nerozhoduje.",
+    description: "Jedna otázka: Co mám dnes udělat? — jedna CTA.",
     availability: "ready",
-    nextStep: "DNEŠNÍ PLÁN → ZAČÍT DNEŠNÍ MISI.",
+    nextStep: "Začni dnešní misi.",
   },
   {
     href: "/app/plan",
     title: "Plán",
-    description: "Beta learning path z kurikula + deadline tempo.",
+    description: "Dynamický plán od dnes do maturity — dnes, týden, milníky, rizika.",
     availability: "ready",
-    nextStep: "Path se generuje z cjl-beta; pořadí podle diagnostiky.",
+    nextStep: "Sleduj plán od dnes do maturity.",
+  },
+  {
+    href: "/app/exam-profile",
+    title: "Profil maturity",
+    description:
+      "CERMAT · škola · moje materiály — oddělené vrstvy maturitních požadavků.",
+    availability: "ready",
+    nextStep:
+      "Nahraj školní seznam, kritéria a ústní strukturu; vybrané knihy jsou tvoje.",
+  },
+  {
+    href: "/app/literature",
+    title: "Literatura",
+    description:
+      "Seznam vybraných knih, karty k ústní, mastery, Vylosuj mi knihu.",
+    availability: "ready",
+    nextStep: "Doplň seznam knih a procvičuj k ústní.",
   },
   {
     href: "/app/zachran-me",
     title: "Zachraň mě",
-    description: "Priority Plan při málo času — must-today triáž, ne cram.",
+    description:
+      "Nouzový plánovač: termín × hodiny × složky → MUSÍŠ UMĚT / HIGH IMPACT / session.",
     availability: "ready",
-    nextStep: "exam × weakness × forgetting × prereq → bucketed plan.",
+    nextStep: "Nastav termín a hodiny — dostaneš nouzový plán.",
   },
   {
     href: "/app/learn",
     title: "Učit se",
     description: "Kdo jsem?, mapa, recall, timeline, Story…",
     availability: "ready",
-    nextStep: "Kdo jsem? + Question Engine + flashcards + literární díla.",
+    nextStep: "Vyber aktivitu a začni se učit.",
   },
   {
     href: "/app/learn/dilo",
     title: "Literární díla",
     description: "Generický rozbor (14 tabů) — Máj, Kytice, Babička.",
     availability: "ready",
-    nextStep: "Schema literary-work → /app/learn/dilo/[slug].",
+    nextStep: "Otevři dílo a projdi rozbor po krocích.",
   },
   {
     href: "/app/learn/kytice",
     title: "Kytice — 13 balad",
     description: "Collection + hry ze SOURCE; story reconstruction vybraných balad.",
     availability: "ready",
-    nextStep: "npm run seed:kytice",
+    nextStep: "Obsah se připravuje — zkus jinou aktivitu.",
   },
   {
     href: "/app/learn/maj",
@@ -168,7 +265,7 @@ export const routeCatalog: RouteMeta[] = [
     description:
       "Story map, postavy, kompozice, tropy, 60s/3min/full oral + chybějící KU.",
     availability: "ready",
-    nextStep: "npm run seed:maj",
+    nextStep: "Obsah se připravuje — zkus jinou aktivitu.",
   },
   {
     href: "/app/learn/babicka",
@@ -176,42 +273,42 @@ export const routeCatalog: RouteMeta[] = [
     description:
       "Karty, vztahy, T/F pasti, struktura, realismus×idealizace, oral builder.",
     availability: "ready",
-    nextStep: "npm run seed:babicka",
+    nextStep: "Obsah se připravuje — zkus jinou aktivitu.",
   },
   {
     href: "/app/topics",
     title: "Témata",
     description: "Curriculum ČJL BETA (moduly A–F).",
     availability: "ready",
-    nextStep: "Čte curriculum store; KU napojení po Content QA.",
+    nextStep: "Procházej témata podle modulů.",
   },
   {
     href: "/app/tests",
     title: "Testy",
     description: "Question Engine — 14 typů + vysvětlení.",
     availability: "ready",
-    nextStep: "Spusť /app/tests/otazky/cjl-otazky",
+    nextStep: "Spusť cvičný test a procvič slabší místa.",
   },
   {
     href: "/app/review",
-    title: "Opakovat",
-    description: "Flashcard engine — SM-2 schedule.",
+    title: "Opakování",
+    description: "Opakování podle toho, co začínáš zapomínat.",
     availability: "ready",
-    nextStep: "Spusť session: due + nové karty, self-grade, summary.",
+    nextStep: "Dnes je vhodné zopakovat frontu — nejdřív slabší body.",
   },
   {
     href: "/app/mistakes",
     title: "Moje chyby",
     description: "ErrorMemory — slabiny k opravě, historie zůstává.",
     availability: "ready",
-    nextStep: "Procvičit moje chyby · again z mixed review se ukládá.",
+    nextStep: "Procvič moje chyby — jen reálné chyby z testů a studia.",
   },
   {
     href: "/app/progress",
-    title: "Připravenost",
+    title: "Pokrok",
     description: "Mastery coverage — ne predikce maturity.",
     availability: "ready",
-    nextStep: "Celková % · oblasti · slabiny → cílená session.",
+    nextStep: "Podívej se na pokrytí a jdi na slabiny.",
   },
   {
     href: "/app/progress/experiment",
@@ -219,50 +316,58 @@ export const routeCatalog: RouteMeta[] = [
     description:
       "Baseline, daily, retention, methods, weekly/final — N=1 validation.",
     availability: "ready",
-    nextStep: "docs/BETA_EXPERIMENT.md — ne statistická generalizace.",
+    nextStep: "Sleduj svůj osobní průběh v beta experimentu.",
   },
   {
     href: "/app/simulation",
     title: "Zkouška nanečisto",
     description:
-      "Příprava → odpověď → doplňující otázky → rubrika (ne školní známka).",
+      "Ústní maturita: kniha / náhodná / slabina / plná — evidence rubrika, text-first.",
     availability: "ready",
-    nextStep: "npm run seed:mock-exam",
+    nextStep: "Vyber knihu a spusť ústní nanečisto.",
+  },
+  {
+    href: "/app/cermat",
+    title: "CERMAT ČJL",
+    description:
+      "Didaktický test: kategorie, časovaná simulace, trénink, slabiny — cvičné exam-style položky.",
+    availability: "ready",
+    nextStep: "Spusť cvičný didaktický test (ne oficiální CERMAT).",
   },
   {
     href: "/app/profile",
     title: "Profil",
     description: "Účet, deadline, time budget.",
     availability: "ready",
-    nextStep: "Profil z onboardingu; auth účet přijde později.",
+    nextStep: "Uprav deadline, plán a předplatné.",
   },
   {
     href: "/admin/sources",
     title: "Admin · Zdroje",
     description: "Source materials a provenance.",
     availability: "ready",
-    nextStep: "DOCX ingestion pipeline — spouštění importu a audit log.",
+    nextStep: "Nahraj nebo zkontroluj zdrojové materiály.",
   },
   {
     href: "/admin/questions",
     title: "Admin · Otázky",
     description: "Learning items / otázky.",
     availability: "scaffolded",
-    nextStep: "Po modelu LearningItem.",
+    nextStep: "Správa otázek bude dostupná po dokončení modelu.",
   },
   {
     href: "/admin/users",
     title: "Admin · Uživatelé",
     description: "Uživatelé a enrollmenty.",
     availability: "blocked",
-    nextStep: "Vyžaduje auth a admin roli.",
+    nextStep: "Tato část zatím není dostupná.",
   },
   {
     href: "/admin/reviews",
     title: "Admin · Content QA",
     description: "SOURCE → NORMALIZED → FINAL + REASON.",
     availability: "ready",
-    nextStep: "Odborná kontrola flagged položek; publish jen po verify/correct.",
+    nextStep: "Zkontroluj označené položky před publikací.",
   },
   {
     href: "/admin/content",
@@ -270,7 +375,7 @@ export const routeCatalog: RouteMeta[] = [
     description:
       "Typed CRUD subjects→exercises, provenance, preview, bulk, versions — no raw JSON.",
     availability: "ready",
-    nextStep: "Form editors + student lesson preview + bulk status.",
+    nextStep: "Uprav obsah ve studiu a ověř preview.",
   },
   {
     href: "/admin/analytics",
@@ -278,12 +383,32 @@ export const routeCatalog: RouteMeta[] = [
     description:
       "Learning analytics + beta PO — retention, mastery, question quality, export.",
     availability: "ready",
-    nextStep: "Seed: npm run seed:learning-analytics",
+    nextStep: "Sleduj funnel a learning outcomes bez obsahu studentů.",
   },
 ];
 
 export function getRouteMeta(href: string): RouteMeta | undefined {
   return routeCatalog.find((r) => r.href === href);
+}
+
+/** Only ready destinations — never show empty/scaffolded/blocked in chrome. */
+export function filterReadyNav(items: NavItem[]): NavItem[] {
+  return items.filter((item) => {
+    const meta = getRouteMeta(item.href);
+    return meta?.availability === "ready";
+  });
+}
+
+export function getVisiblePrimaryNav(): NavItem[] {
+  return filterReadyNav(appPrimaryNav);
+}
+
+export function getVisibleSecondaryNav(): NavItem[] {
+  return filterReadyNav(appSecondaryNav);
+}
+
+export function getVisibleAdminNav(): NavItem[] {
+  return filterReadyNav(adminNav);
 }
 
 /** Active if exact match, or nested path under href (except bare `/`). */

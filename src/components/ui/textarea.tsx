@@ -12,7 +12,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       rows={rows}
       aria-invalid={invalid || undefined}
       className={cn(
-        "flex w-full rounded-md border bg-surface px-3 py-2.5 text-body-md text-fg shadow-xs",
+        "flex w-full rounded-md border bg-surface px-3 py-2.5 text-base text-fg shadow-xs",
         "placeholder:text-fg-disabled",
         "transition duration-fast ease-out",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface",

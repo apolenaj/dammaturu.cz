@@ -16,10 +16,10 @@ export function PublicHeader() {
             Přihlášení
           </Link>
           <Link
-            href="/onboarding"
+            href="/registrace"
             className="inline-flex min-h-11 items-center rounded-lg bg-action px-3.5 text-sm font-semibold text-fg-on-brand transition hover:bg-action-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
           >
-            Zjistit připravenost
+            Registrace
           </Link>
         </div>
       </div>
@@ -35,7 +35,7 @@ export function PublicFooter() {
           <div>
             <BrandMark size="sm" />
             <p className="mt-2 max-w-sm text-body-sm text-fg-muted">
-              Víš přesně, co se naučit. A víš, kdy jsi připraven.
+              Nahraj, co se musíš naučit. My tě připravíme až k maturitě.
             </p>
           </div>
           <nav aria-label="Patička" className="flex flex-wrap gap-x-4 gap-y-2 text-body-sm">
@@ -48,7 +48,7 @@ export function PublicFooter() {
             <Link href="/#faq" className="text-fg-secondary hover:text-fg">
               FAQ
             </Link>
-            <Link href="/onboarding" className="text-fg-secondary hover:text-fg">
+            <Link href="/registrace" className="text-fg-secondary hover:text-fg">
               Začít
             </Link>
           </nav>

@@ -1,62 +1,61 @@
 # DESIGN_SYSTEM — DámMaturu.cz
 
-> Prémiový EdTech design system. Light mode je primární. Dark je podporovaný přes class `.dark`.
+> Premium EdTech visual system. Light = primary. Dark via `.dark`.
 
-## Princip
+## Feel
 
-**ANO:** důvěryhodnost, energie, pocit postupu, 17–25 + rodiče.  
-**NE:** infantilní škola, AI neon gradienty, roboti, mozky, přeplácané efekty.
+**motivating · fast · modern · calm · confident**
+
+Reference: Duolingo friendliness + Linear polish. Trustworthy for parents and schools.
+
+**ANO:** silná typografie, konzistentní karty, progress, mikro-interakce, celebratory moments, excellent spacing, clear states.  
+**NE:** infantilní vizuály, AI purple/neon gradienty, dashboard clutter, corporate SaaS šedivost, cream+terracotta AI klíšé.
 
 ## Tokens
 
 Runtime: `src/app/globals.css` (`:root` + `.dark`).  
-Tailwind mapování: `tailwind.config.ts`.
-
-### Semantic layers
+Tailwind: `tailwind.config.ts`.  
+Helpers: `src/lib/design-system.ts`.
 
 | Skupina | Příklady |
 |---------|----------|
 | Surface | `--bg-canvas`, `--bg-surface`, `--bg-subtle` |
 | Foreground | `--fg-primary`, `--fg-secondary`, `--fg-muted` |
-| Border | `--border-default`, `--border-strong` |
-| Action | `--action-primary`, `--action-primary-hover`, `--action-primary-soft` |
-| Accent | `--accent` (warm energy, ne neon) |
-| Feedback | success / warning / danger / info |
-| Mastery | unknown → mastered spektrum |
-| Focus | `--focus-ring` + offset na surface |
-| Elevation | `--shadow-xs` … `--shadow-lg` |
-| Radius | sm 6 · md 10 · lg 14 · xl 20 |
+| Action | deep teal `#0d7a6a` |
+| Accent | warm ember `#d18a1a` (progress / celebrate) |
+| Mastery | unknown → mastered |
+| Elevation | `--shadow-xs` … `--shadow-lg`, `--shadow-lift` |
+| Radius | sm 8 · md 12 · lg 16 · xl 20 · 2xl 24 |
+| Motion | `--ease-out`, `--ease-spring`, fast 140 / base 220 / slow 420 |
+
+Atmosphere: `bg-paper-wash` — soft teal + ember washes, never neon.
 
 ## Typografie
 
-- **Display:** Fraunces (`font-display`) — brand, H1/H2
-- **UI:** Manrope (`font-sans`)
-- Scale: `display-lg/md`, `title-lg/md/sm`, `body-lg/md/sm`, `caption`, `overline`
+- **Display:** Fraunces (`font-display`) — brand, H1/H2, celebration titles  
+- **UI:** Manrope (`font-sans`)  
+- Scale: `display-lg/md/sm`, `title-lg/md/sm`, `body-lg/md/sm`, `caption`, `overline`  
+- Prefer `text-balance` on headlines
 
 ## Komponenty (`src/components/ui/`)
 
 | Komponenta | Soubor |
 |------------|--------|
-| Button | `button.tsx` |
-| Input / Textarea / Label | `input.tsx`, `textarea.tsx`, `label.tsx` |
-| Badge | `badge.tsx` |
-| Card | `card.tsx` |
-| Progress | `progress.tsx` |
-| Score | `score.tsx` |
-| Charts | `chart.tsx` (BarChart, Sparkline) |
+| Button | `button.tsx` — press scale, soft shadow |
+| Card | `card.tsx` — variants: default / muted / interactive / hero |
+| Badge | `badge.tsx` — soft ring tones |
+| Progress | `progress.tsx` — shine + celebrate at 100% |
+| Score | `score.tsx` — animated ring |
+| CelebrateMoment / StreakPill / ProgressSteps | `celebrate.tsx` |
 | EmptyState | `empty-state.tsx` |
-| Skeleton | `skeleton.tsx` |
-| Alert / Success / Error | `alert.tsx` |
-| Toast | `toast.tsx` + `ToastProvider` |
-| Theme | `theme/theme-provider.tsx` |
+| Alert | `alert.tsx` |
+| AppPageHeader / loading / error | `shell/app-screen.tsx` |
+
+Utility classes: `.dm-surface`, `.dm-surface-interactive`, `.dm-press`, `.animate-in-rise`, `.animate-in-pop`.
 
 ## Showcase
 
-`/design-system` — **pouze development**.
-
-Ochrana:
-1. `notFound()` v page při `NODE_ENV === "production"`
-2. `src/middleware.ts` → HTTP 404 v produkci
+`/design-system` — **development only**.
 
 ```bash
 npm run dev
@@ -65,20 +64,12 @@ npm run dev
 
 ## A11y
 
-- `:focus-visible` ring 2px + offset
-- Skip link v root layout
-- Progressbar / Score `role="img"` s label
-- Toast `aria-live="polite"`
-- `prefers-reduced-motion` respektován
-- Touch target tlačítek md+ ≥ 44px výška
+- `:focus-visible` ring 2px + offset on surface  
+- Skip link in root layout  
+- Progressbar / Score accessible labels  
+- Toast `aria-live="polite"`  
+- Celebrate `role="status"`  
+- `prefers-reduced-motion` hard-shortens animations  
+- Touch targets md+ ≥ 44px  
 
-### Kontrast
-
-Tokeny navrženy na **WCAG AA** (text ≥ 4.5:1, UI ≥ 3:1).  
-Automatický audit kontrastu v CI: **zatím NOT VERIFIED** — manuální kontrola na showcase.
-
-## Dark mode
-
-- Primární: light
-- Toggle na showcase; persistence `localStorage` klíč `dammaturu-theme`
-- Produkční UI zatím default light (toggle není v learner shell — záměr)
+Token contrast target: **WCAG AA**.

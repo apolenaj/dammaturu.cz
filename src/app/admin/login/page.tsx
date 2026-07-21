@@ -18,8 +18,13 @@ export default async function AdminLoginPage({
     <div className="mx-auto flex min-h-[70vh] w-full max-w-md flex-col justify-center px-4">
       <h1 className="font-display text-display-md text-fg">Admin přihlášení</h1>
       <p className="mt-2 text-body-md text-fg-secondary">
-        Vyžaduje <code className="text-body-sm">ADMIN_SECRET</code>. V developmentu
-        default je <code className="text-body-sm">dev-admin-secret</code>.
+        Přihlášení jen pro administrátory obsahu.
+        {process.env.NODE_ENV !== "production" ? (
+          <>
+            {" "}
+            (Dev: heslo z <code className="text-body-sm">ADMIN_SECRET</code>.)
+          </>
+        ) : null}
       </p>
       <form action={adminLoginAction} className="mt-8 space-y-4">
         <input type="hidden" name="next" value={params.next ?? "/admin"} />

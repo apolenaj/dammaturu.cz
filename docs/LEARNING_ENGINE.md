@@ -165,32 +165,29 @@ flowchart TD
 
 ---
 
-## 5. Mastery aggregate (ne readiness-as-P(pass))
+## 5. Evidence-based readiness (Maturita Score)
+
+**Canonical formula doc:** [`docs/READINESS_FORMULA.md`](./READINESS_FORMULA.md) (`2026.07-evidence-v1`).
+
+Summary:
+
+- Six weighted dimensions: didactic test · oral · writing · materials · retention · consistency  
+- Confidence thresholds — **no confident %** until enough real attempts  
+- Copy when thin: *„Potřebujeme ještě X pokusů pro spolehlivější odhad.“*  
+- Trends: improving / stable / declining from daily history snapshots  
+- Curriculum area bars remain a **secondary** mastery-coverage view  
+
+Mastery aggregate (still used inside dimensions / area bars):
 
 \[
 A = 100 \times \frac{\sum_i w_i \cdot (s_i / 100)}{\sum_i w_i}
 \]
 
-- \(w_i\) = `exam_weight` KU  
-- \(s_i\) = mastery score KU  
+UI: `/app/progress` — Maturita Score withholds the ring until the overall gate passes.
 
-`computeMasteryAggregate` vrací i:
+### Legacy note
 
-- `labeledAs: "mastery_aggregate"`
-- `lowEvidence` pokud některé KU mají &lt; 2 graded evidence
-- **disclaimer** o absenci validačních dat pro P(pass)
-
-UI: zobrazovat jako „Pokrytí učiva / mastery“, ne „Šance složit maturitu“.
-
-### Připravenost UI (D-036)
-
-`src/domain/learning/readiness.ts` · `/app/progress`
-
-- **CELKOVÁ PŘIPRAVENOST** = zaokrouhlený mastery aggregate  
-- Oblasti: Literární směry · Autoři a díla · Rozbory · Jazyk  
-- `+N % tento týden` z weekly history  
-- 3 silné / 3 slabiny; klik na slabinu → `sessionHref` (cílená session)  
-- Disclaimer: není predikce úspěchu  
+Older “CELKOVÁ PŘIPRAVENOST = raw mastery %” is replaced by the evidence model above.
 
 ---
 

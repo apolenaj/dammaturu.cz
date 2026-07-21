@@ -10,7 +10,7 @@ import {
 } from "@/domain/learning/spaced-repetition";
 import { buildCjlSpacedPack } from "@/server/spaced-repetition/packs/cjl-spaced";
 
-describe("spaced-repetition", () => {
+describe("spaced-repetition (FSRS)", () => {
   const pack = parseSpacedReviewPack(
     buildCjlSpacedPack("2026-07-20T12:00:00.000Z"),
   );
@@ -24,12 +24,30 @@ describe("spaced-repetition", () => {
     const easy = applyPerformance(base, "easy", "2026-07-20T12:00:00.000Z");
 
     expect(fail.lapseCount).toBe(1);
-    expect(fail.stability).toBeLessThan(base.stability);
+    expect(fail.stability).toBeLessThan(easy.stability);
     expect(new Date(fail.nextReview).getTime()).toBeLessThan(
       new Date(easy.nextReview).getTime(),
     );
-    expect(easy.stability).toBeGreaterThan(base.stability);
     expect(easy.reviewCount).toBe(1);
+  });
+
+  it("repeated errors shorten next interval vs clean history", () => {
+    const base = createSpacedSchedule(
+      pack.knowledge[0]!.id,
+      "2026-07-20T12:00:00.000Z",
+    );
+    const clean = applyPerformance(base, "good", "2026-07-20T12:00:00.000Z", {
+      confidence: 4,
+      repeatedErrors: 0,
+    });
+    const dirty = applyPerformance(base, "good", "2026-07-20T12:00:00.000Z", {
+      confidence: 4,
+      repeatedErrors: 5,
+      contentDifficulty: 5,
+    });
+    expect(new Date(dirty.nextReview).getTime()).toBeLessThanOrEqual(
+      new Date(clean.nextReview).getTime(),
+    );
   });
 
   it("builds mixed queue without 3 identical formats in a row", () => {
@@ -51,14 +69,14 @@ describe("spaced-repetition", () => {
     expect(formats.size).toBeGreaterThanOrEqual(2);
   });
 
-  it("due summary uses Czech headline with minutes", () => {
+  it("due summary uses student-facing Czech headline", () => {
     const summary = buildDueSummary({
       pack,
       book: null,
       nowIso: "2026-07-20T12:00:00.000Z",
     });
-    expect(summary.headlineCs).toMatch(/^Dnes k zopakování:/);
-    expect(summary.headlineCs).toMatch(/položek/);
+    expect(summary.headlineCs).toMatch(/^Dnes je vhodné zopakovat \d+ položek\.$/);
+    expect(summary.supportingCs.length).toBeGreaterThan(10);
     expect(summary.estimatedMinutes).toBeGreaterThanOrEqual(1);
   });
 

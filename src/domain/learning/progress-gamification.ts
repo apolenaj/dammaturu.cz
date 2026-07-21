@@ -1,10 +1,14 @@
 import { z } from "zod";
 
 /**
- * Progress motivation / elegant gamification (D-047).
+ * Progress motivation / elegant gamification (D-047 / D-060).
  * Primary = real progress to exam goal. XP is secondary footnote.
- * No avatars, diamonds, or distraction currencies.
+ * Celebrate real learning outcomes only — never points farming.
+ *
+ * HARD RULE: secondary XP MUST NOT write into readiness / mastery scores.
+ * Readiness comes only from graded evidence (D-031 / readiness formula).
  */
+export const XP_AFFECTS_READINESS = false as const;
 
 export const progressMilestoneIds = [
   "first_topic_mastered",
@@ -27,35 +31,44 @@ export type ProgressMilestoneDef = {
 export const PROGRESS_MILESTONES: ProgressMilestoneDef[] = [
   {
     id: "first_topic_mastered",
-    titleCs: "První téma zvládnuto",
+    titleCs: "První oblast zvládnuta",
     descriptionCs: "Jedna oblast má solidní mastery coverage (≥ 80 %).",
     studyWhyCs: "Dokazuješ, že umíš dotáhnout téma do použitelné úrovně.",
   },
   {
     id: "fifty_ku_mastered",
-    titleCs: "50 knowledge units mastered",
-    descriptionCs: "50 KU ve stavu mastered.",
+    titleCs: "50 znalostí zvládnuto",
+    descriptionCs: "50 knowledge units ve stavu mastered.",
     studyWhyCs: "Objem zvládnutého učiva — základ pro maturitní pokrytí.",
   },
   {
     id: "seven_day_streak",
-    titleCs: "7 dní konzistentní práce",
+    titleCs: "7 dní v řadě",
     descriptionCs: "Sedm po sobě jdoucích dní s dokončenou denní misí.",
     studyWhyCs: "Konzistence bije nárazové cramming — držíš tempo k deadline.",
   },
   {
     id: "first_simulation",
-    titleCs: "První simulace dokončena",
+    titleCs: "První maturita nanečisto dokončena",
     descriptionCs: "Dokončená Zkouška nanečisto.",
     studyWhyCs: "Trénink ústního výkonu pod časem — blíže reálné zkoušce.",
   },
   {
     id: "eighty_pct_curriculum",
-    titleCs: "80 % curriculum mastered",
+    titleCs: "80 % učiva zvládnuto",
     descriptionCs: "Celková připravenost (mastery coverage) ≥ 80 %.",
     studyWhyCs: "Široké pokrytí učiva — hlavní signál postupu k cíli.",
   },
 ];
+
+/** Streak marks worth celebrating (mission days in a row). */
+export const STREAK_CELEBRATION_MARKS = [3, 7, 14, 30] as const;
+
+/** Min area readiness jump (%) before we celebrate — avoids noise farming. */
+export const READINESS_AREA_DELTA_MIN = 5;
+
+/** Min overall readiness jump (%) before we celebrate. */
+export const READINESS_OVERALL_DELTA_MIN = 3;
 
 export function milestoneDef(
   id: ProgressMilestoneId,
@@ -89,7 +102,7 @@ export type ProgressPersonalBests = z.infer<typeof progressPersonalBestsSchema>;
 
 export const progressLearnerStateSchema = z.object({
   learnerId: z.string().min(1).max(64),
-  /** Secondary only — never the hero metric. */
+  /** Secondary only — never the hero metric. Never writes readiness. */
   secondaryXp: z.number().int().min(0).max(1_000_000),
   /** Prevent double XP for the same mission day. */
   lastMissionXpDateKey: z
@@ -102,6 +115,18 @@ export const progressLearnerStateSchema = z.object({
   topicCompletions: z.array(progressTopicCompletionSchema).max(40),
   personalBests: progressPersonalBestsSchema,
   mockExamCompletions: z.number().int().min(0).max(10_000),
+  /** Baselines for readiness improvement celebrations (display only). */
+  lastSeenAreaPcts: z
+    .record(z.string(), z.number().min(0).max(100))
+    .default({}),
+  lastSeenOverallPct: z.number().min(0).max(100).nullable().default(null),
+  /** Week-start keys already celebrated for weekly goal. */
+  celebratedWeeklyGoalKeys: z
+    .array(z.string().regex(/^\d{4}-\d{2}-\d{2}$/))
+    .max(52)
+    .default([]),
+  /** Streak day-counts already celebrated (3, 7, 14…). */
+  celebratedStreakMarks: z.array(z.number().int().min(1).max(10_000)).max(30).default([]),
   updatedAt: z.string().datetime(),
 });
 
@@ -126,6 +151,10 @@ export function emptyProgressState(
       speedRoundScore: null,
     },
     mockExamCompletions: 0,
+    lastSeenAreaPcts: {},
+    lastSeenOverallPct: null,
+    celebratedWeeklyGoalKeys: [],
+    celebratedStreakMarks: [],
     updatedAt: nowIso,
   };
 }
@@ -207,26 +236,35 @@ export function applyTopicCompletionsFromAreas(
   state: ProgressLearnerState,
   areas: Array<{ id: string; labelCs: string; pct: number }>,
   nowIso: string,
-): ProgressLearnerState {
+): {
+  state: ProgressLearnerState;
+  justCompleted: ProgressTopicCompletion[];
+} {
   const existing = new Set(state.topicCompletions.map((t) => t.topicId));
   const next = [...state.topicCompletions];
+  const justCompleted: ProgressTopicCompletion[] = [];
   let xp = state.secondaryXp;
   for (const a of areas) {
     if (a.pct >= TOPIC_MASTERED_PCT && !existing.has(a.id)) {
-      next.push({
+      const row: ProgressTopicCompletion = {
         topicId: a.id,
         labelCs: a.labelCs,
         pct: a.pct,
         completedAt: nowIso,
-      });
+      };
+      next.push(row);
+      justCompleted.push(row);
       xp += secondaryXpRewards.topicComplete;
     }
   }
   return {
-    ...state,
-    topicCompletions: next,
-    secondaryXp: xp,
-    updatedAt: nowIso,
+    justCompleted,
+    state: {
+      ...state,
+      topicCompletions: next,
+      secondaryXp: xp,
+      updatedAt: nowIso,
+    },
   };
 }
 
@@ -320,6 +358,32 @@ export function buildWeeklyGoalView(completedDays: number): WeeklyGoalView {
   };
 }
 
+export const learningCelebrationKinds = [
+  "mission_day",
+  "streak",
+  "weekly_goal",
+  "topic_mastered",
+  "readiness_area",
+  "readiness_overall",
+  "milestone",
+  "mock_exam",
+] as const;
+
+export type LearningCelebrationKind =
+  (typeof learningCelebrationKinds)[number];
+
+/**
+ * One-shot celebration of a real learning outcome.
+ * Titles are evidence-first (never “+50 XP”).
+ */
+export type LearningCelebration = {
+  id: string;
+  kind: LearningCelebrationKind;
+  titleCs: string;
+  descriptionCs: string;
+  evidenceCs: string;
+};
+
 export type MilestoneStatusView = {
   id: ProgressMilestoneId;
   titleCs: string;
@@ -360,14 +424,224 @@ export type ProgressMotivationView = {
     speedRoundScore: number | null;
     linesCs: string[];
   };
-  /** Footnote only. */
+  /** Footnote only — never inflates readiness. */
   secondaryXp: number;
   secondaryXpNoteCs: string;
   philosophyCs: string;
+  /** Fresh celebrations from this sync (empty when nothing new). */
+  celebrations: LearningCelebration[];
 };
 
 export const progressPhilosophyCs =
-  "Gamifikace podporuje studium: denní mise, týdenní cíl a milníky měří reálný postup k maturitě. XP je jen sekundární stopka — ne cíl.";
+  "Oslavujeme reálný postup: mise, streak, zvládnutá témata, zlepšení readiness a maturitu nanečisto. XP je jen stopka — nepřidává body do připravenosti.";
+
+/**
+ * Diff readiness baselines → celebrate meaningful improvements only.
+ * Does not mutate readiness; only updates seen baselines on state.
+ */
+export function applyReadinessBaselines(
+  state: ProgressLearnerState,
+  input: {
+    overallPct: number | null;
+    areas: Array<{ id: string; labelCs: string; pct: number }>;
+    nowIso: string;
+  },
+): {
+  state: ProgressLearnerState;
+  celebrations: LearningCelebration[];
+} {
+  const celebrations: LearningCelebration[] = [];
+  const prevOverall = state.lastSeenOverallPct;
+  const nextAreas: Record<string, number> = { ...state.lastSeenAreaPcts };
+
+  if (
+    input.overallPct != null &&
+    prevOverall != null &&
+    input.overallPct - prevOverall >= READINESS_OVERALL_DELTA_MIN
+  ) {
+    const delta = Math.round(input.overallPct - prevOverall);
+    celebrations.push({
+      id: `readiness-overall-${input.nowIso}`,
+      kind: "readiness_overall",
+      titleCs: `+${delta} % připravenost`,
+      descriptionCs: "Celková mastery coverage stoupla díky cvičení — ne díky XP.",
+      evidenceCs: `${Math.round(prevOverall)} % → ${Math.round(input.overallPct)} %`,
+    });
+  }
+
+  for (const a of input.areas) {
+    const prev = state.lastSeenAreaPcts[a.id];
+    if (prev != null && a.pct - prev >= READINESS_AREA_DELTA_MIN) {
+      const delta = Math.round(a.pct - prev);
+      celebrations.push({
+        id: `readiness-area-${a.id}-${input.nowIso}`,
+        kind: "readiness_area",
+        titleCs: `+${delta} % · ${a.labelCs}`,
+        descriptionCs: `${a.labelCs} je silnější podle výsledků cvičení.`,
+        evidenceCs: `${Math.round(prev)} % → ${Math.round(a.pct)} %`,
+      });
+    }
+    nextAreas[a.id] = a.pct;
+  }
+
+  return {
+    celebrations,
+    state: {
+      ...state,
+      lastSeenAreaPcts: nextAreas,
+      lastSeenOverallPct:
+        input.overallPct != null
+          ? input.overallPct
+          : state.lastSeenOverallPct,
+      updatedAt: input.nowIso,
+    },
+  };
+}
+
+export function celebrateTopicCompletions(
+  topics: ProgressTopicCompletion[],
+): LearningCelebration[] {
+  return topics.map((t) => ({
+    id: `topic-${t.topicId}-${t.completedAt}`,
+    kind: "topic_mastered" as const,
+    titleCs: `${t.labelCs} zvládnut`,
+    descriptionCs: `Mastery coverage ≥ ${TOPIC_MASTERED_PCT} % — téma držíš na použitelné úrovni.`,
+    evidenceCs: `${Math.round(t.pct)} % coverage`,
+  }));
+}
+
+export function celebrateMilestoneUnlocks(
+  ids: ProgressMilestoneId[],
+): LearningCelebration[] {
+  return ids.map((id) => {
+    const def = milestoneDef(id)!;
+    return {
+      id: `milestone-${id}`,
+      kind: "milestone" as const,
+      titleCs: def.titleCs,
+      descriptionCs: def.studyWhyCs,
+      evidenceCs: def.descriptionCs,
+    };
+  });
+}
+
+export function celebrateStreakMarks(
+  state: ProgressLearnerState,
+  currentStreak: number,
+  nowIso: string,
+): {
+  state: ProgressLearnerState;
+  celebrations: LearningCelebration[];
+} {
+  const celebrated = new Set(state.celebratedStreakMarks);
+  const celebrations: LearningCelebration[] = [];
+  const marks = [...state.celebratedStreakMarks];
+  for (const mark of STREAK_CELEBRATION_MARKS) {
+    if (currentStreak >= mark && !celebrated.has(mark)) {
+      celebrated.add(mark);
+      marks.push(mark);
+      celebrations.push({
+        id: `streak-${mark}-${nowIso}`,
+        kind: "streak",
+        titleCs: `${mark} dní v řadě`,
+        descriptionCs:
+          mark === 7
+            ? "Týden konzistence — přesně to, co bije cramming."
+            : "Denní mise držíš bez výpadku.",
+        evidenceCs: `Aktuální streak ${currentStreak} dní`,
+      });
+    }
+  }
+  return {
+    celebrations,
+    state: {
+      ...state,
+      celebratedStreakMarks: marks,
+      updatedAt: nowIso,
+    },
+  };
+}
+
+export function celebrateWeeklyGoalIfMet(
+  state: ProgressLearnerState,
+  weeklyMissionDays: number,
+  weekStartKey: string,
+  nowIso: string,
+): {
+  state: ProgressLearnerState;
+  celebrations: LearningCelebration[];
+} {
+  if (weeklyMissionDays < WEEKLY_MISSION_GOAL) {
+    return { state, celebrations: [] };
+  }
+  if (state.celebratedWeeklyGoalKeys.includes(weekStartKey)) {
+    return { state, celebrations: [] };
+  }
+  return {
+    celebrations: [
+      {
+        id: `weekly-${weekStartKey}`,
+        kind: "weekly_goal",
+        titleCs: "Týdenní cíl splněn",
+        descriptionCs: `${WEEKLY_MISSION_GOAL} misí tento týden — tempo k deadline držíš.`,
+        evidenceCs: `${weeklyMissionDays} / ${WEEKLY_MISSION_GOAL} misí`,
+      },
+    ],
+    state: {
+      ...state,
+      celebratedWeeklyGoalKeys: [
+        ...state.celebratedWeeklyGoalKeys,
+        weekStartKey,
+      ].slice(-52),
+      updatedAt: nowIso,
+    },
+  };
+}
+
+export function celebrateMissionDay(dateKey: string): LearningCelebration {
+  return {
+    id: `mission-${dateKey}`,
+    kind: "mission_day",
+    titleCs: "Dnešní mise hotová",
+    descriptionCs: "Tři kroky za tebou — reálný studijní den, ne body do tabulky.",
+    evidenceCs: `Mise ${dateKey}`,
+  };
+}
+
+export function celebrateMockExam(input: {
+  isFirst: boolean;
+  isPersonalBest: boolean;
+  score: number;
+  topicSlug: string;
+  nowIso: string;
+}): LearningCelebration[] {
+  const out: LearningCelebration[] = [];
+  if (input.isFirst) {
+    out.push({
+      id: `mock-first-${input.nowIso}`,
+      kind: "mock_exam",
+      titleCs: "První maturita nanečisto dokončena",
+      descriptionCs: "Prošel/a jsi celý průběh ústní simulace — to je trénink výkonu.",
+      evidenceCs: `Rubrika ${input.score}/100 · ${input.topicSlug}`,
+    });
+  } else if (input.isPersonalBest) {
+    out.push({
+      id: `mock-pb-${input.nowIso}`,
+      kind: "mock_exam",
+      titleCs: "Nový osobní rekord nanečisto",
+      descriptionCs: "Lepší skóre rubriky než minule — zlepšení z cvičení.",
+      evidenceCs: `${input.score}/100 · ${input.topicSlug}`,
+    });
+  }
+  return out;
+}
+
+/**
+ * Assert XP ledger never couples to readiness — used in tests / sync docs.
+ */
+export function assertXpDoesNotAffectReadiness(): typeof XP_AFFECTS_READINESS {
+  return XP_AFFECTS_READINESS;
+}
 
 export function buildProgressMotivationView(input: {
   daysRemaining: number;
@@ -380,6 +654,7 @@ export function buildProgressMotivationView(input: {
   currentStreak: number;
   longestStreak: number;
   state: ProgressLearnerState;
+  celebrations?: LearningCelebration[];
 }): ProgressMotivationView {
   const unlocked = new Set(input.state.unlockedMilestoneIds);
   const milestones: MilestoneStatusView[] = PROGRESS_MILESTONES.map((m) => ({
@@ -453,8 +728,9 @@ export function buildProgressMotivationView(input: {
       linesCs,
     },
     secondaryXp: input.state.secondaryXp,
-    secondaryXpNoteCs: `XP ${input.state.secondaryXp} (sekundární — ne primární motivace)`,
+    secondaryXpNoteCs: `XP ${input.state.secondaryXp} (sekundární stopka — nepřidává do připravenosti)`,
     philosophyCs: progressPhilosophyCs,
+    celebrations: input.celebrations ?? [],
   };
 }
 

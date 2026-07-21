@@ -1,5 +1,13 @@
 import { z } from "zod";
 import { examRelevanceSchema } from "@/domain/content/schemas";
+import type { OpenAnswerEvaluation } from "@/domain/learning/open-answer-eval";
+import {
+  evaluateOpenAnswer,
+  ideaPresentInAnswer,
+  normalizeOpenText,
+  openAnswerResultLabelsCs,
+  openResultToAttemptResult,
+} from "@/domain/learning/open-answer-eval";
 
 /**
  * Unified Question Engine — one schema surface for all assessment item kinds.
@@ -264,6 +272,8 @@ export type GradeFeedback = {
     title: string;
     credited: boolean;
   }>;
+  /** Present for short_answer / long_answer — robust open evaluation. */
+  openEvaluation?: OpenAnswerEvaluation;
 };
 
 export function parseQuestionPack(raw: unknown): QuestionPack {
@@ -341,15 +351,20 @@ function baseFeedback(
   details: string[],
   expectedSummary: string,
   credited: boolean,
+  openEvaluation?: OpenAnswerEvaluation,
 ): GradeFeedback {
+  const result = openEvaluation
+    ? openResultToAttemptResult(openEvaluation.result)
+    : resultFromScore(score);
   return {
-    result: resultFromScore(score),
+    result,
     score: Math.round(score * 100) / 100,
     explanation: q.explanation,
     headline,
     details,
     expectedSummary,
     knowledgeUnits: kuCredits(q, credited || score >= 0.5),
+    openEvaluation,
   };
 }
 
@@ -472,80 +487,104 @@ export function gradeQuestion(
     }
     case "short_answer": {
       if (answer.kind !== "short_answer") break;
-      const n = normalizeText(answer.text);
-      const acceptedHit = question.correctAnswer.accepted.some((a) =>
-        n.includes(normalizeText(a)),
-      );
-      const termHits = question.correctAnswer.keyTerms.filter((t) =>
-        n.includes(normalizeText(t)),
-      );
-      const termScore =
-        question.correctAnswer.keyTerms.length === 0
-          ? 0
-          : termHits.length / question.correctAnswer.keyTerms.length;
-      const score = acceptedHit ? Math.max(0.85, termScore) : termScore;
-      const misconception = question.distractors.find((d) =>
-        n.includes(normalizeText(d)),
-      );
-      const details = [
-        `Key terms: ${termHits.length}/${question.correctAnswer.keyTerms.length}`,
-        acceptedHit ? "Shoda s akceptovanou formulací." : "Bez exact accepted match.",
+      const keyIdeas = [
+        ...question.correctAnswer.keyTerms.map((t, i) => ({
+          id: `term-${i}`,
+          label: t,
+          synonyms: [] as string[],
+          required: true,
+        })),
+        ...question.correctAnswer.accepted.map((a, i) => ({
+          id: `acc-${i}`,
+          label: a,
+          synonyms: [] as string[],
+          // Accepted full phrases are alternate paths — not all required
+          required: question.correctAnswer.keyTerms.length === 0,
+        })),
       ];
-      if (misconception) {
-        details.push(`Pozor — častá mýlka: „${misconception}“.`);
+      // Deduplicate by normalized label
+      const seen = new Set<string>();
+      const uniqueIdeas = keyIdeas.filter((k) => {
+        const n = normalizeOpenText(k.label);
+        if (!n || seen.has(n)) return false;
+        seen.add(n);
+        return true;
+      });
+      const ideal =
+        question.correctAnswer.accepted[0] ??
+        question.correctAnswer.keyTerms.join(", ");
+      const openEvaluation = evaluateOpenAnswer({
+        studentAnswer: answer.text,
+        keyIdeas: uniqueIdeas.length
+          ? uniqueIdeas
+          : [{ id: "ideal", label: ideal, synonyms: [], required: true }],
+        idealAnswer: ideal,
+        sourceEvidence: {
+          quote: question.explanation.slice(0, 2000),
+          sourceLabel: question.source,
+        },
+        knownIncorrect: question.distractors,
+      });
+      // Soft full-credit: any accepted phrase matched → boost coverage path
+      const acceptedSoft = question.correctAnswer.accepted.some((a) =>
+        ideaPresentInAnswer(normalizeOpenText(answer.text), a).matched,
+      );
+      let score = openEvaluation.coverage;
+      if (acceptedSoft) score = Math.max(score, 0.9);
+      if (openEvaluation.whatWasWrong.length && score >= 0.85) {
+        score = Math.min(score, 0.7);
       }
+      const details = [
+        `${openAnswerResultLabelsCs[openEvaluation.result]} (${openEvaluation.resultLabel})`,
+        ...openEvaluation.whatWasCorrect.map((c) => `✓ Správně: ${c}`),
+        ...openEvaluation.whatWasMissing.map((m) => `○ Chybí: ${m}`),
+        ...openEvaluation.whatWasWrong.map((w) => `✗ ${w}`),
+      ];
       return baseFeedback(
         question,
         score,
-        resultFromScore(score) === "correct"
-          ? "Dobrá stručná odpověď"
-          : resultFromScore(score) === "partial"
-            ? "Částečná odpověď"
-            : "Zatím mimo",
+        openAnswerResultLabelsCs[openEvaluation.result],
         details,
-        question.correctAnswer.accepted[0] ?? "",
+        openEvaluation.idealAnswer,
         score > 0,
+        openEvaluation,
       );
     }
     case "long_answer": {
       if (answer.kind !== "long_answer") break;
-      const n = normalizeText(answer.text);
-      const hits = question.correctAnswer.keyPoints.filter((kp) => {
-        const tokens = normalizeText(kp)
-          .split(" ")
-          .filter((t) => t.length >= 4);
-        return tokens.length === 0
-          ? n.includes(normalizeText(kp))
-          : tokens.every((t) => n.includes(t));
+      const openEvaluation = evaluateOpenAnswer({
+        studentAnswer: answer.text,
+        keyIdeas: question.correctAnswer.keyPoints.map((kp, i) => ({
+          id: `kp-${i}`,
+          label: kp,
+          synonyms: [],
+          required: true,
+        })),
+        idealAnswer: question.correctAnswer.keyPoints.join(" · "),
+        sourceEvidence: {
+          quote: question.explanation.slice(0, 2000),
+          sourceLabel: question.source,
+        },
+        knownIncorrect: question.distractors,
       });
-      const score =
-        question.correctAnswer.keyPoints.length === 0
-          ? 0
-          : hits.length / question.correctAnswer.keyPoints.length;
-      const extras = question.distractors.filter((d) =>
-        n.includes(normalizeText(d)),
-      );
-      const details = [
-        `Key points: ${hits.length}/${question.correctAnswer.keyPoints.length}`,
-        ...hits.map((h) => `✓ ${h}`),
-        ...question.correctAnswer.keyPoints
-          .filter((kp) => !hits.includes(kp))
-          .map((kp) => `✗ Chybí: ${kp}`),
-      ];
-      if (extras.length) {
-        details.push(`Navíc/mýlky: ${extras.join("; ")}`);
+      let score = openEvaluation.coverage;
+      if (openEvaluation.whatWasWrong.length && score >= 0.85) {
+        score = Math.min(score, 0.7);
       }
+      const details = [
+        `${openAnswerResultLabelsCs[openEvaluation.result]} (${openEvaluation.resultLabel})`,
+        ...openEvaluation.whatWasCorrect.map((c) => `✓ Správně: ${c}`),
+        ...openEvaluation.whatWasMissing.map((m) => `○ Chybí: ${m}`),
+        ...openEvaluation.whatWasWrong.map((w) => `✗ ${w}`),
+      ];
       return baseFeedback(
         question,
         score,
-        score >= 0.85
-          ? "Silná odpověď"
-          : score > 0
-            ? "Částečná znalost"
-            : "Bez zásahu do klíčových bodů",
+        openAnswerResultLabelsCs[openEvaluation.result],
         details,
-        question.correctAnswer.keyPoints.join(" · "),
+        openEvaluation.idealAnswer,
         score > 0,
+        openEvaluation,
       );
     }
     case "fill_blank": {

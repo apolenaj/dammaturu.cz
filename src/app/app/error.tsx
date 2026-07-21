@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import Link from "next/link";
-import { Alert } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { AppErrorState } from "@/components/shell/app-screen";
 
 export default function AppError({
   error,
@@ -17,21 +15,9 @@ export default function AppError({
   }, [error]);
 
   return (
-    <div className="mx-auto w-full max-w-lg space-y-4 px-1 py-8">
-      <Alert title="Něco se pokazilo" tone="danger">
-        Zkus to znovu. Pokud problém přetrvá, vrať se na Dnes.
-      </Alert>
-      <div className="flex flex-wrap gap-2">
-        <Button type="button" onClick={reset}>
-          Zkusit znovu
-        </Button>
-        <Link
-          href="/app/dashboard"
-          className="inline-flex min-h-11 items-center justify-center rounded-md border border-border px-4 text-body-sm font-semibold text-fg"
-        >
-          Zpět na Dnes
-        </Link>
-      </div>
-    </div>
+    <AppErrorState
+      onRetry={reset}
+      description="Zkus to znovu. Když problém zůstane, vrať se na Dnes a pokračuj od mise."
+    />
   );
 }

@@ -672,12 +672,13 @@ function ExplanationPanel({
       : grade.result === "partial"
         ? "warning"
         : "danger";
+  const open = grade.openEvaluation;
 
   return (
     <section className="space-y-4">
       <Alert title={grade.headline} tone={tone}>
-        Skóre {Math.round(grade.score * 100)}% · výsledek: {grade.result}. Nejen
-        barva — níže je vysvětlení.
+        Skóre {Math.round(grade.score * 100)}% ·{" "}
+        {open ? open.resultLabel : grade.result}. Nejen barva — níže je rozbor.
       </Alert>
 
       <div className="rounded-2xl border border-border bg-surface p-4">
@@ -685,20 +686,91 @@ function ExplanationPanel({
         <p className="mt-2 text-body-md text-fg">{grade.explanation}</p>
       </div>
 
-      <div className="rounded-2xl border border-border bg-subtle/40 p-4">
-        <h3 className="text-body-sm font-semibold text-fg">Rozbor</h3>
-        <ul className="mt-2 space-y-1 text-body-sm text-fg-secondary">
-          {grade.details.map((d) => (
-            <li key={d}>{d}</li>
-          ))}
-        </ul>
-        {grade.expectedSummary ? (
-          <p className="mt-3 text-body-sm text-fg">
-            <span className="font-semibold">Očekáváno: </span>
-            {grade.expectedSummary}
+      {open ? (
+        <div className="space-y-3 rounded-2xl border border-border bg-subtle/40 p-4">
+          <h3 className="text-body-sm font-semibold text-fg">
+            Hodnocení otevřené odpovědi
+          </h3>
+          <p className="text-caption text-fg-muted">
+            Nehodnotíme přesné znění — jen klíčové myšlenky a fakta.
           </p>
-        ) : null}
-      </div>
+          {open.whatWasCorrect.length > 0 ? (
+            <div>
+              <p className="text-caption font-semibold text-success">
+                Co bylo správně
+              </p>
+              <ul className="mt-1 space-y-1 text-body-sm text-fg-secondary">
+                {open.whatWasCorrect.map((c) => (
+                  <li key={`ok-${c}`}>✓ {c}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {open.whatWasMissing.length > 0 ? (
+            <div>
+              <p className="text-caption font-semibold text-warning">
+                Co chybělo
+              </p>
+              <ul className="mt-1 space-y-1 text-body-sm text-fg-secondary">
+                {open.whatWasMissing.map((m) => (
+                  <li key={`miss-${m}`}>○ {m}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {open.whatWasWrong.length > 0 ? (
+            <div>
+              <p className="text-caption font-semibold text-danger">
+                Co bylo špatně
+              </p>
+              <ul className="mt-1 space-y-1 text-body-sm text-fg-secondary">
+                {open.whatWasWrong.map((w) => (
+                  <li key={`bad-${w}`}>✗ {w}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          <div>
+            <p className="text-caption font-semibold text-fg">
+              Ideální stručná odpověď
+            </p>
+            <p className="mt-1 text-body-sm text-fg whitespace-pre-wrap">
+              {open.idealAnswer}
+            </p>
+          </div>
+          {open.sourceEvidence ? (
+            <div>
+              <p className="text-caption font-semibold text-fg">
+                Zdrojová evidence
+              </p>
+              <p className="mt-1 text-caption text-fg-muted">
+                {open.sourceEvidence.sourceLabel}
+                {open.sourceEvidence.pageStart != null
+                  ? ` · str. ${open.sourceEvidence.pageStart}`
+                  : ""}
+              </p>
+              <blockquote className="mt-1 border-l-2 border-action pl-3 text-body-sm text-fg-secondary">
+                {open.sourceEvidence.quote}
+              </blockquote>
+            </div>
+          ) : null}
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-border bg-subtle/40 p-4">
+          <h3 className="text-body-sm font-semibold text-fg">Rozbor</h3>
+          <ul className="mt-2 space-y-1 text-body-sm text-fg-secondary">
+            {grade.details.map((d) => (
+              <li key={d}>{d}</li>
+            ))}
+          </ul>
+          {grade.expectedSummary ? (
+            <p className="mt-3 text-body-sm text-fg">
+              <span className="font-semibold">Očekáváno: </span>
+              {grade.expectedSummary}
+            </p>
+          ) : null}
+        </div>
+      )}
 
       <div className="rounded-2xl border border-border bg-surface p-4">
         <h3 className="text-body-sm font-semibold text-fg">Knowledge units</h3>

@@ -19,8 +19,7 @@ export default async function BabickaExperiencePage() {
         <h1 className="font-display text-display-md text-fg">Babička</h1>
         <Card>
           <CardDescription>
-            Experience ještě není nasazená. Spusť{" "}
-            <code className="text-body-sm">npm run seed:babicka</code> (vyžaduje
+Tento obsah zatím není k dispozici. Zkus jinou aktivitu nebo se vrať později.
             ingest Babička.docx).
           </CardDescription>
         </Card>

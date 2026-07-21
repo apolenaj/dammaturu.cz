@@ -5,11 +5,17 @@ import {
   preferDistinguishFormat,
   prioritizeForSelection,
 } from "@/domain/learning/interleaving";
+import {
+  createFsrsCard,
+  forgettingPriority,
+  performanceGradeToFsrsRating,
+  reviewFsrs,
+  type FsrsCard,
+} from "@/domain/learning/fsrs";
 
 /**
- * Spaced repetition scheduler (D-032) + interleaving (D-033).
- * Per-knowledge: lastReviewed, nextReview, stability, difficulty, reviewCount, lapseCount.
- * Mixed review formats with anti-monotony rotation.
+ * Spaced repetition (D-032) + interleaving (D-033).
+ * Scheduling is FSRS-4.5 under the hood — student copy stays plain Czech.
  */
 
 const slugSchema = z
@@ -31,13 +37,13 @@ export type ReviewFormat = (typeof reviewFormats)[number];
 export const reviewFormatSchema = z.enum(reviewFormats);
 
 export const reviewFormatLabelsCs: Record<ReviewFormat, string> = {
-  flashcard: "Flashcard",
-  free_recall: "Free recall",
-  matching: "Matching",
+  flashcard: "Kartička",
+  free_recall: "Vybavování",
+  matching: "Přiřazení",
   question: "Otázka",
 };
 
-/** Approx seconds per item by format (for “cca X minut”). */
+/** Approx seconds per item by format (for soft time hint). */
 export const reviewFormatSeconds: Record<ReviewFormat, number> = {
   flashcard: 25,
   free_recall: 40,
@@ -50,44 +56,45 @@ export type PerformanceGrade = (typeof performanceGrades)[number];
 
 export const performanceGradeSchema = z.enum(performanceGrades);
 
+/** Student-facing — no algorithm jargon. */
 export const performanceGradeLabelsCs: Record<PerformanceGrade, string> = {
-  again: "Znovu (chyba)",
+  again: "Ještě ne",
   hard: "Těžké",
-  good: "Dobře",
-  easy: "Snadno / jistě",
+  good: "Jo, pamatuju",
+  easy: "Úplně jistě",
 };
 
-/** Schedule row for one knowledge unit / atom. */
+/** Schedule row for one knowledge unit / atom (FSRS S/D). */
 export const spacedScheduleSchema = z.object({
   knowledgeId: z.string().uuid(),
   lastReviewed: z.string().datetime().nullable(),
   nextReview: z.string().datetime(),
-  /** Mean interval length in days (grows with success). */
+  /** FSRS stability S (days). */
   stability: z.number().min(0.05).max(365),
-  /** 1 = easy … 10 = hard; slows growth. */
+  /** FSRS difficulty D (1–10). */
   difficulty: z.number().min(1).max(10),
   reviewCount: z.number().int().min(0).max(10_000),
   lapseCount: z.number().int().min(0).max(10_000),
-  /** Last format used — for rotation. */
   lastFormat: reviewFormatSchema.nullable(),
   updatedAt: z.string().datetime(),
 });
 
 export type SpacedSchedule = z.infer<typeof spacedScheduleSchema>;
 
-export const DEFAULT_STABILITY_DAYS = 0.5;
+export const DEFAULT_STABILITY_DAYS = 0.4;
 export const DEFAULT_DIFFICULTY = 5;
 
 export function createSpacedSchedule(
   knowledgeId: string,
   nowIso: string,
 ): SpacedSchedule {
+  const fsrs = createFsrsCard(nowIso);
   return {
     knowledgeId,
     lastReviewed: null,
     nextReview: nowIso,
-    stability: DEFAULT_STABILITY_DAYS,
-    difficulty: DEFAULT_DIFFICULTY,
+    stability: fsrs.stability,
+    difficulty: fsrs.difficulty,
     reviewCount: 0,
     lapseCount: 0,
     lastFormat: null,
@@ -95,78 +102,68 @@ export function createSpacedSchedule(
   };
 }
 
-function addDays(iso: string, days: number): string {
-  const d = new Date(iso);
-  d.setTime(d.getTime() + Math.max(0.05, days) * 24 * 60 * 60 * 1000);
-  return d.toISOString();
+function toFsrsCard(sch: SpacedSchedule): FsrsCard {
+  return {
+    stability: sch.stability,
+    difficulty: sch.difficulty,
+    reps: Math.max(0, sch.reviewCount - sch.lapseCount),
+    lapses: sch.lapseCount,
+    state:
+      sch.lastReviewed == null
+        ? "new"
+        : sch.reviewCount === 0
+          ? "learning"
+          : sch.lapseCount > 0 && sch.stability < 1
+            ? "relearning"
+            : "review",
+    lastReviewAt: sch.lastReviewed,
+    dueAt: sch.nextReview,
+  };
 }
 
-function clamp(n: number, lo: number, hi: number): number {
-  return Math.min(hi, Math.max(lo, n));
-}
+export type ApplyPerformanceOpts = {
+  format?: ReviewFormat;
+  /** Content difficulty 1–5. */
+  contentDifficulty?: number;
+  /** Self-confidence 1–5. */
+  confidence?: number;
+  /** Recent repeated errors for this knowledge. */
+  repeatedErrors?: number;
+};
 
 /**
- * Performance → schedule update.
- * Chyba → kratší interval. Opakovaná jistá odpověď → delší.
+ * Performance → FSRS schedule update.
+ * Correctness (grade), difficulty, confidence, history, repeated errors.
  */
 export function applyPerformance(
   prev: SpacedSchedule,
   grade: PerformanceGrade,
   nowIso: string,
-  format?: ReviewFormat,
+  formatOrOpts?: ReviewFormat | ApplyPerformanceOpts,
 ): SpacedSchedule {
-  let { stability, difficulty, reviewCount, lapseCount } = prev;
+  const opts: ApplyPerformanceOpts =
+    typeof formatOrOpts === "string" || formatOrOpts == null
+      ? { format: formatOrOpts }
+      : formatOrOpts;
 
-  switch (grade) {
-    case "again": {
-      lapseCount += 1;
-      reviewCount += 1;
-      difficulty = clamp(difficulty + 0.85, 1, 10);
-      // Short interval after error
-      stability = clamp(Math.min(stability * 0.35, 0.6), 0.1, 365);
-      break;
-    }
-    case "hard": {
-      reviewCount += 1;
-      difficulty = clamp(difficulty + 0.2, 1, 10);
-      stability = clamp(stability * 1.15, 0.2, 365);
-      break;
-    }
-    case "good": {
-      reviewCount += 1;
-      difficulty = clamp(difficulty - 0.12, 1, 10);
-      const grow = 1.45 + ((10 - difficulty) / 10) * 0.55;
-      stability = clamp(stability * grow, 0.35, 365);
-      break;
-    }
-    case "easy": {
-      // Confident / fluent success — lengthen more
-      reviewCount += 1;
-      difficulty = clamp(difficulty - 0.28, 1, 10);
-      const grow = 1.9 + ((10 - difficulty) / 10) * 0.9;
-      // Extra bump when already reviewing successfully
-      const streakBoost = prev.reviewCount >= 2 && prev.lapseCount === 0 ? 1.15 : 1;
-      stability = clamp(stability * grow * streakBoost, 0.5, 365);
-      break;
-    }
-  }
-
-  const intervalDays =
-    grade === "again"
-      ? stability
-      : grade === "hard"
-        ? stability * 0.85
-        : stability;
+  const result = reviewFsrs({
+    card: toFsrsCard(prev),
+    rating: performanceGradeToFsrsRating(grade),
+    nowIso,
+    contentDifficulty: opts.contentDifficulty,
+    confidence: opts.confidence,
+    repeatedErrors: opts.repeatedErrors ?? prev.lapseCount,
+  });
 
   return {
     knowledgeId: prev.knowledgeId,
     lastReviewed: nowIso,
-    nextReview: addDays(nowIso, intervalDays),
-    stability: Math.round(stability * 1000) / 1000,
-    difficulty: Math.round(difficulty * 100) / 100,
-    reviewCount,
-    lapseCount,
-    lastFormat: format ?? prev.lastFormat,
+    nextReview: result.card.dueAt,
+    stability: result.card.stability,
+    difficulty: result.card.difficulty,
+    reviewCount: prev.reviewCount + 1,
+    lapseCount: result.card.lapses,
+    lastFormat: opts.format ?? prev.lastFormat,
     updatedAt: nowIso,
   };
 }
@@ -304,8 +301,10 @@ export type DueSummary = {
   dueCount: number;
   newCount: number;
   estimatedMinutes: number;
-  /** Exact dashboard copy. */
+  /** Student-facing headline — no algorithm jargon. */
   headlineCs: string;
+  /** Soft supporting line (“app knows what you're forgetting”). */
+  supportingCs: string;
   /** D-033 interleaving phase explanation. */
   interleaveRationaleCs?: string;
 };
@@ -341,8 +340,16 @@ export function buildDueSummary(input: {
   const total = queue.length;
   const headlineCs =
     total === 0
-      ? "Dnes k zopakování: 0 položek – nic ve frontě."
-      : `Dnes k zopakování: ${total} položek – cca ${estimatedMinutes} minut.`;
+      ? "Dnes není nic, co bys měl/a hned opakovat."
+      : `Dnes je vhodné zopakovat ${total} položek.`;
+  const supportingCs =
+    total === 0
+      ? "Až něco začne vyprchávat, objeví se to tady."
+      : dueCount > 0
+        ? `Nejdřív to, na čem začínáš zapomínat${
+            estimatedMinutes > 0 ? ` — cca ${estimatedMinutes} min` : ""
+          }.`
+        : `Pár nových bodů k zapamatování — cca ${estimatedMinutes} min.`;
   const interleaveRationaleCs = describeInterleave(
     input.pack,
     input.book,
@@ -352,6 +359,7 @@ export function buildDueSummary(input: {
     newCount,
     estimatedMinutes,
     headlineCs,
+    supportingCs,
     interleaveRationaleCs,
   };
 }
@@ -423,6 +431,26 @@ export function buildMixedReviewQueue(input: {
   due.sort((a, b) => {
     const sa = book!.byKnowledgeId[a.id]!;
     const sb = book!.byKnowledgeId[b.id]!;
+    // Lowest retrievability first = “starting to forget”
+    const ra = forgettingPriority(
+      {
+        stability: sa.stability,
+        lastReviewAt: sa.lastReviewed,
+        state: "review",
+      },
+      input.nowIso,
+    );
+    const rb = forgettingPriority(
+      {
+        stability: sb.stability,
+        lastReviewAt: sb.lastReviewed,
+        state: "review",
+      },
+      input.nowIso,
+    );
+    if (Math.abs(ra - rb) > 0.02) return ra - rb;
+    // Then more lapses / harder items
+    if (sb.lapseCount !== sa.lapseCount) return sb.lapseCount - sa.lapseCount;
     return (
       new Date(sa.nextReview).getTime() - new Date(sb.nextReview).getTime()
     );
@@ -551,6 +579,9 @@ export function applySessionGrade(input: {
   book: LearnerScheduleBook;
   grade: PerformanceGrade;
   nowIso: string;
+  contentDifficulty?: number;
+  confidence?: number;
+  repeatedErrors?: number;
 }): {
   session: MixedReviewSession;
   book: LearnerScheduleBook;
@@ -577,12 +608,12 @@ export function applySessionGrade(input: {
     input.book.byKnowledgeId[item.knowledgeId] ??
     createSpacedSchedule(item.knowledgeId, input.nowIso);
 
-  const nextSch = applyPerformance(
-    prev,
-    input.grade,
-    input.nowIso,
-    item.format,
-  );
+  const nextSch = applyPerformance(prev, input.grade, input.nowIso, {
+    format: item.format,
+    contentDifficulty: input.contentDifficulty,
+    confidence: input.confidence,
+    repeatedErrors: input.repeatedErrors,
+  });
 
   const book: LearnerScheduleBook = {
     ...input.book,

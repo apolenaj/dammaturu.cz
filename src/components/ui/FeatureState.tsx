@@ -55,7 +55,7 @@ export function FeatureState({
       </h1>
       <p className="mt-3 text-body-lg text-fg-secondary">{description}</p>
       <Card className="mt-6" role="status">
-        <p className="text-body-sm font-semibold text-fg">Co chybí</p>
+        <p className="text-body-sm font-semibold text-fg">Co dál</p>
         <p className="mt-1 text-body-sm text-fg-muted">{nextStep}</p>
       </Card>
       {(primaryHref || secondaryHref) && (

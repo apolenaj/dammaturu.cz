@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { BrandMark } from "@/components/brand/BrandMark";
 import { NavLinkList } from "@/components/navigation/NavLinkList";
-import { adminNav } from "@/lib/navigation";
+import { getVisibleAdminNav } from "@/lib/navigation";
 import { adminLogoutAction } from "@/server/actions/admin-auth";
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
+  const nav = getVisibleAdminNav();
+
   return (
     <div className="flex min-h-dvh bg-paper-wash text-ink">
       <aside
@@ -16,7 +18,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <p className="mt-1 text-xs text-ink-muted">Administrace</p>
         </div>
         <nav aria-label="Admin">
-          <NavLinkList items={adminNav} variant="admin" />
+          <NavLinkList items={nav} variant="admin" />
         </nav>
         <div className="mt-auto space-y-1">
           <Link
@@ -41,7 +43,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <BrandMark href="/admin/content" size="sm" />
           <nav className="mt-3 overflow-x-auto" aria-label="Admin mobilní">
             <NavLinkList
-              items={adminNav}
+              items={nav}
               orientation="horizontal"
               variant="top"
               className="min-w-max"

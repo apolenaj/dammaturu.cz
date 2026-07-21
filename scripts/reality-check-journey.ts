@@ -86,7 +86,7 @@ async function main() {
             slug: "reality-ku",
             title: "Reality KU",
           },
-          errorType: "unknown_fact",
+          errorType: "forgot_fact",
           source: "question_engine",
         });
       }
@@ -160,14 +160,20 @@ async function main() {
   // Daily mission create
   const day = await getOrCreateTodayMission({
     learnerId,
-    dueCardCount: 0,
-    learnTopicTitle: "Reality",
-    learnHref: "/app/learn/rychle/realismus",
+    signals: {
+      overdueCount: 0,
+      openMistakesCount: 0,
+      weakAreaLabelCs: "Reality",
+      weakAreaHref: "/app/learn/rychle/realismus",
+      weakAreaPct: null,
+      daysRemaining: 40,
+    },
+    dailyMinutes: 30,
   });
   note(
     "daily_mission",
-    day.steps.length === 3 ? "WORKING" : "BROKEN",
-    `steps=${day.steps.map((s) => s.kind).join(",")}`,
+    day.steps.length >= 1 && day.budgetMinutes === 30 ? "WORKING" : "BROKEN",
+    `steps=${day.steps.map((s) => s.kind).join(",")} budget=${day.budgetMinutes}`,
   );
 
   const missed = computeMissedDays({

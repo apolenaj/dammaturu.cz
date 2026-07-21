@@ -6,22 +6,44 @@ import {
   completeDailyMissionAction,
   markDailyStepDoneAction,
 } from "@/server/actions/daily-dashboard";
-import { formatWeekDeltaCs } from "@/domain/learning/readiness";
 import type { DailyDashboardView } from "@/domain/learning/daily-dashboard";
+import type {
+  LearningCelebration,
+  ProgressMotivationView,
+} from "@/domain/learning/progress-gamification";
 import { Alert } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Sparkline } from "@/components/ui/chart";
+import {
+  CelebrateMoment,
+  ProgressSteps,
+  StreakPill,
+} from "@/components/ui/celebrate";
+import { Progress } from "@/components/ui/progress";
+import { ProgressMotivationPanel } from "@/components/progress/progress-motivation-panel";
+import { LearningCelebrationQueue } from "@/components/progress/learning-celebration-queue";
 import { cn } from "@/lib/cn";
 
 export function DailyDashboard({
   initialView,
+  initialMotivation,
+  initialCelebrations = [],
 }: {
   initialView: DailyDashboardView;
+  initialMotivation?: ProgressMotivationView | null;
+  initialCelebrations?: LearningCelebration[];
 }) {
   const [view, setView] = useState(initialView);
+  const [motivation, setMotivation] = useState(initialMotivation ?? null);
+  const [celebrations, setCelebrations] =
+    useState<LearningCelebration[]>(initialCelebrations);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+
+  const doneCount = view.steps.filter((s) => s.done).length;
+  const progressPct =
+    view.steps.length === 0
+      ? 0
+      : Math.round((doneCount / view.steps.length) * 100);
 
   function markStep(stepId: string) {
     setError(null);
@@ -32,6 +54,8 @@ export function DailyDashboard({
         return;
       }
       setView(res.view);
+      if (res.celebrations.length) setCelebrations(res.celebrations);
+      if (res.motivation) setMotivation(res.motivation);
     });
   }
 
@@ -44,88 +68,162 @@ export function DailyDashboard({
         return;
       }
       setView(res.view);
+      if (res.celebrations.length) setCelebrations(res.celebrations);
+      if (res.motivation) setMotivation(res.motivation);
     });
   }
 
-  const s = view.secondary;
-
   return (
-    <div className="mx-auto w-full max-w-lg space-y-8">
-      {/* Hero — one job: orient + remove choice anxiety */}
-      <header className="space-y-2">
-        <h1 className="font-display text-display-md text-fg">
+    <div className="mx-auto w-full max-w-lg space-y-6 sm:space-y-8">
+      <header className="space-y-3">
+        <div className="flex flex-wrap items-center gap-2">
+          {view.secondary.streakDays > 0 ? (
+            <StreakPill days={view.secondary.streakDays} />
+          ) : null}
+        </div>
+        <h1 className="font-display text-display-md tracking-tight text-fg text-balance">
           {view.greetingCs}
         </h1>
         <p className="text-body-md text-fg-secondary">{view.daysRemainingCs}</p>
+        <p className="font-display text-title-md tracking-tight text-fg text-balance">
+          {view.questionCs}
+        </p>
       </header>
 
-      {view.completed && view.completionCs ? (
-        <section className="space-y-4 rounded-2xl border border-success/30 bg-success-soft/30 px-5 py-6">
-          <Badge tone="success">Hotovo</Badge>
-          <p className="font-display text-xl text-fg">{view.completionCs}</p>
-          <Link
-            href="/app/progress"
-            className="inline-flex min-h-11 items-center justify-center rounded-md bg-action px-5 text-body-sm font-semibold uppercase tracking-wide text-fg-on-brand shadow-xs transition hover:bg-action-hover"
-          >
-            Připravenost
-          </Link>
-        </section>
-      ) : (
-        <section className="space-y-5">
-          <div>
-            <p className="text-caption font-semibold uppercase tracking-[0.14em] text-fg-muted">
-              {view.planTitleCs}
-            </p>
-            <ol className="mt-4 space-y-3">
-              {view.steps.map((step, i) => (
-                <li
-                  key={step.id}
-                  className={cn(
-                    "flex items-start gap-3 text-body-md",
-                    step.done && "text-fg-muted line-through",
-                  )}
-                >
-                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-subtle text-caption font-semibold text-fg">
-                    {i + 1}
+      {celebrations.length > 0 ? (
+        <LearningCelebrationQueue
+          key={celebrations.map((c) => c.id).join("|")}
+          initial={celebrations}
+        />
+      ) : null}
+
+      {motivation ? (
+        <ProgressMotivationPanel view={motivation} compact />
+      ) : null}
+
+      {!view.completed ? (
+        <Link
+          href="/app/minute"
+          className="flex min-h-14 touch-manipulation items-center justify-between gap-3 rounded-2xl border border-action/25 bg-action-soft/50 px-4 py-3 shadow-xs transition hover:border-action/40 hover:bg-action-soft active:scale-[0.99]"
+        >
+          <span>
+            <span className="block text-body-md font-semibold text-fg">
+              1 minuta učení
+            </span>
+            <span className="block text-caption text-fg-secondary">
+              Autobus? Spusť hned — bez rozhodování.
+            </span>
+          </span>
+          <span className="shrink-0 text-body-sm font-semibold text-action">
+            Start →
+          </span>
+        </Link>
+      ) : null}
+
+      {view.completed && view.completionCs && celebrations.length === 0 ? (
+        <CelebrateMoment
+          title={view.completionCs}
+          description={
+            view.secondary.streakDays > 0
+              ? `${view.secondary.streakDays} dní v řadě — drž tempo.`
+              : "Dnes je hotovo. Zítra pokračuj od mise."
+          }
+          actionLabel="Podívat se na pokrok"
+          actionHref="/app/progress"
+        />
+      ) : null}
+
+      {!view.completed ? (
+        <section className="space-y-6 rounded-2xl border border-border bg-surface p-5 shadow-sm sm:p-6">
+          <div className="space-y-3">
+            <div className="flex items-baseline justify-between gap-3">
+              <p className="text-overline text-action">{view.planTitleCs}</p>
+              <span className="text-caption font-semibold tabular-nums text-fg-muted">
+                {doneCount}/{view.steps.length}
+              </span>
+            </div>
+            <Progress
+              value={progressPct}
+              label="Dnešní postup"
+              showValue
+              size="md"
+              celebrate={progressPct >= 100}
+            />
+            <ProgressSteps
+              steps={view.steps.map((step, i) => ({
+                id: step.id,
+                label: `Krok ${i + 1}`,
+                done: step.done,
+                current: !step.done && view.steps.slice(0, i).every((s) => s.done),
+              }))}
+            />
+          </div>
+
+          <ol className="space-y-3">
+            {view.steps.map((step, i) => (
+              <li
+                key={step.id}
+                className={cn(
+                  "rounded-xl border px-3.5 py-3 transition duration-fast",
+                  step.done
+                    ? "border-success/25 bg-success-soft/40"
+                    : "border-border bg-canvas",
+                )}
+              >
+                <div className="flex items-start gap-3">
+                  <span
+                    className={cn(
+                      "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-caption font-bold",
+                      step.done
+                        ? "bg-success text-fg-on-brand"
+                        : "bg-subtle text-fg",
+                    )}
+                  >
+                    {step.done ? "✓" : i + 1}
                   </span>
                   <div className="min-w-0 flex-1">
                     {step.done ? (
-                      <p className="text-fg">{step.labelCs}</p>
+                      <p className="text-body-md text-fg-muted line-through">
+                        {step.labelCs}
+                      </p>
                     ) : (
                       <Link
                         href={step.href}
-                        className="font-semibold text-action hover:underline"
+                        className="text-body-md font-semibold text-action transition hover:underline"
                       >
                         {step.labelCs}
                       </Link>
                     )}
+                    {!step.done && step.reasonCs ? (
+                      <p className="mt-1 text-caption text-fg-secondary">
+                        {step.reasonCs}
+                      </p>
+                    ) : null}
                     {!step.done ? (
-                      <p className="mt-1 text-caption text-fg-muted">
-                        Po session se krok označí automaticky. Manuálně jen když
-                        session doběhla offline:
+                      <p className="mt-1.5 text-caption text-fg-muted">
+                        Po session se krok označí automaticky.{" "}
                         <button
                           type="button"
                           disabled={pending}
                           onClick={() => markStep(step.id)}
-                          className="ml-1 font-semibold text-action hover:underline"
+                          className="font-semibold text-action hover:underline"
                         >
                           Potvrdit hotové
                         </button>
                       </p>
                     ) : null}
                   </div>
-                </li>
-              ))}
-            </ol>
-            <p className="mt-4 text-body-sm text-fg-secondary">
-              {view.totalMinutesCs}
-            </p>
-          </div>
+                </div>
+              </li>
+            ))}
+          </ol>
+
+          <p className="text-body-sm text-fg-secondary">{view.totalMinutesCs}</p>
 
           <div className="flex flex-col gap-2">
             <Link
               href={view.ctaHref}
-              className="inline-flex min-h-12 w-full items-center justify-center rounded-md bg-action px-5 text-body-sm font-semibold uppercase tracking-wide text-fg-on-brand shadow-xs transition hover:bg-action-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+              className="inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-action px-5 text-body-sm font-semibold tracking-wide text-fg-on-brand shadow-xs transition duration-fast ease-out hover:bg-action-hover hover:shadow-sm active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
             >
               {view.ctaLabelCs}
             </Link>
@@ -138,104 +236,16 @@ export function DailyDashboard({
               >
                 Potvrdit dokončení dne
               </Button>
-            ) : (
-              <p className="text-center text-caption text-fg-muted">
-                Kroky označ až po skutečné session — bez zkratky „celý den hotový“.
-              </p>
-            )}
+            ) : null}
           </div>
         </section>
-      )}
+      ) : null}
 
       {error ? (
         <Alert title="Chyba" tone="danger">
           {error}
         </Alert>
       ) : null}
-
-      {/* Secondary — compact signals, not a second dashboard */}
-      <section
-        aria-label="Přehled"
-        className="grid grid-cols-2 gap-3 sm:grid-cols-3"
-      >
-        <SignalCard
-          href={s.readinessHref}
-          title="Připravenost"
-          value={s.readinessPct != null ? `${s.readinessPct} %` : "—"}
-          hint={
-            s.weekDeltaPct != null
-              ? formatWeekDeltaCs(s.weekDeltaPct)
-              : undefined
-          }
-        />
-        <SignalCard
-          href={s.weakHref ?? "/app/mistakes"}
-          title="Slabá místa"
-          value={s.weakLabelCs ?? "—"}
-          hint="Cílená session"
-        />
-        <SignalCard
-          href="/app/dashboard"
-          title="Streak"
-          value={s.streakDays > 0 ? `${s.streakDays} dní` : "0"}
-          hint="Po sobě jdoucí dny"
-        />
-        <div className="col-span-2 rounded-xl border border-border bg-subtle/50 px-3 py-3 sm:col-span-2">
-          <p className="text-caption font-semibold uppercase tracking-wider text-fg-muted">
-            Týdenní připravenost
-          </p>
-          <div className="mt-2 flex items-end justify-between gap-2">
-            {s.weeklySpark.length >= 2 ? (
-              <Sparkline
-                values={s.weeklySpark}
-                aria-label="Týdenní připravenost"
-              />
-            ) : (
-              <p className="text-body-sm text-fg-secondary">
-                Zatím málo dat — spark se objeví po cvičení.
-              </p>
-            )}
-            {s.weekDeltaPct != null ? (
-              <span className="text-body-sm font-semibold tabular-nums text-fg">
-                {formatWeekDeltaCs(s.weekDeltaPct)}
-              </span>
-            ) : null}
-          </div>
-        </div>
-        <SignalCard
-          href="/app/review/mixed"
-          title="Nadcházející review"
-          value={String(s.upcomingReviews)}
-          hint="Due položky"
-        />
-      </section>
     </div>
-  );
-}
-
-function SignalCard({
-  href,
-  title,
-  value,
-  hint,
-}: {
-  href: string;
-  title: string;
-  value: string;
-  hint?: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="rounded-xl border border-border bg-canvas px-3 py-3 transition hover:border-action/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-    >
-      <p className="text-caption font-semibold uppercase tracking-wider text-fg-muted">
-        {title}
-      </p>
-      <p className="mt-1 font-display text-lg text-fg">{value}</p>
-      {hint ? (
-        <p className="mt-0.5 text-caption text-fg-secondary">{hint}</p>
-      ) : null}
-    </Link>
   );
 }

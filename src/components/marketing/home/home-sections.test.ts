@@ -11,27 +11,34 @@ describe("homepage conversion copy", () => {
     path.join(process.cwd(), "src/components/marketing/home/home-sections.tsx"),
     "utf8",
   );
+  const previews = readFileSync(
+    path.join(
+      process.cwd(),
+      "src/components/marketing/previews/product-previews.tsx",
+    ),
+    "utf8",
+  );
 
-  it("includes required hero promise and CTAs", () => {
-    expect(sections).toMatch(/Víš přesně, co se naučit/);
-    expect(sections).toMatch(/Zjistit moji připravenost/);
+  it("leads with the product promise", () => {
+    expect(sections).toMatch(
+      /Nahraj, co se musíš naučit\. My tě připravíme až k/,
+    );
+    expect(sections).toMatch(/Začít zdarma/);
     expect(sections).toMatch(/Jak to funguje/);
-    expect(sections).not.toMatch(/AI parťák|AI chatbot|umělá inteligence jako/i);
   });
 
-  it("wires all conversion sections", () => {
+  it("wires required marketing sections", () => {
     for (const name of [
       "HomeHero",
-      "HomeProblem",
-      "HomeDiagnostics",
-      "HomePlan",
-      "HomeMethods",
-      "HomeScore",
-      "HomeWeakspots",
-      "HomeReview",
-      "HomeSimulation",
-      "HomeDashboardShowcase",
-      "HomeLessonShowcase",
+      "HomeHowItWorks",
+      "HomeUploadDemo",
+      "HomeTestingDemo",
+      "HomeReadiness",
+      "HomeCermat",
+      "HomeOralSimulation",
+      "HomeOwnMaterials",
+      "HomeSuccessJourney",
+      "HomePricingPreview",
       "HomeFaq",
       "HomeFinalCta",
     ]) {
@@ -39,8 +46,24 @@ describe("homepage conversion copy", () => {
     }
   });
 
-  it("exports SEO metadata", () => {
+  it("avoids internal jargon on the homepage", () => {
+    const blob = `${sections}\n${previews}`;
+    expect(blob).not.toMatch(/\bmastery\b/i);
+    expect(blob).not.toMatch(/\bprovenance\b/i);
+    expect(blob).not.toMatch(/error loop/i);
+    expect(blob).not.toMatch(/due reviews/i);
+    expect(blob).not.toMatch(/Maturita Score/i);
+  });
+
+  it("stays honest about CERMAT and pricing", () => {
+    expect(sections).toMatch(/cvičné/i);
+    expect(sections).toMatch(/ne oficiální CERMAT|ne oficiální zadání/i);
+    expect(sections).toMatch(/bez fiktivních cen|Veřejný ceník/i);
+  });
+
+  it("exports SEO metadata and FAQ JSON-LD", () => {
     expect(page).toContain("openGraph");
     expect(page).toContain("application/ld+json");
+    expect(page).toContain("homeFaqItems");
   });
 });

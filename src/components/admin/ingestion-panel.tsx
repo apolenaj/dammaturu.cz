@@ -71,9 +71,8 @@ export function IngestionPanel({
         <div>
           <h1 className="font-display text-display-md text-fg">Zdroje</h1>
           <p className="mt-2 max-w-2xl text-body-md text-fg-secondary">
-            Bezpečný import DOCX z{" "}
-            <code className="text-body-sm">content/source-materials</code>.
-            Původní soubory se nepřepisují. Výstup končí ve stavu{" "}
+            Bezpečný import allowlistovaných maturitních DOCX. Původní soubory
+            se nepřepisují. Výstup končí ve stavu{" "}
             <strong>needs_review</strong> — nikdy automaticky verified/published.
           </p>
         </div>

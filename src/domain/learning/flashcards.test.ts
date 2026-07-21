@@ -16,7 +16,7 @@ import {
 } from "@/domain/learning/flashcards";
 import { buildCjlLiterarniDeck } from "@/server/flashcards/packs/cjl-literarni";
 
-describe("SM-2 scheduler", () => {
+describe("FSRS-backed review scheduler", () => {
   const now = "2026-07-20T12:00:00.000Z";
 
   it("maps grades to quality", () => {
@@ -25,25 +25,29 @@ describe("SM-2 scheduler", () => {
     expect(gradeToQuality.know).toBe(5);
   });
 
-  it("resets on dont_know and schedules 1 day", () => {
+  it("resets reps on dont_know and schedules soon", () => {
     let entry = createScheduleEntry("card-1", now);
     entry = applySm2(entry, "know", now).entry;
-    expect(entry.repetitions).toBe(1);
-    expect(entry.intervalDays).toBe(1);
+    expect(entry.repetitions).toBeGreaterThanOrEqual(1);
     entry = applySm2(entry, "dont_know", "2026-07-21T12:00:00.000Z").entry;
     expect(entry.repetitions).toBe(0);
-    expect(entry.intervalDays).toBe(1);
-    expect(entry.lapses).toBe(1);
+    expect(entry.lapses).toBeGreaterThanOrEqual(1);
+    expect(new Date(entry.dueAt).getTime()).toBeLessThanOrEqual(
+      new Date("2026-07-23T12:00:00.000Z").getTime(),
+    );
   });
 
   it("grows interval after repeated know", () => {
     let entry = createScheduleEntry("card-1", now);
     entry = applySm2(entry, "know", now).entry;
+    const firstDue = entry.dueAt;
     entry = applySm2(entry, "know", "2026-07-21T12:00:00.000Z").entry;
-    expect(entry.intervalDays).toBe(6);
-    entry = applySm2(entry, "know", "2026-07-27T12:00:00.000Z").entry;
-    expect(entry.intervalDays).toBeGreaterThan(6);
-    expect(entry.easiness).toBeGreaterThanOrEqual(2.5);
+    expect(new Date(entry.dueAt).getTime()).toBeGreaterThan(
+      new Date(firstDue).getTime(),
+    );
+    entry = applySm2(entry, "know", entry.dueAt).entry;
+    expect(entry.intervalDays).toBeGreaterThanOrEqual(1);
+    expect(entry.stability ?? entry.intervalDays).toBeGreaterThan(0.4);
   });
 
   it("builds due + new queue", () => {
@@ -62,6 +66,7 @@ describe("SM-2 scheduler", () => {
         dueAt: "2026-08-01T12:00:00.000Z",
         repetitions: 2,
         intervalDays: 10,
+        stability: 10,
       },
     };
     const queue = buildReviewQueue({

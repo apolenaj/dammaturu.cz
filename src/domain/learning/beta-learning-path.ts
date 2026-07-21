@@ -1,8 +1,7 @@
 import { z } from "zod";
-import { BETA_TARGET_DATE } from "@/domain/onboarding/schema";
 
 /**
- * Beta learning path (D-040) — auto-generated from curriculum pack until Aug 31.
+ * Curriculum learning path — auto-generated from pack until the student's exam date.
  * Phase recipes select topics by module/topic slug from the pack.
  * Components must only render the resulting view model (no topic lists in UI).
  */
@@ -148,7 +147,6 @@ export const betaPathBlueprints: PhaseBlueprint[] = [
 ];
 
 export const betaPathConfig = {
-  targetDate: BETA_TARGET_DATE,
   curriculumSlug: "cjl-beta",
   diagnosticHref: "/app/tests?intent=diagnostic",
   simulationHref: "/app/simulation",
@@ -508,7 +506,8 @@ export function pickWeakRepairTopics(
 export function buildBetaLearningPath(input: {
   pack: CurriculumPackLike;
   diagnostic?: DiagnosticSnapshot | null;
-  targetDate?: string;
+  /** Student's real exam date — required, never a product default. */
+  targetDate: string;
   now?: Date;
 }): BetaLearningPath {
   const diagnostic = diagnosticSnapshotSchema.parse(
@@ -516,7 +515,7 @@ export function buildBetaLearningPath(input: {
   );
   const now = input.now ?? new Date();
   const todayKey = dateKey(now);
-  const targetDate = input.targetDate ?? betaPathConfig.targetDate;
+  const targetDate = input.targetDate;
   const daysRemaining = daysBetween(todayKey, targetDate);
   const bufferDays = Math.min(
     8,

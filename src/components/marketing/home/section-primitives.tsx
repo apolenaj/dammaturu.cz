@@ -2,15 +2,15 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 
 const linkPrimary =
-  "inline-flex min-h-12 items-center justify-center rounded-md bg-action px-5 text-body-sm font-semibold text-fg-on-brand shadow-xs transition hover:bg-action-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface";
+  "inline-flex min-h-12 items-center justify-center rounded-lg bg-action px-6 text-body-sm font-semibold tracking-wide text-fg-on-brand shadow-xs transition duration-fast ease-out hover:bg-action-hover hover:shadow-sm active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface";
 
 const linkSecondary =
-  "inline-flex min-h-12 items-center justify-center rounded-md border border-border bg-surface px-5 text-body-sm font-semibold text-fg shadow-xs transition hover:bg-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface";
+  "inline-flex min-h-12 items-center justify-center rounded-lg border border-border bg-surface px-6 text-body-sm font-semibold text-fg shadow-xs transition duration-fast ease-out hover:bg-subtle active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface";
 
 export function CtaPair({
   className,
-  primaryHref = "/onboarding",
-  primaryLabel = "Zjistit moji připravenost",
+  primaryHref = "/registrace",
+  primaryLabel = "Začít zdarma",
   secondaryHref = "/jak-to-funguje",
   secondaryLabel = "Jak to funguje",
 }: {
@@ -21,7 +21,12 @@ export function CtaPair({
   secondaryLabel?: string;
 }) {
   return (
-    <div className={cn("flex flex-col gap-3 sm:flex-row sm:flex-wrap", className)}>
+    <div
+      className={cn(
+        "flex flex-col gap-3 sm:flex-row sm:flex-wrap",
+        className,
+      )}
+    >
       <Link href={primaryHref} className={linkPrimary}>
         {primaryLabel}
       </Link>
@@ -55,14 +60,16 @@ export function SectionHeading({
       ) : null}
       <h2
         className={cn(
-          "font-display text-title-lg text-fg sm:text-[1.875rem]",
+          "font-display text-title-lg tracking-tight text-fg text-balance sm:text-display-sm",
           eyebrow && "mt-2",
         )}
       >
         {title}
       </h2>
       {description ? (
-        <p className="mt-3 text-body-lg text-fg-secondary">{description}</p>
+        <p className="mt-3 text-body-lg leading-relaxed text-fg-secondary">
+          {description}
+        </p>
       ) : null}
     </div>
   );

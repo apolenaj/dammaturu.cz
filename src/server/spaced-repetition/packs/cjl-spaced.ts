@@ -682,7 +682,7 @@ export function buildCjlSpacedPack(
     slug: "cjl-spaced",
     title: "Spaced review — ČJL základy",
     summary:
-      "Opakování se stability/difficulty + interleaving (mix autorů a směrů po zvládnutí základů). Formáty: flashcards, free recall, matching, otázky.",
+      "Opakování řadí nejdřív to, na čem začínáš zapomínat. Formáty: kartičky, vybavování, přiřazení, otázky.",
     knowledge: KNOWLEDGE.map(buildKnowledge),
     createdAt: nowIso,
     updatedAt: nowIso,

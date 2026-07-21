@@ -9,7 +9,7 @@ import {
 } from "@/domain/learning/scheduler";
 
 /**
- * Full flashcard engine — typed cards + SM-2 schedule + session summary.
+ * Full flashcard engine — typed cards + FSRS schedule + session summary.
  * Not a static card list: queue is computed from due/new + grades update schedule.
  */
 
@@ -72,6 +72,10 @@ export const scheduleEntrySchema = z.object({
   dueAt: z.string().datetime(),
   lastReviewedAt: z.string().datetime().nullable(),
   lastGrade: z.enum(reviewGrades).nullable(),
+  /** FSRS stability (optional — legacy books omit). */
+  stability: z.number().min(0.05).max(365).optional(),
+  /** FSRS difficulty 1–10 (optional). */
+  difficulty: z.number().min(1).max(10).optional(),
 });
 
 export const flashcardScheduleSchema = z.object({

@@ -47,6 +47,19 @@ describe("beta-profile (D-039)", () => {
       targetDate: "2026-08-31",
       units,
       readiness: {
+        overall: {
+          scorePct: 55,
+          provisionalPct: 55,
+          confidence: "moderate",
+          attemptsNeeded: 0,
+          messageCs: "ok",
+          scoredDimensionCount: 3,
+          totalEvidence: 30,
+        },
+        dimensions: [],
+        trend: "improving",
+        trendLabelCs: "Zlepšuje se",
+        trendDeltaPct: 3,
         overallPct: 55,
         weekDeltaPct: 3,
         areas: [],
@@ -61,8 +74,10 @@ describe("beta-profile (D-039)", () => {
             sessionLabelCs: "x",
           },
         ],
+        history: [],
+        formulaVersion: "2026.07-evidence-v1",
         lowEvidence: false,
-        labeledAs: "mastery_coverage",
+        labeledAs: "evidence_readiness",
         disclaimerCs: "",
         computedAt: nowIso,
       },
@@ -137,7 +152,7 @@ describe("beta-profile (D-039)", () => {
         kind: "feature_used",
         feature: "flashcards",
         minutes: 10,
-        errorType: "author_work_swap",
+        errorType: "wrong_author",
         dateKey: "2026-07-18",
         at: nowIso,
       },
@@ -146,7 +161,7 @@ describe("beta-profile (D-039)", () => {
         learnerKey: "abc",
         kind: "feature_used",
         feature: "error_memory",
-        errorType: "author_work_swap",
+        errorType: "wrong_author",
         dateKey: "2026-07-17",
         at: nowIso,
       },
@@ -155,7 +170,7 @@ describe("beta-profile (D-039)", () => {
         learnerKey: "abc",
         kind: "feature_used",
         feature: "error_memory",
-        errorType: "author_work_swap",
+        errorType: "wrong_author",
         dateKey: "2026-07-16",
         at: nowIso,
       },
@@ -177,7 +192,7 @@ describe("beta-profile (D-039)", () => {
     expect(dash.accuracyPct).toBe(50);
     expect(dash.masteryDeltaPct).toBe(6);
     expect(dash.dropOffPoints[0]?.dropOffAt).toContain("nauc-zpatky");
-    expect(dash.mostCommonErrors[0]?.errorType).toBe("author_work_swap");
+    expect(dash.mostCommonErrors[0]?.errorType).toBe("wrong_author");
     expect(dash.insights.some((i) => i.id === "drop-off" || i.id === "mastery-up")).toBe(
       true,
     );

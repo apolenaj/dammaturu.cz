@@ -111,6 +111,7 @@ export async function getAdminBetaDashboardAction(): Promise<AdminBetaDashboard>
     const book = await getErrorBook(l.id);
     if (!book) continue;
     for (const err of book.memories.slice(0, 40)) {
+      const at = err.lastOccurredAt ?? err.firstOccurredAt;
       errorEvents.push({
         id: err.id,
         learnerKey: l.id,
@@ -118,8 +119,8 @@ export async function getAdminBetaDashboardAction(): Promise<AdminBetaDashboard>
         feature: "error_memory",
         errorType: err.errorType,
         topicSlug: err.knowledgeUnit.slug,
-        dateKey: dateKeyFromDate(new Date(err.date)),
-        at: err.date,
+        dateKey: dateKeyFromDate(new Date(at)),
+        at,
       });
     }
   }

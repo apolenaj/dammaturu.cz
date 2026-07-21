@@ -73,6 +73,18 @@ export type AnalyticsEventName =
   | "daily_mission_step_done"
   | "daily_mission_completed"
   | "deadline_plan_viewed"
+  | "dynamic_study_plan_viewed"
+  | "school_exam_profile_updated"
+  | "school_exam_document_uploaded"
+  | "school_exam_document_deleted"
+  | "literature_book_added"
+  | "literature_book_drawn"
+  | "literature_imported_exam_profile"
+  | "literature_imported_materials"
+  | "oral_simulation_started"
+  | "oral_simulation_graded"
+  | "cermat_session_started"
+  | "cermat_item_answered"
   | "beta_admin_dashboard_viewed"
   | "beta_telemetry_recorded"
   | "beta_learning_path_generated"
@@ -96,7 +108,13 @@ export type AnalyticsEventName =
   | "learning_analytics_dashboard_viewed"
   | "learning_analytics_export"
   | "beta_feedback_submitted"
-  | "diagnostic_baseline_completed";
+  | "diagnostic_baseline_completed"
+  | "billing_checkout_started"
+  | "billing_portal_opened"
+  | "product_analytics_dashboard_viewed"
+  | "product_analytics_export"
+  | "feature_flag_updated"
+  | "experiment_upserted";
 
 type AnalyticsSink = (
   event: AnalyticsEventName,

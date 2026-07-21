@@ -22,7 +22,10 @@ export async function getReadinessHubAction(): Promise<{
   if (!learnerId) {
     return { snapshot: null, learnerId: null, hasBook: false };
   }
-  const result = await getReadinessSnapshotForLearner({ learnerId });
+  const result = await getReadinessSnapshotForLearner({
+    learnerId,
+    persistHistory: true,
+  });
   if (!result) {
     return { snapshot: null, learnerId, hasBook: false };
   }

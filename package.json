@@ -13,7 +13,7 @@
     "test:e2e": "playwright test",
     "db:generate": "drizzle-kit generate",
     "db:check": "drizzle-kit check",
-    "db:migrate:sql": "node -e \"console.log('Apply:\\n  psql \\\"$DATABASE_URL\\\" -f src/db/migrations/0001_content_model.sql\\n  psql \\\"$DATABASE_URL\\\" -f src/db/migrations/0002_curriculum_modules.sql')\"",
+    "db:migrate:sql": "node -e \"console.log('Apply in order:\\n  psql \\\"$DATABASE_URL\\\" -f src/db/migrations/0001_content_model.sql\\n  psql \\\"$DATABASE_URL\\\" -f src/db/migrations/0002_curriculum_modules.sql\\n  psql \\\"$DATABASE_URL\\\" -f src/db/migrations/0003_production_core.sql\\n  psql \\\"$DATABASE_URL\\\" -f src/db/migrations/0004_billing.sql')\"",
     "ingest": "tsx scripts/ingest.ts",
     "ingest:discover": "tsx scripts/ingest.ts --dry-discover",
     "content-qa": "tsx scripts/content-qa.ts",
@@ -44,13 +44,17 @@
     "seed:mock-exam": "tsx scripts/seed-mock-exam.ts"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.3",
+    "@supabase/supabase-js": "^2.110.7",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.2",
     "mammoth": "^1.12.0",
     "next": "^15.1.0",
+    "pdf-parse": "^2.4.5",
     "pg": "^8.22.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "stripe": "^17.7.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -59,6 +63,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@types/node": "^22.10.0",
+    "@types/pdf-parse": "^1.1.5",
     "@types/pg": "^8.20.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

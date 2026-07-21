@@ -1,52 +1,69 @@
 import { z } from "zod";
 
 /**
- * Error Memory — „Moje chyby“ (D-034).
- * Significant mistakes become durable ErrorMemory rows.
- * Practice → repeated success → resolved (history kept).
+ * Moje chyby — data-driven ErrorMemory (D-034 rebuild).
+ * Only real graded mistakes are stored. Never invent / seed fake rows in product.
  */
 
-export const errorTypes = [
-  "author_work_swap",
-  "unknown_fact",
-  "chronology",
-  "concept_misunderstanding",
-  "plot_detail",
-  "literary_term",
-  "uncertainty",
+export const mistakeClasses = [
+  "forgot_fact",
+  "confused_concepts",
+  "partial_answer",
+  "wrong_author",
+  "wrong_literary_period",
+  "weak_explanation",
+  "repeated_mistake",
 ] as const;
 
-export type ErrorType = (typeof errorTypes)[number];
+export type MistakeClass = (typeof mistakeClasses)[number];
 
-export const errorTypeSchema = z.enum(errorTypes);
+/** @deprecated Use MistakeClass — kept for call-site aliases during migrate. */
+export type ErrorType = MistakeClass;
+export const errorTypes = mistakeClasses;
+export const errorTypeSchema = z.enum(mistakeClasses);
+export const mistakeClassSchema = errorTypeSchema;
 
-export const errorTypeLabelsCs: Record<ErrorType, string> = {
-  author_work_swap: "Zaměnil autor/dílo",
-  unknown_fact: "Neznal fakt",
-  chronology: "Chronologie",
-  concept_misunderstanding: "Nepochopení pojmu",
-  plot_detail: "Detail děje",
-  literary_term: "Literární termín",
-  uncertainty: "Nejistota",
+export const mistakeClassLabelsCs: Record<MistakeClass, string> = {
+  forgot_fact: "Zapomenutý fakt",
+  confused_concepts: "Záměna pojmů",
+  partial_answer: "Částečná odpověď",
+  wrong_author: "Špatný autor",
+  wrong_literary_period: "Špatné literární období",
+  weak_explanation: "Slabé vysvětlení",
+  repeated_mistake: "Opakovaná chyba",
 };
 
+/** Alias for existing UI imports. */
+export const errorTypeLabelsCs = mistakeClassLabelsCs;
+
+export const mistakeStatuses = [
+  "new",
+  "weak",
+  "improving",
+  "mastered",
+] as const;
+
+export type MistakeStatus = (typeof mistakeStatuses)[number];
+
+export const mistakeStatusSchema = z.enum(mistakeStatuses);
+
+export const mistakeStatusLabelsCs: Record<MistakeStatus, string> = {
+  new: "Nová",
+  weak: "Slabá",
+  improving: "Zlepšuje se",
+  mastered: "Zvládnutá",
+};
+
+/** Legacy aliases used by older UI / tests. */
 export const resolvedStatuses = ["open", "practicing", "resolved"] as const;
 export type ResolvedStatus = (typeof resolvedStatuses)[number];
 
-export const resolvedStatusSchema = z.enum(resolvedStatuses);
-
-export const resolvedStatusLabelsCs: Record<ResolvedStatus, string> = {
-  open: "Otevřená",
-  practicing: "Procvičuje se",
-  resolved: "Vyřešená",
-};
-
 export const errorMemoryConfig = {
-  /** Consecutive successful practices to mark resolved. */
+  /** Consecutive successful recoveries → Mastered. */
+  masterSuccessStreak: 2,
+  /** @deprecated alias */
   resolveSuccessStreak: 2,
-  /** Max items in „Procvičit moje chyby“ queue. */
   practiceQueueMax: 12,
-  /** Dedup window: same KU + type within this many ms → update, don’t duplicate. */
   dedupeWindowMs: 7 * 24 * 60 * 60 * 1000,
 } as const;
 
@@ -71,18 +88,35 @@ export const errorMemorySchema = z.object({
   correctConcept: z.string().min(1).max(500),
   whyWrong: z.string().min(1).max(600),
   knowledgeUnit: errorKnowledgeUnitSchema,
-  errorType: errorTypeSchema,
-  date: z.string().datetime(),
-  resolvedStatus: resolvedStatusSchema,
-  /** Consecutive successful practices (resets on fail). */
+  /** Classification of the mistake. */
+  errorType: mistakeClassSchema,
+  /** First time this mistake was recorded. */
+  firstOccurredAt: z.string().datetime(),
+  /** Most recent recurrence (or first if never repeated). */
+  lastOccurredAt: z.string().datetime(),
+  /** How many times the same weakness showed up (incl. first). */
+  occurrenceCount: z.number().int().min(1).max(10_000),
+  /** Practice / recovery attempts against this memory. */
+  recoveryAttempts: z.number().int().min(0).max(10_000),
+  status: mistakeStatusSchema,
+  /** Consecutive successful recoveries (resets on fail). */
   successStreak: z.number().int().min(0).max(100),
-  practiceCount: z.number().int().min(0).max(10_000),
-  /** When resolved — history stays. */
-  resolvedAt: z.string().datetime().nullable(),
+  masteredAt: z.string().datetime().nullable(),
   updatedAt: z.string().datetime(),
   source: z
-    .enum(["mixed_review", "question_engine", "manual", "seed"])
+    .enum([
+      "mixed_review",
+      "question_engine",
+      "materials_study",
+      "grounded_study",
+      "manual",
+    ])
     .default("manual"),
+  // --- legacy fields kept optional for migrate / soft read ---
+  date: z.string().datetime().optional(),
+  resolvedStatus: z.enum(resolvedStatuses).optional(),
+  practiceCount: z.number().int().min(0).max(10_000).optional(),
+  resolvedAt: z.string().datetime().nullable().optional(),
 });
 
 export type ErrorMemory = z.infer<typeof errorMemorySchema>;
@@ -97,13 +131,11 @@ export type ErrorMemoryBook = z.infer<typeof errorMemoryBookSchema>;
 
 export const practiceGrades = ["again", "good"] as const;
 export type PracticeGrade = (typeof practiceGrades)[number];
-
 export const practiceGradeSchema = z.enum(practiceGrades);
 
 export const mistakePracticeSessionSchema = z.object({
   id: z.string().uuid(),
   learnerId: z.string().min(1).max(64),
-  /** ErrorMemory ids in practice order. */
   queue: z.array(z.string().uuid()).min(1).max(40),
   cursor: z.number().int().min(0),
   grades: z.array(
@@ -129,6 +161,117 @@ export function emptyErrorBook(
   return { learnerId, memories: [], updatedAt: nowIso };
 }
 
+const LEGACY_TYPE_MAP: Record<string, MistakeClass> = {
+  author_work_swap: "wrong_author",
+  unknown_fact: "forgot_fact",
+  chronology: "wrong_literary_period",
+  concept_misunderstanding: "confused_concepts",
+  plot_detail: "forgot_fact",
+  literary_term: "confused_concepts",
+  uncertainty: "weak_explanation",
+  other: "forgot_fact",
+  forgot_fact: "forgot_fact",
+  confused_concepts: "confused_concepts",
+  partial_answer: "partial_answer",
+  wrong_author: "wrong_author",
+  wrong_literary_period: "wrong_literary_period",
+  weak_explanation: "weak_explanation",
+  repeated_mistake: "repeated_mistake",
+};
+
+function mapLegacyStatus(raw: unknown, practiceCount: number): MistakeStatus {
+  if (raw === "new" || raw === "weak" || raw === "improving" || raw === "mastered") {
+    return raw;
+  }
+  if (raw === "resolved") return "mastered";
+  if (raw === "practicing") return "improving";
+  if (raw === "open") return practiceCount > 0 ? "weak" : "new";
+  return "new";
+}
+
+/** Normalize one memory from legacy or current shape. */
+export function normalizeErrorMemory(raw: unknown): ErrorMemory | null {
+  if (!raw || typeof raw !== "object") return null;
+  const m = raw as Record<string, unknown>;
+  const errorType = LEGACY_TYPE_MAP[String(m.errorType)] ?? "forgot_fact";
+  const practiceCount =
+    typeof m.recoveryAttempts === "number"
+      ? m.recoveryAttempts
+      : typeof m.practiceCount === "number"
+        ? m.practiceCount
+        : 0;
+  const firstOccurredAt = String(
+    m.firstOccurredAt ?? m.date ?? m.updatedAt ?? new Date().toISOString(),
+  );
+  const lastOccurredAt = String(
+    m.lastOccurredAt ?? m.updatedAt ?? firstOccurredAt,
+  );
+  const occurrenceCount =
+    typeof m.occurrenceCount === "number" && m.occurrenceCount >= 1
+      ? m.occurrenceCount
+      : 1;
+  const status = mapLegacyStatus(m.status ?? m.resolvedStatus, practiceCount);
+  const masteredAt =
+    status === "mastered"
+      ? (typeof m.masteredAt === "string"
+          ? m.masteredAt
+          : typeof m.resolvedAt === "string"
+            ? m.resolvedAt
+            : lastOccurredAt)
+      : null;
+
+  const candidate = {
+    id: m.id,
+    learnerId: m.learnerId,
+    question: m.question,
+    studentAnswer: m.studentAnswer,
+    correctConcept: m.correctConcept,
+    whyWrong: m.whyWrong,
+    knowledgeUnit: m.knowledgeUnit,
+    errorType,
+    firstOccurredAt,
+    lastOccurredAt,
+    occurrenceCount,
+    recoveryAttempts: practiceCount,
+    status,
+    successStreak: typeof m.successStreak === "number" ? m.successStreak : 0,
+    masteredAt,
+    updatedAt: String(m.updatedAt ?? lastOccurredAt),
+    source:
+      m.source === "seed"
+        ? "manual"
+        : m.source === "mixed_review" ||
+            m.source === "question_engine" ||
+            m.source === "materials_study" ||
+            m.source === "grounded_study" ||
+            m.source === "manual"
+          ? m.source
+          : "manual",
+  };
+
+  const parsed = errorMemorySchema.safeParse(candidate);
+  return parsed.success ? parsed.data : null;
+}
+
+export function migrateErrorBook(raw: unknown): ErrorMemoryBook | null {
+  if (!raw || typeof raw !== "object") return null;
+  const b = raw as Record<string, unknown>;
+  if (typeof b.learnerId !== "string") return null;
+  const memoriesRaw = Array.isArray(b.memories) ? b.memories : [];
+  const memories: ErrorMemory[] = [];
+  for (const row of memoriesRaw) {
+    const n = normalizeErrorMemory(row);
+    if (n) memories.push(n);
+  }
+  const updatedAt =
+    typeof b.updatedAt === "string" ? b.updatedAt : new Date().toISOString();
+  return errorMemoryBookSchema.parse({
+    learnerId: b.learnerId,
+    memories,
+    updatedAt,
+  });
+}
+
 export type RecordErrorInput = {
   id: string;
   learnerId: string;
@@ -137,14 +280,14 @@ export type RecordErrorInput = {
   correctConcept: string;
   whyWrong: string;
   knowledgeUnit: ErrorKnowledgeUnit;
-  errorType: ErrorType;
+  errorType: MistakeClass;
   nowIso: string;
   source?: ErrorMemory["source"];
 };
 
 /**
- * Record a significant mistake. Dedupes recent same KU + type (updates answer).
- * Reopens resolved memories if the same weakness reappears.
+ * Record a meaningful mistake. Dedupes same KU + class → bumps occurrence.
+ * Reopens mastered memories when the same weakness reappears.
  */
 export function recordError(
   book: ErrorMemoryBook,
@@ -155,15 +298,16 @@ export function recordError(
 
   const existingIdx = book.memories.findIndex((m) => {
     if (m.knowledgeUnit.slug !== input.knowledgeUnit.slug) return false;
-    if (m.errorType !== input.errorType) return false;
-    const t = new Date(m.date).getTime();
-    // Always match unresolved; match resolved only inside window
-    if (m.resolvedStatus !== "resolved") return true;
-    return t >= windowStart;
+    if (m.errorType !== input.errorType && m.errorType !== "repeated_mistake") {
+      return false;
+    }
+    if (m.status !== "mastered") return true;
+    return new Date(m.lastOccurredAt).getTime() >= windowStart;
   });
 
   if (existingIdx >= 0) {
     const prev = book.memories[existingIdx]!;
+    const occurrenceCount = prev.occurrenceCount + 1;
     const memory: ErrorMemory = {
       ...prev,
       question: input.question,
@@ -171,10 +315,13 @@ export function recordError(
       correctConcept: input.correctConcept,
       whyWrong: input.whyWrong,
       knowledgeUnit: input.knowledgeUnit,
-      date: prev.resolvedStatus === "resolved" ? input.nowIso : prev.date,
-      resolvedStatus: "open",
+      // 2+ occurrences → classify as repeated (keep evidence fields updated)
+      errorType: occurrenceCount >= 2 ? "repeated_mistake" : input.errorType,
+      lastOccurredAt: input.nowIso,
+      occurrenceCount,
+      status: "weak",
       successStreak: 0,
-      resolvedAt: null,
+      masteredAt: null,
       updatedAt: input.nowIso,
       source: input.source ?? prev.source,
     };
@@ -196,11 +343,13 @@ export function recordError(
     whyWrong: input.whyWrong,
     knowledgeUnit: input.knowledgeUnit,
     errorType: input.errorType,
-    date: input.nowIso,
-    resolvedStatus: "open",
+    firstOccurredAt: input.nowIso,
+    lastOccurredAt: input.nowIso,
+    occurrenceCount: 1,
+    recoveryAttempts: 0,
+    status: "new",
     successStreak: 0,
-    practiceCount: 0,
-    resolvedAt: null,
+    masteredAt: null,
     updatedAt: input.nowIso,
     source: input.source ?? "manual",
   };
@@ -217,61 +366,75 @@ export function recordError(
 }
 
 /**
- * Apply practice grade. Repeated success → resolved; history stays in book.
+ * Apply recovery practice grade. Updates recoveryAttempts + status.
  */
 export function applyPracticeGrade(
   memory: ErrorMemory,
   grade: PracticeGrade,
   nowIso: string,
 ): ErrorMemory {
-  const practiceCount = memory.practiceCount + 1;
+  const recoveryAttempts = memory.recoveryAttempts + 1;
 
   if (grade === "again") {
     return {
       ...memory,
-      practiceCount,
+      recoveryAttempts,
       successStreak: 0,
-      resolvedStatus: "open",
-      resolvedAt: null,
+      status: "weak",
+      masteredAt: null,
       updatedAt: nowIso,
     };
   }
 
   const successStreak = memory.successStreak + 1;
-  const resolved =
-    successStreak >= errorMemoryConfig.resolveSuccessStreak;
+  const mastered =
+    successStreak >= errorMemoryConfig.masterSuccessStreak;
 
   return {
     ...memory,
-    practiceCount,
+    recoveryAttempts,
     successStreak,
-    resolvedStatus: resolved ? "resolved" : "practicing",
-    resolvedAt: resolved ? nowIso : null,
+    status: mastered ? "mastered" : "improving",
+    masteredAt: mastered ? nowIso : null,
     updatedAt: nowIso,
   };
 }
 
-export function listOpenMemories(book: ErrorMemoryBook): ErrorMemory[] {
+export function listActiveMemories(book: ErrorMemoryBook): ErrorMemory[] {
   return book.memories
-    .filter((m) => m.resolvedStatus !== "resolved")
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-}
-
-export function listResolvedMemories(book: ErrorMemoryBook): ErrorMemory[] {
-  return book.memories
-    .filter((m) => m.resolvedStatus === "resolved")
+    .filter((m) => m.status !== "mastered")
     .sort(
       (a, b) =>
-        new Date(b.resolvedAt ?? b.updatedAt).getTime() -
-        new Date(a.resolvedAt ?? a.updatedAt).getTime(),
+        new Date(b.lastOccurredAt).getTime() -
+        new Date(a.lastOccurredAt).getTime(),
     );
 }
 
-export function countByErrorType(
+/** @deprecated use listActiveMemories */
+export function listOpenMemories(book: ErrorMemoryBook): ErrorMemory[] {
+  return listActiveMemories(book);
+}
+
+export function listMasteredMemories(book: ErrorMemoryBook): ErrorMemory[] {
+  return book.memories
+    .filter((m) => m.status === "mastered")
+    .sort(
+      (a, b) =>
+        new Date(b.masteredAt ?? b.updatedAt).getTime() -
+        new Date(a.masteredAt ?? a.updatedAt).getTime(),
+    );
+}
+
+/** @deprecated use listMasteredMemories */
+export function listResolvedMemories(book: ErrorMemoryBook): ErrorMemory[] {
+  return listMasteredMemories(book);
+}
+
+export function countByMistakeClass(
   memories: ErrorMemory[],
-): Record<ErrorType, number> {
-  const out = Object.fromEntries(errorTypes.map((t) => [t, 0])) as Record<
-    ErrorType,
+): Record<MistakeClass, number> {
+  const out = Object.fromEntries(mistakeClasses.map((t) => [t, 0])) as Record<
+    MistakeClass,
     number
   >;
   for (const m of memories) {
@@ -280,38 +443,62 @@ export function countByErrorType(
   return out;
 }
 
+/** @deprecated */
+export const countByErrorType = countByMistakeClass;
+
 export type MistakesHubSummary = {
+  activeCount: number;
+  masteredCount: number;
+  /** Alias for activeCount — older UI. */
   openCount: number;
   resolvedCount: number;
-  byType: Record<ErrorType, number>;
+  byType: Record<MistakeClass, number>;
+  byStatus: Record<MistakeStatus, number>;
   headlineCs: string;
 };
 
 export function buildMistakesHubSummary(
   book: ErrorMemoryBook,
 ): MistakesHubSummary {
-  const open = listOpenMemories(book);
-  const resolved = listResolvedMemories(book);
-  const byType = countByErrorType(open);
+  const active = listActiveMemories(book);
+  const mastered = listMasteredMemories(book);
+  const byType = countByMistakeClass(active);
+  const byStatus = Object.fromEntries(
+    mistakeStatuses.map((s) => [s, 0]),
+  ) as Record<MistakeStatus, number>;
+  for (const m of book.memories) {
+    byStatus[m.status] += 1;
+  }
   const headlineCs =
-    open.length === 0
-      ? resolved.length === 0
-        ? "Zatím žádné zaznamenané chyby."
-        : `Všechny chyby vyřešené (${resolved.length} v historii).`
-      : `Otevřené chyby: ${open.length} — spusť „Procvičit moje chyby“.`;
+    active.length === 0
+      ? mastered.length === 0
+        ? "Zatím žádné zaznamenané chyby — objeví se po reálných odpovědích v testech a studiu."
+        : `Všechny chyby zvládnuté (${mastered.length} v historii).`
+      : `Aktivní chyby: ${active.length} — spusť „Procvičit moje chyby“.`;
   return {
-    openCount: open.length,
-    resolvedCount: resolved.length,
+    activeCount: active.length,
+    masteredCount: mastered.length,
+    openCount: active.length,
+    resolvedCount: mastered.length,
     byType,
+    byStatus,
     headlineCs,
   };
 }
 
-/** Build practice queue from open errors (newest first, capped). */
 export function buildMistakePracticeQueue(
   book: ErrorMemoryBook,
 ): ErrorMemory[] {
-  return listOpenMemories(book).slice(0, errorMemoryConfig.practiceQueueMax);
+  // Prefer weak / repeated, then new, then improving
+  const rank = (s: MistakeStatus) =>
+    s === "weak" ? 0 : s === "new" ? 1 : s === "improving" ? 2 : 3;
+  return listActiveMemories(book)
+    .sort((a, b) => {
+      const rd = rank(a.status) - rank(b.status);
+      if (rd !== 0) return rd;
+      return b.occurrenceCount - a.occurrenceCount;
+    })
+    .slice(0, errorMemoryConfig.practiceQueueMax);
 }
 
 export function startMistakePracticeSession(input: {
@@ -411,46 +598,98 @@ export function applyMistakeSessionGrade(input: {
 }
 
 /**
- * Infer error type from mixed-review style content (heuristic for auto-ingest).
+ * Classify a meaningful mistake from answer evidence (deterministic heuristics).
  */
+export function classifyMistake(input: {
+  question: string;
+  studentAnswer: string;
+  correctConcept: string;
+  knowledgeSlug?: string;
+  result?: "incorrect" | "partial" | "partially_correct";
+  coverage?: number;
+  whatWasWrong?: string[];
+}): MistakeClass {
+  if (
+    input.result === "partial" ||
+    input.result === "partially_correct" ||
+    (typeof input.coverage === "number" &&
+      input.coverage >= 0.35 &&
+      input.coverage < 0.85)
+  ) {
+    return "partial_answer";
+  }
+
+  const blob =
+    `${input.question} ${input.correctConcept} ${input.studentAnswer} ${input.knowledgeSlug ?? ""}`.toLowerCase();
+
+  if (
+    /autor|napsal|dílo|goriot|dickens|dostojev|mácha|erben|neruda|balzac|tolstoj|shakespeare/.test(
+      blob,
+    )
+  ) {
+    return "wrong_author";
+  }
+  if (
+    /rok|století|období|chronolog|kdy|obrozen|romantismus|realismus|symbolismus|směr/.test(
+      blob,
+    ) &&
+    /romant|realis|symbol|obrozen|stolet|obdob/.test(blob)
+  ) {
+    // Period / movement mix-ups
+    if (
+      /romantismus|realismus|symbolismus|obrozen|stolet/.test(blob)
+    ) {
+      return "wrong_literary_period";
+    }
+  }
+  if (/romantismus|realismus|symbolismus|směr|znak|pojmem|pojem/.test(blob)) {
+    return "confused_concepts";
+  }
+  if (
+    /vysvětl|proč|význam|definuj|definice/.test(blob) ||
+    (typeof input.coverage === "number" && input.coverage < 0.35)
+  ) {
+    return "weak_explanation";
+  }
+  if ((input.whatWasWrong?.length ?? 0) > 0 && /záměn|zaměň|confus/.test(
+    (input.whatWasWrong ?? []).join(" ").toLowerCase(),
+  )) {
+    return "confused_concepts";
+  }
+  return "forgot_fact";
+}
+
+/** @deprecated use classifyMistake */
 export function inferErrorType(input: {
   question: string;
   correctConcept: string;
   knowledgeSlug?: string;
-}): ErrorType {
-  const blob = `${input.question} ${input.correctConcept} ${input.knowledgeSlug ?? ""}`.toLowerCase();
-  if (
-    /autor|napsal|dílo|goriot|dickens|dostojev|mácha|erben|neruda|balzac/.test(
-      blob,
-    )
-  ) {
-    return "author_work_swap";
-  }
-  if (/rok|století|období|chronolog|kdy|obrozen/.test(blob)) {
-    return "chronology";
-  }
-  if (
-    /metafora|epiteton|synekdoch|balada|termín|pojmenování|přívlastek/.test(
-      blob,
-    )
-  ) {
-    return "literary_term";
-  }
-  if (/romantismus|realismus|symbolismus|směr|znak/.test(blob)) {
-    return "concept_misunderstanding";
-  }
-  if (/děj|postava|raskolnikov|oliver|zápletka|scéna/.test(blob)) {
-    return "plot_detail";
-  }
-  return "unknown_fact";
+  studentAnswer?: string;
+  result?: "incorrect" | "partial" | "partially_correct";
+  coverage?: number;
+}): MistakeClass {
+  return classifyMistake({
+    question: input.question,
+    studentAnswer: input.studentAnswer ?? "",
+    correctConcept: input.correctConcept,
+    knowledgeSlug: input.knowledgeSlug,
+    result: input.result,
+    coverage: input.coverage,
+  });
 }
 
-/** Build whyWrong copy for auto-ingest when UI doesn’t supply one. */
 export function defaultWhyWrong(input: {
-  errorType: ErrorType;
+  errorType: MistakeClass;
   studentAnswer: string;
   correctConcept: string;
 }): string {
-  const typeHint = errorTypeLabelsCs[input.errorType];
+  const typeHint = mistakeClassLabelsCs[input.errorType];
   return `Typ: ${typeHint}. Odpověď „${input.studentAnswer}“ neodpovídá správnému konceptu „${input.correctConcept}“.`;
 }
+
+/** Legacy label map for old resolvedStatus UI. */
+export const resolvedStatusLabelsCs: Record<ResolvedStatus, string> = {
+  open: "Otevřená",
+  practicing: "Procvičuje se",
+  resolved: "Vyřešená",
+};

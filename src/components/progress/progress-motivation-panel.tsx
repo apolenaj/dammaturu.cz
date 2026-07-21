@@ -105,13 +105,13 @@ export function ProgressMotivationPanel({
           {view.topicCompletions.length > 0 ? (
             <div>
               <p className="text-caption font-semibold uppercase tracking-wider text-fg-muted">
-                Topic completion
+                Zvládnutá témata
               </p>
               <ul className="mt-2 flex flex-wrap gap-2">
                 {view.topicCompletions.map((t) => (
                   <li key={t.topicId}>
                     <Badge tone="success">
-                      {t.labelCs} · {Math.round(t.pct)} %
+                      {t.labelCs} zvládnut · {Math.round(t.pct)} %
                     </Badge>
                   </li>
                 ))}

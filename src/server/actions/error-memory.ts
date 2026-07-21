@@ -6,7 +6,7 @@ import {
   buildMistakesHubSummary,
   type ErrorMemory,
   type ErrorMemoryBook,
-  type ErrorType,
+  type MistakeClass,
   type MistakePracticeSession,
   type MistakesHubSummary,
   type PracticeGrade,
@@ -51,12 +51,15 @@ export async function recordErrorMemoryAction(input: {
   correctConcept: string;
   whyWrong: string;
   knowledgeUnit: { id?: string; slug: string; title: string };
-  errorType: ErrorType;
+  errorType: MistakeClass;
   source?: ErrorMemory["source"];
 }): Promise<{ ok: true; created: boolean } | Fail> {
   try {
     const learnerId = await getLearnerIdFromCookies();
     if (!learnerId) return { ok: false, error: "Nejdřív dokonči onboarding." };
+    if (input.source === undefined && !input.studentAnswer.trim()) {
+      return { ok: false, error: "Bez skutečné odpovědi chybu neukládám." };
+    }
     const { created } = await recordLearnerError({
       learnerId,
       ...input,
@@ -92,7 +95,7 @@ export async function startMistakePracticeAction(): Promise<
     if (!result) {
       return {
         ok: false,
-        error: "Žádné otevřené chyby k procvičení.",
+        error: "Žádné aktivní chyby k procvičení.",
       };
     }
     track("mistake_practice_started", {
@@ -133,69 +136,23 @@ export async function gradeMistakePracticeAction(input: {
       grade: input.grade,
       completed: result.completed,
     });
+    if (result.completed) {
+      const { markTodayMissionStepFromActivity } = await import(
+        "@/server/daily-dashboard/mission-progress"
+      );
+      await markTodayMissionStepFromActivity({
+        learnerId,
+        stepKind: "mistakes",
+      });
+    }
     revalidatePath("/app/mistakes");
+    revalidatePath("/app/dashboard");
     return {
       ok: true,
       session: result.session,
       book: result.book,
       completed: result.completed,
       summary: buildMistakesHubSummary(result.book),
-    };
-  } catch (error) {
-    return {
-      ok: false,
-      error: error instanceof Error ? error.message : String(error),
-    };
-  }
-}
-
-/** Load demo ErrorMemory — only with NEXT_PUBLIC_ENABLE_DEMO_DATA=1 (never for beta tester). */
-export async function loadDemoMistakesAction(): Promise<
-  | { ok: true; book: ErrorMemoryBook; summary: MistakesHubSummary; count: number }
-  | Fail
-> {
-  try {
-    if (
-      process.env.NODE_ENV === "production" ||
-      process.env.NEXT_PUBLIC_ENABLE_DEMO_DATA !== "1"
-    ) {
-      return {
-        ok: false,
-        error: "Ukázkové chyby nejsou v beta režimu dostupné.",
-      };
-    }
-    const learnerId = await getLearnerIdFromCookies();
-    if (!learnerId) return { ok: false, error: "Nejdřív dokonči onboarding." };
-    const { buildSeedErrorBook } = await import("@/server/error-memory/seed");
-    const { saveErrorBook } = await import("@/server/error-memory/store");
-    const existing = await getOrCreateErrorBook(learnerId);
-    if (existing.memories.length >= 3) {
-      return {
-        ok: true,
-        book: existing,
-        summary: buildMistakesHubSummary(existing),
-        count: 0,
-      };
-    }
-    const seeded = buildSeedErrorBook(learnerId);
-    // Keep any existing, prepend seed that aren't duplicate slugs
-    const have = new Set(existing.memories.map((m) => m.knowledgeUnit.slug));
-    const merged = {
-      ...existing,
-      memories: [
-        ...seeded.memories.filter((m) => !have.has(m.knowledgeUnit.slug)),
-        ...existing.memories,
-      ],
-      updatedAt: new Date().toISOString(),
-    };
-    await saveErrorBook(merged);
-    track("error_memory_demo_loaded", { count: merged.memories.length });
-    revalidatePath("/app/mistakes");
-    return {
-      ok: true,
-      book: merged,
-      summary: buildMistakesHubSummary(merged),
-      count: merged.memories.length - existing.memories.length,
     };
   } catch (error) {
     return {

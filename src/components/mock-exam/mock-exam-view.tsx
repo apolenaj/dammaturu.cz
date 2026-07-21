@@ -25,9 +25,11 @@ import {
   type MockExamTopic,
 } from "@/domain/learning/mock-exam";
 import { recordMockExamProgressAction } from "@/server/actions/progress-gamification";
+import type { LearningCelebration } from "@/domain/learning/progress-gamification";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { LearningCelebrationQueue } from "@/components/progress/learning-celebration-queue";
 import { cn } from "@/lib/cn";
 
 type SpeechRecognitionLike = {
@@ -81,6 +83,7 @@ export function MockExamView({ pack }: { pack: MockExamPack }) {
   const [followIndex, setFollowIndex] = useState(0);
   const [confidence, setConfidence] = useState(3);
   const [report, setReport] = useState<MockExamReport | null>(null);
+  const [celebrations, setCelebrations] = useState<LearningCelebration[]>([]);
   const [listening, setListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
   const [speechError, setSpeechError] = useState<string | null>(null);
@@ -211,10 +214,13 @@ export function MockExamView({ pack }: { pack: MockExamPack }) {
     });
     setReport(result);
     setPhase("report");
-    // Fire-and-forget progress sync (milestones / personal best)
     void recordMockExamProgressAction({
       score: result.overallScore,
       topicSlug: topic.slug,
+    }).then((res) => {
+      if (res.ok && res.celebrations.length) {
+        setCelebrations(res.celebrations);
+      }
     });
   }
 
@@ -223,6 +229,7 @@ export function MockExamView({ pack }: { pack: MockExamPack }) {
     setPhase("select");
     setTopic(null);
     setReport(null);
+    setCelebrations([]);
   }
 
   const currentFollow: MockExamFollowUp | undefined = followUps[followIndex];
@@ -326,7 +333,13 @@ export function MockExamView({ pack }: { pack: MockExamPack }) {
       ) : null}
 
       {phase === "report" && report && topic ? (
-        <ReportPhase pack={pack} topic={topic} report={report} onReset={reset} />
+        <ReportPhase
+          pack={pack}
+          topic={topic}
+          report={report}
+          celebrations={celebrations}
+          onReset={reset}
+        />
       ) : null}
     </div>
   );
@@ -608,15 +621,20 @@ function ReportPhase({
   pack,
   topic,
   report,
+  celebrations,
   onReset,
 }: {
   pack: MockExamPack;
   topic: MockExamTopic;
   report: MockExamReport;
+  celebrations: LearningCelebration[];
   onReset: () => void;
 }) {
   return (
     <section className="space-y-5 rounded-2xl border border-border bg-canvas px-4 py-4">
+      {celebrations.length > 0 ? (
+        <LearningCelebrationQueue initial={celebrations} />
+      ) : null}
       <div className="space-y-2">
         <h2 className="font-display text-xl text-fg">Hodnocení</h2>
         <Alert tone="info" title="Rubrika — ne známka">

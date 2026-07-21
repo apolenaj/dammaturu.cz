@@ -225,11 +225,49 @@ export async function gradeMixedReviewItem(input: {
 
   const currentItem = session.queue[session.cursor] ?? null;
 
+  let repeatedErrors = 0;
+  if (currentItem) {
+    const sch = book.byKnowledgeId[currentItem.knowledgeId];
+    repeatedErrors = sch?.lapseCount ?? 0;
+    try {
+      const { getErrorBook } = await import("@/server/error-memory/store");
+      const errBook = await getErrorBook(input.learnerId);
+      const knowledge = input.pack.knowledge.find(
+        (k) => k.id === currentItem.knowledgeId,
+      );
+      if (errBook && knowledge) {
+        const matches = errBook.memories.filter(
+          (m) =>
+            m.status !== "mastered" &&
+            (m.knowledgeUnit.id === knowledge.id ||
+              m.knowledgeUnit.slug === knowledge.slug),
+        );
+        for (const m of matches) {
+          repeatedErrors = Math.max(repeatedErrors, m.occurrenceCount);
+        }
+      }
+    } catch {
+      // Error memory optional — scheduling still works
+    }
+  }
+
+  const confidence =
+    input.grade === "easy"
+      ? 5
+      : input.grade === "good"
+        ? 4
+        : input.grade === "hard"
+          ? 2
+          : 1;
+
   const result = applySessionGrade({
     session,
     book,
     grade: input.grade,
     nowIso: now,
+    confidence,
+    repeatedErrors,
+    contentDifficulty: 3,
   });
   await saveSession(result.session);
   await saveBook(result.book);
@@ -240,39 +278,25 @@ export async function gradeMixedReviewItem(input: {
       (k) => k.id === currentItem.knowledgeId,
     );
     if (knowledge) {
-      const { recordLearnerError } = await import(
-        "@/server/error-memory/store"
+      const { ingestMeaningfulMistake } = await import(
+        "@/server/error-memory/ingest"
       );
-      const {
-        defaultWhyWrong,
-        inferErrorType,
-      } = await import("@/domain/learning/error-memory");
       const extracted = extractFromPayload(
         currentItem.payload,
         input.studentAnswer,
       );
-      const errorType = inferErrorType({
-        question: extracted.question,
-        correctConcept: extracted.correctConcept,
-        knowledgeSlug: knowledge.slug,
-      });
-      await recordLearnerError({
+      await ingestMeaningfulMistake({
         learnerId: input.learnerId,
         question: extracted.question,
         studentAnswer: extracted.studentAnswer,
         correctConcept: extracted.correctConcept,
-        whyWrong: defaultWhyWrong({
-          errorType,
-          studentAnswer: extracted.studentAnswer,
-          correctConcept: extracted.correctConcept,
-        }),
         knowledgeUnit: {
           id: knowledge.id,
           slug: knowledge.slug,
           title: knowledge.title,
         },
-        errorType,
         source: "mixed_review",
+        result: "incorrect",
         nowIso: now,
       });
     }

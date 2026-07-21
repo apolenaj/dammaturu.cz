@@ -1,31 +1,35 @@
 import type { Metadata } from "next";
+import { HomepageAnalyticsBeacon } from "@/components/analytics/homepage-analytics-beacon";
 import { MarketingShell } from "@/components/shell/MarketingShell";
 import {
-  HomeDashboardShowcase,
-  HomeDiagnostics,
+  HomeCermat,
   HomeFaq,
   HomeFinalCta,
   HomeHero,
-  HomeLessonShowcase,
-  HomeMethods,
-  HomePlan,
-  HomeProblem,
-  HomeReview,
-  HomeScore,
-  HomeSimulation,
-  HomeWeakspots,
+  HomeHowItWorks,
+  HomeOralSimulation,
+  HomeOwnMaterials,
+  HomePricingPreview,
+  HomeReadiness,
+  HomeSuccessJourney,
+  HomeTestingDemo,
+  HomeUploadDemo,
+  homeFaqItems,
 } from "@/components/marketing/home/home-sections";
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
   "https://dammaturu.cz";
 
+const promise =
+  "Nahraj, co se musíš naučit. My tě připravíme až k maturitě.";
+
 export const metadata: Metadata = {
   title: {
-    absolute: "DámMaturu.cz — Víš, co se naučit. Víš, kdy jsi připraven.",
+    absolute: `DámMaturu.cz — ${promise}`,
   },
   description:
-    "DámMaturu promění maturitní učivo v konkrétní plán, procvičování, testy a opakování podle toho, co skutečně umíš. Diagnostika, mastery a Maturita Score.",
+    "Nahraj poznámky a PDF. DámMaturu ti dá denní misi, procvičování z tvých textů, cvičný CERMAT a ústní nanečisto — až k maturitě z češtiny.",
   alternates: {
     canonical: siteUrl,
   },
@@ -34,15 +38,14 @@ export const metadata: Metadata = {
     locale: "cs_CZ",
     url: siteUrl,
     siteName: "DámMaturu.cz",
-    title: "DámMaturu.cz — Víš, co se naučit. Víš, kdy jsi připraven.",
+    title: `DámMaturu.cz — ${promise}`,
     description:
-      "Systém maturitní přípravy: diagnostika, osobní plán, active recall, opakování a Maturita Score. Ne chatbot.",
+      "Materiály → denní mise → testy a ústní. Skutečná appka, ne chatbot.",
   },
   twitter: {
     card: "summary_large_image",
     title: "DámMaturu.cz",
-    description:
-      "Víš přesně, co se naučit. A víš, kdy jsi připraven.",
+    description: promise,
   },
   robots: {
     index: true,
@@ -58,8 +61,7 @@ const jsonLd = {
       "@id": `${siteUrl}/#website`,
       url: siteUrl,
       name: "DámMaturu.cz",
-      description:
-        "Kompletní systém přípravy k maturitě — plán, procvičování, testy a Maturita Score.",
+      description: promise,
       inLanguage: "cs-CZ",
     },
     {
@@ -69,35 +71,25 @@ const jsonLd = {
       operatingSystem: "Web",
       url: siteUrl,
       description:
-        "Vzdělávací systém, který studentovi řekne, co se naučit, ověří znalosti a ukáže připravenost k maturitě.",
+        "Studijní systém k maturitě: nahrání materiálů, denní mise, procvičování, cvičný CERMAT a ústní nanečisto.",
       inLanguage: "cs-CZ",
       offers: {
         "@type": "Offer",
         price: "0",
         priceCurrency: "CZK",
-        description: "Beta přístup řízený registrací",
+        description: "FREE · SMART · AI PRO · MATURITA MAX — entitlements v kódu",
       },
     },
     {
       "@type": "FAQPage",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "Je DámMaturu chatbot s umělou inteligencí?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Ne. Je to systém diagnostiky, plánu, procvičování, testů a opakování.",
-          },
+      mainEntity: homeFaqItems.map((item) => ({
+        "@type": "Question",
+        name: item.q,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.a,
         },
-        {
-          "@type": "Question",
-          name: "Odkud berete učivo?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Z ověřených studijních materiálů s provenance.",
-          },
-        },
-      ],
+      })),
     },
   ],
 };
@@ -105,21 +97,21 @@ const jsonLd = {
 export default function HomePage() {
   return (
     <MarketingShell>
+      <HomepageAnalyticsBeacon />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <HomeHero />
-      <HomeProblem />
-      <HomeDiagnostics />
-      <HomePlan />
-      <HomeMethods />
-      <HomeScore />
-      <HomeWeakspots />
-      <HomeReview />
-      <HomeSimulation />
-      <HomeDashboardShowcase />
-      <HomeLessonShowcase />
+      <HomeHowItWorks />
+      <HomeUploadDemo />
+      <HomeTestingDemo />
+      <HomeReadiness />
+      <HomeCermat />
+      <HomeOralSimulation />
+      <HomeOwnMaterials />
+      <HomeSuccessJourney />
+      <HomePricingPreview />
       <HomeFaq />
       <HomeFinalCta />
     </MarketingShell>

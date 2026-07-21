@@ -2,10 +2,52 @@
 
 Záznam rozhodnutí (ADR-lite). Nová rozhodnutí přidávej nahoru pod „Index“.
 
+## D-063 — Production hardening (2026-07-21)
+
+**Rozhodnutí:** Production-hardening pass: admin middleware ověřuje HMAC session (ne jen přítomnost cookie), safe internal redirects (blok `//`), magic-byte upload validace + same-origin + rate limits (auth/upload/analytics/admin), sanitizace material ID, client-safe errors, prompt-injection wrapping pro untrusted dokumenty, odstranění všech `npm run seed:*` a developer stringů z learner UI. Golden-path Playwright E2E. Kód: `src/lib/security`, `src/server/security`, `e2e/golden-path.spec.ts`.
+
+---
+
+## D-062 — Privacy-conscious product analytics + feature flags (2026-07-21)
+
+**Rozhodnutí:** Interní product analytics sleduje funnel (homepage → registrace → onboarding → první dokument → první session → 10 otázek → day 2/7 return → mock exam → upgrade) a learning outcomes (otázky, mastery Δ, weak topic slugy, studijní minuty, retence). **Žádný student content / PII** v analytics store ani admin UI — allowlist eventů, hashované learner klíče v exportu. Feature flags + lightweight experimenty jsou **oddělené od billing entitlements**. Kód: `src/domain/product-analytics`, `src/domain/feature-flags`, admin `/admin/analytics`.
+
+---
+
+## D-061 — Pricing architecture + Stripe (2026-07-21)
+
+**Rozhodnutí:** Plány **FREE / SMART / AI PRO / MATURITA MAX** s entitlements v kódu (`src/domain/billing`). SMART standard 149 Kč/měsíc, launch 99 Kč (konfigurovatelné). AI PRO 249 Kč/měsíc. MATURITA MAX 499 Kč / 90 dní. Billing přes **Stripe** (Checkout, Customer Portal, webhooks). Stavy: upgrade, downgrade, cancel, expired, past_due, trial. **Osobní nahrané materiály zůstávají vždy čitelné** (`personal_materials_read` durable) — po expiraci se omezí jen upload a placené funkce. Runtime store: FS `data/billing/` + Postgres migrace `0004_billing.sql`.
+
+---
+
+## D-060 — Meaningful celebrations (2026-07-21)
+
+**Rozhodnutí:** Gamifikace oslavuje **reálné studijní výsledky** (mise, streak, zvládnutá témata, readiness Δ, maturita nanečisto, milníky). Event pipeline vrací `LearningCelebration[]`. XP zůstává sekundární stopka. **`XP_AFFECTS_READINESS = false`** — XP ledger nikdy nezapisuje do readiness/mastery.
+
+---
+
+## D-059 — Mobile-first + PWA + 1 minuta (2026-07-21)
+
+**Rozhodnutí:** Learner app je mobile-first: overflow-x clip, safe-area shell, touch targets ≥44px, inputs ≥16px (iOS), sticky study CTAs. PWA: `manifest.ts`, `public/sw.js`, install prompt, `/offline`. Rychlá cesta `/app/minute` — jeden CTA bez rozhodování (flashcards → mixed review → CERMAT → speed → learn hub).
+
+---
+
+## D-051 — Production data model (2026-07-21)
+
+**Rozhodnutí:** Postgres schema rozšířen o identity (`users`, `student_profiles`, `school_profiles`, `exams`, `subject_enrollments`), `study_materials`, a learner runtime (`question_attempts`, `study_sessions`, `mistakes`, `review_schedules`, `study_plans`, `daily_missions`, `mock_exams`, `mock_exam_attempts`, `readiness_snapshots`). Content spine (`source_documents` / `source_chunks` / KU / topics / questions) **zůstává** — žádné paralelní Document tabulky. `mastery_states` rozšířen o score+band (D-031). Dokumentace: `docs/DATA_MODEL.md`. Migrace: `0003_production_core.sql`.
+
+---
+
 ## Index
 
 | ID | Datum | Rozhodnutí | Stav |
 |----|-------|------------|------|
+| D-063 | 2026-07-21 | Production hardening: auth, uploads, rate limits, no seed UI leaks, E2E golden path | accepted |
+| D-062 | 2026-07-21 | Privacy-conscious product analytics + feature flags/experiments | accepted |
+| D-061 | 2026-07-21 | Pricing plans + Stripe entitlements; durable personal data | accepted |
+| D-060 | 2026-07-21 | Meaningful celebrations; XP never inflates readiness | accepted |
+| D-059 | 2026-07-21 | Mobile-first shell, PWA, `/app/minute` one-minute study | accepted |
+| D-051 | 2026-07-21 | Production data model: identity + materials + learner runtime on Postgres | accepted |
 | D-001 | 2026-07-20 | Greenfield repo — žádný existující app kód | accepted |
 | D-002 | 2026-07-20 | Stack: Next.js 15 + TS strict + Tailwind + Supabase | accepted |
 | D-003 | 2026-07-20 | Neforkovat English Quest / TheStrongest | accepted |
@@ -13,12 +55,12 @@ Záznam rozhodnutí (ADR-lite). Nová rozhodnutí přidávej nahoru pod „Index
 | D-005 | 2026-07-20 | AI/LLM není student-facing positioning ani grading P0 | accepted |
 | D-006 | 2026-07-20 | Scheduler v1 = SM-2-like; API připravené na FSRS | accepted |
 | D-007 | 2026-07-20 | ORM: Drizzle + Postgres content schema | accepted |
-| D-008 | 2026-07-20 | Auth: Supabase email auth (password nebo magic link) | proposed |
-| D-009 | 2026-07-20 | IA routes: `/app/*` + `/admin/*` + Czech public slugs | accepted |
+| D-008 | 2026-07-21 | Auth: Supabase email/password (+ magic link, Google optional); local-dev fallback | accepted |
+| D-009 | 2026-07-20 | IA JTBD chrome (D-057): 5+5 nav, ready-only, screen contract | accepted |
 | D-010 | 2026-07-20 | FeatureState místo mrtvých/fake stránek | accepted |
-| D-011 | 2026-07-20 | Design system: semantic tokens, light primary, dark optional | accepted |
+| D-011 | 2026-07-20 | Design system premium (D-058): tokens, motion, celebrate | accepted |
 | D-012 | 2026-07-20 | `/design-system` showcase jen v development | accepted |
-| D-013 | 2026-07-20 | Onboarding: file learner store + cookie do Supabase auth | accepted |
+| D-013 | 2026-07-21 | Learner id = auth.uid (normalized); progress FS keyed by auth user | accepted |
 | D-014 | 2026-07-20 | Content model: atomic KU + chunks, not markdown blobs | accepted |
 | D-015 | 2026-07-20 | Ingestion: allowlist DOCX → needs_review, never auto-publish | accepted |
 | D-016 | 2026-07-20 | Content QA: flag-only auto; FINAL jen s reviewer note | accepted |
@@ -46,7 +88,7 @@ Záznam rozhodnutí (ADR-lite). Nová rozhodnutí přidávej nahoru pod „Index
 | D-038 | 2026-07-20 | Deadline-aware planner: fáze, buffer, přepočet po miss, cap backlogu | accepted |
 | D-039 | 2026-07-20 | Private BETA profile: student pulse + PO dashboard, privacy-safe telemetry | accepted |
 | D-040 | 2026-07-20 | Beta learning path: 6 fází z cjl-beta kurikula, pořadí dle diagnostiky | accepted |
-| D-041 | 2026-07-20 | Zachraň mě: Priority Plan (exam×weak×forget×prereq), triáž ne cram | accepted |
+| D-041 | 2026-07-20 | Zachraň mě: nouzový plánovač (D-056: 5 bucketů + session) | accepted |
 | D-042 | 2026-07-20 | Literární dílo: generické schema + 14 tabů; Máj/Kytice/Babička | accepted |
 | D-043 | 2026-07-20 | Kytice experience: 13 balad + hry ze SOURCE / verified KU | accepted |
 | D-044 | 2026-07-20 | Máj exam prep: 7 aktivit + chybějící KU po oral simulaci | accepted |
@@ -110,13 +152,13 @@ Záznam rozhodnutí (ADR-lite). Nová rozhodnutí přidávej nahoru pod „Index
 
 **Rozhodnutí:** Drizzle ORM + PostgreSQL. Schema v `src/db/schema`, SQL migrace `0001_content_model.sql`.
 
-## D-008 — Auth method (proposed)
+## D-008 — Auth method
 
-**Možnosti:** magic link vs password.
+**Rozhodnutí:** Supabase Auth — e-mail/heslo (P0), magic link (zapnuto defaultně při Supabase), Google OAuth (opt-in `NEXT_PUBLIC_AUTH_GOOGLE=true`). Session přes `@supabase/ssr` cookies. Learner id = `auth.uid` bez pomlček.
 
-**Návrh pro beta:** email + password (jednodušší pro opakované denní loginy studentky) + later magic link.
+**Local-dev:** Pokud chybí Supabase env a `NODE_ENV !== production`, běží file-backed local Auth (`data/auth-local/`) se stejným learner-id mapováním — jen pro vývoj. V production bez Supabase je Auth nedostupný.
 
-**Confirm při:** Fáze 1.
+**Confirm:** 2026-07-21.
 
 ---
 
@@ -124,7 +166,9 @@ Záznam rozhodnutí (ADR-lite). Nová rozhodnutí přidávej nahoru pod „Index
 
 **Rozhodnutí:** Veřejné české slugs (`/jak-to-funguje`, …). Learner pod `/app/*` (dashboard = Dnes). Admin pod `/admin/*`.
 
-**Důvod:** Oddělení marketing / learner / ops; shoda se zadáním IA.
+**Aktualizace D-057 (2026-07-21):** Chrome kolem JTBD. Primární: Dnes · Učit se · Moje materiály · Testy · Pokrok. Sekundární: Opakování · Moje chyby · Plán · Zkouška nanečisto · Profil. Hlubší nástroje (CERMAT, literatura, témata, Zachraň mě, profil maturity) jen z hubů. Navigace filtruje `ready` only. Screen contract: účel + 1 CTA + empty/loading/error (`AppPageHeader`, `EmptyState`, `AppLoadingState`, `AppErrorState`).
+
+**Důvod:** Oddělení marketing / learner / ops; snížení kognitivní zátěže.
 
 ## D-010 — FeatureState
 
@@ -134,15 +178,17 @@ Záznam rozhodnutí (ADR-lite). Nová rozhodnutí přidávej nahoru pod „Index
 
 **Rozhodnutí:** Semantic CSS tokens + Tailwind mapování. Light primary. Dark přes `.dark`. Komponenty v `src/components/ui/*`. Bez AI neon / infantilní estetiky.
 
+**Aktualizace D-058 (2026-07-21):** Premium redesign — Duolingo friendliness + Linear polish. Teal action + ember accent, Fraunces/Manrope hierarchy, card variants, progress shine/celebrate, CelebrateMoment / StreakPill / ProgressSteps, soft elevation + micro-interactions, `prefers-reduced-motion` preserved. Docs: `docs/DESIGN_SYSTEM.md`.
+
 ## D-012 — Design showcase
 
-**Rozhodnutí:** `/design-system` renderuje showcase jen když `NODE_ENV !== "production"`; jinak `notFound()`.
+**Rozhodnutí:** `/design-system` showcase jen v development; jinak `notFound()`.
 
-## D-013 — Onboarding persistence
+## D-013 — Onboarding / progress identity
 
-**Rozhodnutí:** Do příchodu Supabase Auth ukládat learner profil + study plan do `data/learners/*.json` a vázat přes httpOnly cookie `dm_learner_id`.
+**Rozhodnutí:** Learner record + veškerý progress ve `data/**` je klíčovaný stabilním `learnerId = auth.uid` (UUID bez pomlček). Soft cookie `dm_learner_id` je odstraněná. Cross-device = stejný Auth účet na stejném serveru s persistentním diskem (nebo budoucí DB).
 
-**Důsledky:** Persistentní lokálně / na serveru s filesystemem. Na serverless bez disku je potřeba migrace na DB. Rozhraní (`upsertLearner`) je připravené na výměnu.
+**Důsledky:** Logout nesmaže progress. Login na jiném zařízení obnoví stejný learnerId. Serverless bez disku vyžaduje migraci progress store na Postgres/Supabase Storage.
 
 ## D-014 — Atomic content model
 
@@ -254,7 +300,9 @@ Záznam rozhodnutí (ADR-lite). Nová rozhodnutí přidávej nahoru pod „Index
 
 ## D-041 — Zachraň mě (Priority Plan)
 
-**Rozhodnutí:** Režim pro málo času: vstupy deadline + denní minuty + předměty → **Priority Plan**. Skóre = `exam relevance × weakness × forgetting risk × prerequisite importance`. Explicitní bucketty: **Dnes musíš zvládnout toto** · **Toto může počkat** · **Toto už umíš** · **Toto je riziko**. Manifesto: není to „nauč se náhodně všechno rychleji“ — must-today je zastropovaný time budgetem. Beta default deadline **31. 8. 2026**; zatím plně ČJL. Kód: `src/domain/learning/zachran-me.ts`, UI `/app/zachran-me`.
+**Rozhodnutí (původní):** Režim pro málo času: vstupy deadline + denní minuty + předměty → **Priority Plan**. Skóre = `exam relevance × weakness × forgetting risk × prerequisite importance`. Explicitní bucketty: **Dnes musíš zvládnout toto** · **Toto může počkat** · **Toto už umíš** · **Toto je riziko**. Manifesto: není to „nauč se náhodně všechno rychleji“ — must-today je zastropovaný time budgetem. Beta default deadline **31. 8. 2026**; zatím plně ČJL. Kód: `src/domain/learning/zachran-me.ts`, UI `/app/zachran-me`.
+
+**Aktualizace D-056 (2026-07-21):** Přestavba na **nouzový studijní plánovač**. Vstupy: skutečný termín maturity · dostupné hodiny · vybrané **podporované** složky (`cermat_didactic`, `oral_literature`, `language_topics`) — žádné nepodporované předměty v UI. Analýza: readiness × weakness × importance × time pressure. Bucketty: **MUSÍŠ UMĚT** · **HIGH IMPACT** · **MĚL/A BYS UMĚT** · **POKUD ZBUDE ČAS** · **UŽ UMÍŠ — NEPLÝTVEJ ČASEM**. Výstup zahrnuje **přesnou příští session** (kroky + minuty + CTA). Signály z CERMAT progress, literatury a kurikula.
 
 ## D-042 — Literární dílo (generický rozbor)
 
@@ -278,7 +326,9 @@ Záznam rozhodnutí (ADR-lite). Nová rozhodnutí přidávej nahoru pod „Index
 
 ## D-047 — Elegantní gamifikace (postup k cíli)
 
-**Rozhodnutí:** Gamifikace podporuje studium, neodvádí pozornost. **Primární** motivace = reálný postup k deadline (denní mise, týdenní cíl 5 misí, streak, mastery coverage, topic completion, personal bests). **XP je sekundární** footnote. Milestones: první téma zvládnuto · 50 KU mastered · 7 dní konzistence · první simulace · 80 % curriculum. **Žádné** infantilní avatary ani náhodné diamanty. UI: kompaktní strip na `/app/dashboard` + plný panel na `/app/progress`. Kód: `src/domain/learning/progress-gamification.ts`.
+**Rozhodnutí:** Gamifikace podporuje studium, neodvádí pozornost. **Primární** motivace = reálný postup k deadline (denní mise, týdenní cíl 5 misí, streak, mastery coverage, topic completion, personal bests). **XP je sekundární** footnote. Milestones: první oblast zvládnuta · 50 KU · 7 dní v řadě · první maturita nanečisto · 80 % učiva. **Žádné** infantilní avatary ani náhodné diamanty. UI: kompaktní strip na `/app/dashboard` + plný panel na `/app/progress`.
+
+**Aktualizace D-060 (2026-07-21):** Event celebrations (`LearningCelebration`) pro mise, streak marks, weekly goal, topic „X zvládnut“, readiness „+N % v …“, mock exam. XP **nesmí** inflatovat readiness score (`XP_AFFECTS_READINESS = false`).
 
 ## D-048 — Admin Content Studio
 

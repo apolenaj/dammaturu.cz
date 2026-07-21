@@ -30,13 +30,13 @@ export function Alert({
     <div
       role={role}
       className={cn(
-        "rounded-lg border px-4 py-3",
+        "rounded-xl border px-4 py-3.5 shadow-xs",
         toneStyles[tone],
         className,
       )}
       {...props}
     >
-      <p className="text-body-sm font-semibold">{title}</p>
+      <p className="text-body-sm font-semibold tracking-tight">{title}</p>
       {children ? (
         <div className="mt-1 text-body-sm opacity-90">{children}</div>
       ) : null}

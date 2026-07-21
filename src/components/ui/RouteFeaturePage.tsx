@@ -24,7 +24,7 @@ export function RouteFeaturePage({
         title="Stránka"
         description="Tato route není v katalogu."
         availability="blocked"
-        nextStep="Doplň metadata do routeCatalog."
+        nextStep="Tato stránka zatím není připravená. Vrať se na Dnes."
         primaryHref="/app/dashboard"
         primaryLabel="Zpět na Dnes"
       />

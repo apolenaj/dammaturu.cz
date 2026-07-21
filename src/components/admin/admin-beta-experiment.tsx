@@ -58,13 +58,12 @@ export async function AdminBetaExperimentGlance() {
         Detail:{" "}
         <Link href="/app/progress/experiment" className="font-semibold text-action">
           learner report
-        </Link>{" "}
-        ·{" "}
-        <code className="text-caption">docs/BETA_EXPERIMENT.md</code>
+        </Link>
+        .
       </p>
       {rows.length === 0 ? (
         <p className="text-body-sm text-fg-muted">
-          Zatím žádný experiment book (`data/beta-experiment/`).
+          Zatím žádný experiment book.
         </p>
       ) : (
         <ul className="space-y-2 text-body-sm">

@@ -19,8 +19,7 @@ export default async function MajExamPrepPage() {
         <h1 className="font-display text-display-md text-fg">Máj</h1>
         <Card>
           <CardDescription>
-            Exam prep ještě není nasazený. Spusť{" "}
-            <code className="text-body-sm">npm run seed:maj</code> (vyžaduje
+Tento obsah zatím není k dispozici. Zkus jinou aktivitu nebo se vrať později.
             ingest Máj.docx).
           </CardDescription>
         </Card>

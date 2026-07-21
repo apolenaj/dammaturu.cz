@@ -2,6 +2,7 @@ import {
   applyMistakeSessionGrade,
   emptyErrorBook,
   errorMemoryBookSchema,
+  migrateErrorBook,
   mistakePracticeSessionSchema,
   recordError,
   startMistakePracticeSession,
@@ -44,9 +45,21 @@ export async function getErrorBook(
   learnerId: string,
 ): Promise<ErrorMemoryBook | null> {
   try {
-    return errorMemoryBookSchema.parse(
-      JSON.parse(await fs.readFile(bookPath(learnerId), "utf8")),
-    );
+    const raw = JSON.parse(await fs.readFile(bookPath(learnerId), "utf8"));
+    const migrated = migrateErrorBook(raw);
+    if (!migrated) {
+      return errorMemoryBookSchema.parse(raw);
+    }
+    // Persist migration so legacy fields disappear from disk
+    const legacyHint =
+      Array.isArray(raw.memories) &&
+      raw.memories[0] &&
+      (raw.memories[0].resolvedStatus != null ||
+        raw.memories[0].firstOccurredAt == null);
+    if (legacyHint) {
+      await saveErrorBook(migrated);
+    }
+    return migrated;
   } catch (error) {
     const err = error as NodeJS.ErrnoException;
     if (err.code === "ENOENT") return null;

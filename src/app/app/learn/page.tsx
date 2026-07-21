@@ -7,6 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { AppPageHeader } from "@/components/shell/app-screen";
+import { EmptyState } from "@/components/ui/empty-state";
 import { computeQuickGraspStats } from "@/domain/learning/quick-grasp";
 import { getCurrentLearnerAction } from "@/server/actions/onboarding";
 import { listLessons } from "@/server/lesson-engine/store";
@@ -29,6 +31,29 @@ import { getBabickaExperiencePack } from "@/server/babicka-experience/store";
 
 export const metadata: Metadata = { title: "Učit se" };
 export const dynamic = "force-dynamic";
+
+const MATURITA_TOOLS = [
+  {
+    href: "/app/literature",
+    title: "Literatura k ústní",
+    hint: "Karty knih, mastery, losování.",
+  },
+  {
+    href: "/app/topics",
+    title: "Témata kurikula",
+    hint: "Moduly ČJL podle exam relevance.",
+  },
+  {
+    href: "/app/cermat",
+    title: "CERMAT ČJL",
+    hint: "Didaktický trénink po kategoriích.",
+  },
+  {
+    href: "/app/zachran-me",
+    title: "Zachraň mě",
+    hint: "Nouzový plán, když zbývá málo času.",
+  },
+] as const;
 
 export default async function LearnPage() {
   const [
@@ -73,29 +98,80 @@ export default async function LearnPage() {
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-8">
-      <div>
-        <h1 className="font-display text-display-md text-fg">Učit se</h1>
-        <p className="mt-2 text-body-md text-fg-secondary">
-          Režim <strong>Rychle pochopit</strong> — mikrobloky 2–5 min (1 myšlenka,
-          1 příklad, 1 otázka) + retrieval checkpoint. Žádné scrollování dlouhým
-          textem.
-        </p>
-      </div>
+      <AppPageHeader
+        title="Učit se"
+        purpose="Vyber jeden režim a jdi do hloubky. Maturitní nástroje jsou dole — ne v hlavní navigaci."
+        primaryAction={{
+          label: "Studium z mých materiálů",
+          href: "/app/materials/study",
+        }}
+        secondaryAction={{
+          label: "Zpět na Dnes",
+          href: "/app/dashboard",
+        }}
+      />
 
       {!learner ? (
-        <Card>
-          <CardDescription>
-            Pro uložení completion a úspěšnosti{" "}
-            <Link
-              href="/onboarding"
-              className="font-semibold text-action hover:underline"
-            >
-              dokonči onboarding
-            </Link>
-            .
-          </CardDescription>
-        </Card>
+        <EmptyState
+          title="Nejdřív onboarding"
+          description="Bez profilu neumíme ukládat completion a úspěšnost."
+          actionLabel="Dokončit onboarding"
+          actionHref="/onboarding"
+        />
       ) : null}
+
+      <section className="space-y-3">
+        <h2 className="font-display text-xl font-semibold text-fg">
+          Maturitní nástroje
+        </h2>
+        <p className="text-body-sm text-fg-secondary">
+          Literatura, témata, CERMAT a nouzový plán — všechno odtud, ať chrome
+          zůstane čistý.
+        </p>
+        <ul className="grid gap-2 sm:grid-cols-2">
+          {MATURITA_TOOLS.map((tool) => (
+            <li key={tool.href}>
+              <Link
+                href={tool.href}
+                className="block rounded-xl border border-border bg-surface px-4 py-3 transition hover:border-action/50"
+              >
+                <p className="font-semibold text-fg">{tool.title}</p>
+                <p className="text-caption text-fg-muted">{tool.hint}</p>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="font-display text-xl font-semibold text-fg">
+          Učit se z mých materiálů
+        </h2>
+        <p className="text-body-sm text-fg-secondary">
+          Otázky, vysvětlení a hodnocení jen z toho, co jsi nahrál — s citací a
+          jistotou. Když podklad chybí, řekneme to rovnou.
+        </p>
+        <Link
+          href="/app/materials/study"
+          className="block rounded-xl border border-border bg-surface p-4 shadow-xs transition hover:border-action/50"
+        >
+          <p className="font-semibold text-fg">Spustit studium z materiálů</p>
+          <p className="mt-1 text-caption text-fg-muted">
+            Ověřeno ze zdroje · Pravděpodobné · Vyžaduje kontrolu · Zobrazit
+            zdroj
+          </p>
+        </Link>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="font-display text-xl font-semibold text-fg">
+          Rychle pochopit
+        </h2>
+        <p className="text-body-sm text-fg-secondary">
+          Mikrobloky 2–5 min (1 myšlenka, 1 příklad, 1 otázka) + retrieval
+          checkpoint. Žádné scrollování dlouhým textem.
+        </p>
+      </section>
 
       <section className="space-y-3">
         <h2 className="font-display text-xl font-semibold text-fg">
@@ -108,8 +184,7 @@ export default async function LearnPage() {
         {workItems.length === 0 ? (
           <Card>
             <CardDescription>
-              Žádná díla. Spusť{" "}
-              <code className="text-body-sm">npm run seed:literary-works</code>.
+Tento obsah zatím není k dispozici. Zkus jinou aktivitu nebo se vrať později.
             </CardDescription>
           </Card>
         ) : (
@@ -154,7 +229,7 @@ export default async function LearnPage() {
             <CardDescription className="mt-1">
               {majPack
                 ? `${majPack.knowledgeUnits.length} KU · 7 aktivit · chybějící KU po simulaci`
-                : "Spusť npm run seed:maj"}
+                : "Obsah se připravuje — zkus jinou aktivitu."}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -168,7 +243,7 @@ export default async function LearnPage() {
             <CardDescription className="mt-1">
               {kyticePack
                 ? `${kyticePack.ballads.length} balad · verified KU`
-                : "Spusť npm run seed:kytice"}
+                : "Obsah se připravuje — zkus jinou aktivitu."}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -182,7 +257,7 @@ export default async function LearnPage() {
             <CardDescription className="mt-1">
               {babickaPack
                 ? `${babickaPack.knowledgeUnits.length} KU · 6 aktivit · karty / T/F / realismus`
-                : "Spusť npm run seed:babicka"}
+                : "Obsah se připravuje — zkus jinou aktivitu."}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -199,8 +274,7 @@ export default async function LearnPage() {
         {speedPacks.length === 0 ? (
           <Card>
             <CardDescription>
-              Žádný balíček. Spusť{" "}
-              <code className="text-body-sm">npm run seed:speed-round</code>.
+Tento obsah zatím není k dispozici. Zkus jinou aktivitu nebo se vrať později.
             </CardDescription>
           </Card>
         ) : (
@@ -243,8 +317,7 @@ export default async function LearnPage() {
         {nonsensePacks.length === 0 ? (
           <Card>
             <CardDescription>
-              Žádný balíček. Spusť{" "}
-              <code className="text-body-sm">npm run seed:najdi-nesmysl</code>.
+Tento obsah zatím není k dispozici. Zkus jinou aktivitu nebo se vrať později.
             </CardDescription>
           </Card>
         ) : (
@@ -287,11 +360,8 @@ export default async function LearnPage() {
         {reconstructions.length === 0 ? (
           <Card>
             <CardDescription>
-              Žádný challenge. Spusť{" "}
-              <code className="text-body-sm">
-                npm run seed:story-reconstruction
-              </code>{" "}
-              (vyžaduje ingest).
+              Tento obsah zatím není k dispozici. Zkus jinou aktivitu nebo se
+              vrať později.
             </CardDescription>
           </Card>
         ) : (
@@ -335,8 +405,7 @@ export default async function LearnPage() {
         {arenas.length === 0 ? (
           <Card>
             <CardDescription>
-              Žádná aréna. Spusť{" "}
-              <code className="text-body-sm">npm run seed:match-arena</code>.
+Tento obsah zatím není k dispozici. Zkus jinou aktivitu nebo se vrať později.
             </CardDescription>
           </Card>
         ) : (
@@ -379,9 +448,7 @@ export default async function LearnPage() {
         {games.length === 0 ? (
           <Card>
             <CardDescription>
-              Žádná hra. Spusť{" "}
-              <code className="text-body-sm">npm run seed:kdo-jsem</code> (vyžaduje
-              ingest).
+Tento obsah zatím není k dispozici. Zkus jinou aktivitu nebo se vrať později.
             </CardDescription>
           </Card>
         ) : (
@@ -425,8 +492,7 @@ export default async function LearnPage() {
         {recalls.length === 0 ? (
           <Card>
             <CardDescription>
-              Žádný balíček. Spusť{" "}
-              <code className="text-body-sm">npm run seed:active-recall</code>.
+Tento obsah zatím není k dispozici. Zkus jinou aktivitu nebo se vrať později.
             </CardDescription>
           </Card>
         ) : (
@@ -470,8 +536,7 @@ export default async function LearnPage() {
         {teachPacks.length === 0 ? (
           <Card>
             <CardDescription>
-              Žádný balíček. Spusť{" "}
-              <code className="text-body-sm">npm run seed:teach-it-back</code>.
+Tento obsah zatím není k dispozici. Zkus jinou aktivitu nebo se vrať později.
             </CardDescription>
           </Card>
         ) : (
@@ -510,7 +575,8 @@ export default async function LearnPage() {
           Flashcards
         </h2>
         <p className="text-body-sm text-fg-secondary">
-          Typed karty + SM-2 schedule. Odpověz v hlavě, ohodnoť, sleduj due.
+          Typed karty + chytré opakování. Odpověz v hlavě, ohodnoť — appka ví,
+          co začínáš zapomínat.
         </p>
         <Card>
           <CardHeader>
@@ -542,8 +608,7 @@ export default async function LearnPage() {
         {timelines.length === 0 ? (
           <Card>
             <CardDescription>
-              Žádná osa. Spusť{" "}
-              <code className="text-body-sm">npm run seed:timeline</code>.
+Tento obsah zatím není k dispozici. Zkus jinou aktivitu nebo se vrať později.
             </CardDescription>
           </Card>
         ) : (
@@ -585,8 +650,7 @@ export default async function LearnPage() {
         {maps.length === 0 ? (
           <Card>
             <CardDescription>
-              Žádná mapa. Spusť{" "}
-              <code className="text-body-sm">npm run seed:connection-map</code>.
+Tento obsah zatím není k dispozici. Zkus jinou aktivitu nebo se vrať později.
             </CardDescription>
           </Card>
         ) : (
@@ -630,8 +694,7 @@ export default async function LearnPage() {
         {stories.length === 0 ? (
           <Card>
             <CardDescription>
-              Žádný příběh. Spusť{" "}
-              <code className="text-body-sm">npm run seed:story-mode</code>.
+Tento obsah zatím není k dispozici. Zkus jinou aktivitu nebo se vrať později.
             </CardDescription>
           </Card>
         ) : (
@@ -671,8 +734,7 @@ export default async function LearnPage() {
         {packs.length === 0 ? (
           <Card>
             <CardDescription>
-              Žádný pack. Spusť{" "}
-              <code className="text-body-sm">npm run seed:quick-grasp</code>.
+Tento obsah zatím není k dispozici. Zkus jinou aktivitu nebo se vrať později.
             </CardDescription>
           </Card>
         ) : (
@@ -719,8 +781,7 @@ export default async function LearnPage() {
         {lessons.length === 0 ? (
           <Card>
             <CardDescription>
-              Žádné lekce. Spusť{" "}
-              <code className="text-body-sm">npm run seed:lessons</code>.
+Tento obsah zatím není k dispozici. Zkus jinou aktivitu nebo se vrať později.
             </CardDescription>
           </Card>
         ) : (

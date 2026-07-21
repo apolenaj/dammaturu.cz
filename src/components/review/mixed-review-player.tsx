@@ -241,14 +241,19 @@ export function MixedReviewPlayer({
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6">
       <header className="space-y-2">
-        <Badge tone="warning">Spaced review</Badge>
+        <Badge tone="warning">Opakovat</Badge>
         <h1 className="font-display text-display-md text-fg">{pack.title}</h1>
-        <p className="text-body-md text-fg-secondary">{pack.summary}</p>
+        <p className="text-body-md text-fg-secondary">
+          Appka řadí nejdřív to, co už začínáš zapomínat.
+        </p>
       </header>
 
       {summary ? (
         <Alert title="Dnes" tone="info">
-          <p>{summary.headlineCs}</p>
+          <p className="font-semibold text-fg">{summary.headlineCs}</p>
+          <p className="mt-1 text-body-sm text-fg-secondary">
+            {summary.supportingCs}
+          </p>
           {summary.interleaveRationaleCs ? (
             <p className="mt-2 text-body-sm text-fg-secondary">
               {summary.interleaveRationaleCs}
@@ -265,7 +270,7 @@ export function MixedReviewPlayer({
 
       {!learnerId ? (
         <Alert title="Onboarding" tone="info">
-          Pro schedule dokonči onboarding.
+          Pro opakování dokonči onboarding.
         </Alert>
       ) : null}
 

@@ -1,7 +1,8 @@
 # CONTENT_MODEL — DámMaturu.cz
 
 > Atomický vzdělávací model pro adaptive learning.  
-> TypeScript: `src/domain/content/` · Drizzle: `src/db/schema/` · SQL: `src/db/migrations/0001_content_model.sql`
+> TypeScript: `src/domain/content/` · Drizzle: `src/db/schema/` · SQL: `src/db/migrations/0001_content_model.sql`  
+> **Full production schema (User, Exam, StudyMaterial, attempts, …):** [`DATA_MODEL.md`](./DATA_MODEL.md)
 
 ## 1. Principy
 
@@ -41,7 +42,7 @@ Moduly jsou první třída (`modules` tabulka). Topic dependency graph = `topic_
 | **LearningObjective** | Cíl výuky ↔ KU |
 | **Question / Answer / Explanation** | Assessment |
 | **Flashcard / Exercise / ExamQuestion** | Specializace assessment |
-| **MasteryState** | Learner × KU progress |
+| **MasteryState** | Learner × KU progress (`score`+`band` canonical — see DATA_MODEL.md) |
 
 ## 4. KnowledgeUnit (povinná pole)
 

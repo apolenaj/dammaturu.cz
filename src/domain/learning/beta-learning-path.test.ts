@@ -53,13 +53,15 @@ describe("beta-learning-path (D-040)", () => {
     expect(czechSlugs).toContain("ceske-realisticke-drama");
   });
 
-  it("builds 6 phases until Aug 31 from pack", () => {
+  it("builds 6 phases until the student's target date from pack", () => {
     const path = buildBetaLearningPath({
       pack: packLike(),
       diagnostic: emptyDiagnosticSnapshot(),
+      targetDate: "2026-09-15",
       now: new Date(2026, 6, 21, 12, 0, 0),
     });
-    expect(path.targetDate).toBe("2026-08-31");
+    expect(path.targetDate).toBe("2026-09-15");
+    expect(path.targetDate).not.toBe("2026-08-31");
     expect(path.phases).toHaveLength(6);
     expect(path.phases.map((p) => p.id)).toEqual([
       "diagnostics",
@@ -103,6 +105,7 @@ describe("beta-learning-path (D-040)", () => {
     const path = buildBetaLearningPath({
       pack,
       diagnostic,
+      targetDate: "2026-09-15",
       now: new Date(2026, 6, 21, 12, 0, 0),
     });
     expect(path.diagnosticApplied).toBe(true);
@@ -165,6 +168,7 @@ describe("beta-learning-path (D-040)", () => {
     const path = buildBetaLearningPath({
       pack: packLike(),
       diagnostic,
+      targetDate: "2026-09-15",
       now: new Date(2026, 6, 21, 12, 0, 0),
     });
     const sim = path.phases.find((p) => p.id === "simulation_repair")!;

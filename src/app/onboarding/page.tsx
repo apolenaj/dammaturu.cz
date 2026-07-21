@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { OnboardingWizard } from "@/components/onboarding/onboarding-wizard";
 import { BrandMark } from "@/components/brand/BrandMark";
+import { getAuthIdentity } from "@/server/learner-session";
 import { getCurrentLearnerAction } from "@/server/actions/onboarding";
 
 export const metadata: Metadata = {
@@ -16,6 +18,11 @@ type PageProps = {
 };
 
 export default async function OnboardingPage({ searchParams }: PageProps) {
+  const identity = await getAuthIdentity();
+  if (!identity) {
+    redirect("/registrace?next=/onboarding");
+  }
+
   const params = await searchParams;
   const edit = params.edit === "1" || params.edit === "true";
   const learner = await getCurrentLearnerAction();
@@ -33,12 +40,9 @@ export default async function OnboardingPage({ searchParams }: PageProps) {
               Zpět do appky
             </Link>
           ) : (
-            <Link
-              href="/"
-              className="text-body-sm font-medium text-fg-secondary hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-            >
-              Domů
-            </Link>
+            <p className="text-caption text-fg-muted truncate max-w-[14rem]">
+              {identity.email}
+            </p>
           )}
         </div>
       </header>

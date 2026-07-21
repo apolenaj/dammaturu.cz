@@ -22,8 +22,7 @@ export default async function TopicsPage({ searchParams }: PageProps) {
         <h1 className="font-display text-display-md text-fg">Témata</h1>
         <Card>
           <CardDescription>
-            Curriculum ještě není nasazený. Spusť{" "}
-            <code className="text-body-sm">npm run seed:curriculum</code>.
+Tento obsah zatím není k dispozici. Zkus jinou aktivitu nebo se vrať později.
           </CardDescription>
         </Card>
         <Link

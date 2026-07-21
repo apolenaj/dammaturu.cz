@@ -28,6 +28,7 @@ export async function recordReadinessPractice(input: {
   units: Array<{ id: string; title?: string; areaId?: ReadinessAreaId }>;
   correctness: "incorrect" | "partial" | "correct";
   kind?: "practice" | "review" | "diagnostic" | "self_grade";
+  difficulty?: number;
 }): Promise<ReadinessBook | null> {
   try {
     const learnerId = assertSafeId(input.learnerId, "learner id");
@@ -64,7 +65,7 @@ export async function recordReadinessPractice(input: {
         {
           kind: input.kind ?? "practice",
           correctness: input.correctness,
-          difficulty: 3,
+          difficulty: input.difficulty ?? 3,
           hintsUsed: 0,
           speedRelevant: false,
           isTransfer: false,
@@ -75,12 +76,32 @@ export async function recordReadinessPractice(input: {
       units[idx] = { ...unit, state };
     }
 
-    const next = readinessBookSchema.parse({
+    let next = readinessBookSchema.parse({
       ...book,
       units,
       updatedAt: now,
     });
+    // Light weekly history from mastery provisional (full evidence snapshot on hub)
+    const { buildReadinessSnapshot, upsertWeeklyHistory, snapshotToHistoryPoint } =
+      await import("@/domain/learning/readiness");
+    const light = buildReadinessSnapshot(next, now);
+    next = upsertWeeklyHistory(
+      next,
+      light.overall.provisionalPct ?? light.overallPct,
+      now,
+    );
     await saveReadinessBook(next);
+    try {
+      const { appendReadinessHistory } = await import(
+        "@/server/readiness/history-store"
+      );
+      await appendReadinessHistory(
+        learnerId,
+        snapshotToHistoryPoint(light),
+      );
+    } catch {
+      // history optional
+    }
     return next;
   } catch {
     return null;
