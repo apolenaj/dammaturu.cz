@@ -28,7 +28,7 @@ export const masteryBandLabelsCs: Record<MasteryBand, string> = {
   learning: "Učím se",
   familiar: "Známé",
   strong: "Silné",
-  mastered: "Zvládnuté",
+  mastered: "Silné",
   at_risk: "Ohrožené",
 };
 
@@ -53,9 +53,9 @@ export const transparentMasteryStateLabelsCs: Record<
 > = {
   new: "Nové",
   learning: "Učím se",
-  fragile: "Křehké",
-  stable: "Stabilní",
-  mastered: "Zvládnuté",
+  fragile: "K procvičení",
+  stable: "Silné",
+  mastered: "Silné",
 };
 
 export const transparentMasteryStateDescriptionsCs: Record<
@@ -64,13 +64,39 @@ export const transparentMasteryStateDescriptionsCs: Record<
 > = {
   new: "Ještě bez reálného vybavení ze zdroje.",
   learning: "Začínáš si vybavovat — potřebuješ opakování.",
-  fragile: "Umíš to někdy, ale snadno to vypadne nebo je to pochybný.",
-  stable: "Opakovaně správně i s odstupem — stále udržuj.",
-  mastered: "Dostatek úspěšných vybavení včetně opakování a obtížnosti.",
+  fragile: "Umíš to někdy, ale snadno to vypadne — vrať se k tomu.",
+  stable: "Opakovaně správně i s odstupem — drž tempo.",
+  mastered: "Dostatek úspěšných vybavení — udržuj krátkým opakováním.",
 };
 
+/** Four student-facing visual states (UI chips). */
+export const studentVisualStates = [
+  "new",
+  "learning",
+  "needs_review",
+  "strong",
+] as const;
+
+export type StudentVisualState = (typeof studentVisualStates)[number];
+
+export const studentVisualStateLabelsCs: Record<StudentVisualState, string> = {
+  new: "Nové",
+  learning: "Učím se",
+  needs_review: "K procvičení",
+  strong: "Silné",
+};
+
+export function toStudentVisualState(
+  state: TransparentMasteryState,
+): StudentVisualState {
+  if (state === "new") return "new";
+  if (state === "learning") return "learning";
+  if (state === "fragile") return "needs_review";
+  return "strong";
+}
+
 export const MASTERY_TRANSPARENCY_DISCLAIMER_CS =
-  "Stavy od „Nové“ po „Zvládnuté“ vycházejí z cvičení — neříkají přesně, jestli maturitu dáš.";
+  "Stavy od „Nové“ po „Silné“ vycházejí z cvičení — neříkají přesně, jestli maturitu dáš.";
 
 /** Evidence that can move mastery. Passive-only kinds never raise score. */
 export const masteryEvidenceKinds = [

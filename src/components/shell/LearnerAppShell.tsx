@@ -3,7 +3,7 @@ import {
   AppMobileHeader,
   AppSidebar,
 } from "@/components/shell/AppShell";
-import { BetaFeedbackWidget } from "@/components/beta/beta-feedback-widget";
+import { LazyBetaFeedbackWidget } from "@/components/beta/lazy-beta-feedback";
 
 export function LearnerAppShell({ children }: { children: React.ReactNode }) {
   return (
@@ -20,7 +20,7 @@ export function LearnerAppShell({ children }: { children: React.ReactNode }) {
           </div>
         </main>
         <AppBottomNav />
-        <BetaFeedbackWidget />
+        <LazyBetaFeedbackWidget />
       </div>
     </div>
   );

@@ -5,7 +5,6 @@ import {
   DONT_KNOW_TOKEN,
   learningInteractionLabelsCs,
   type LearningGradeResult,
-  type LearningItem,
   type LearningSession,
   type SimpleExplanation,
 } from "@/domain/learning/learning-session-engine";
@@ -16,10 +15,19 @@ import {
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  StudyPhaseFrame,
+  StudySessionChrome,
+} from "@/components/ui/study-phase";
+import {
+  StudyHelpedPrompt,
+  markMeaningfulStudyLocal,
+} from "@/components/feedback/study-helped-prompt";
+import { trackProductBeacon } from "@/lib/product-analytics-beacon";
 import { cn } from "@/lib/cn";
 
 /**
- * Recall-before-reveal player.
+ * Recall-before-reveal player with clear study phases.
  * Never shows idealAnswer until after attempt or explicit „Nevím“.
  */
 export function LearningSessionPlayer({
@@ -74,7 +82,6 @@ export function LearningSessionPlayer({
 
   function onPrimarySubmit() {
     if (!item) return;
-    // Micro is framing only — advance without revealing the answer.
     if (item.stepKind === "micro") {
       onNext();
       return;
@@ -93,6 +100,11 @@ export function LearningSessionPlayer({
 
   function onNext() {
     if (index >= session.items.length - 1) {
+      markMeaningfulStudyLocal();
+      trackProductBeacon("lesson_complete", {
+        featureId: "catalog_learning",
+        topicSlug: session.id.slice(0, 120),
+      });
       setDone(true);
       return;
     }
@@ -117,20 +129,28 @@ export function LearningSessionPlayer({
 
   if (done) {
     return (
-      <div className="space-y-4 rounded-2xl border border-border bg-surface p-5">
-        <h2 className="font-display text-xl font-semibold text-fg">
-          Session hotová
-        </h2>
-        <p className="text-body-sm text-fg-secondary">
-          Prošel jsi {session.items.length} kroků u „{session.title}“. Opakování
-          je naplánované podle tvých odpovědí.
-        </p>
-        {onExit ? (
-          <Button type="button" onClick={onExit}>
-            Zpět na materiál
-          </Button>
-        ) : null}
-      </div>
+      <StudySessionChrome title={session.title} progressLabel="Hotovo">
+        <StudyPhaseFrame phase="feedback" showLabel={false}>
+          <h2 className="font-display text-xl font-semibold text-fg">
+            Session hotová
+          </h2>
+          <p className="mt-2 text-body-sm text-fg-secondary">
+            Prošel jsi {session.items.length} kroků u „{session.title}“.
+            Opakování je naplánované podle tvých odpovědí.
+          </p>
+          {onExit ? (
+            <div className="mt-4">
+              <Button type="button" onClick={onExit}>
+                Zpět na materiál
+              </Button>
+            </div>
+          ) : null}
+        </StudyPhaseFrame>
+        <StudyHelpedPrompt
+          className="mt-4"
+          context={`learning_session:${session.id}`}
+        />
+      </StudySessionChrome>
     );
   }
 
@@ -139,30 +159,27 @@ export function LearningSessionPlayer({
   const revealAllowed = Boolean(grade);
 
   return (
-    <div className="space-y-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] lg:pb-0">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-caption text-fg-muted">{progressLabel}</p>
+    <StudySessionChrome title={session.title} progressLabel={progressLabel}>
+      <div className="flex flex-wrap items-center gap-2">
         <Badge tone="neutral">
           {learningInteractionLabelsCs[item.interaction]}
         </Badge>
+        {item.literatureLens ? (
+          <p className="text-caption font-semibold uppercase tracking-wide text-action">
+            Literatura · {item.literatureLens.replace(/_/g, " ")}
+          </p>
+        ) : null}
       </div>
 
-      {item.literatureLens ? (
-        <p className="text-caption font-semibold uppercase tracking-wide text-action">
-          Literatura · {item.literatureLens.replace(/_/g, " ")}
-        </p>
-      ) : null}
-
       {item.stepKind === "micro" ? (
-        <section className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-fg-muted">
-            Kontext
-          </p>
-          <h2 className="mt-2 font-display text-xl font-semibold text-fg">
+        <StudyPhaseFrame phase="question">
+          <h2 className="font-display text-xl font-semibold text-fg">
             {item.prompt}
           </h2>
           {item.microText ? (
-            <p className="mt-2 text-body-sm text-fg-secondary">{item.microText}</p>
+            <p className="mt-2 text-body-sm text-fg-secondary">
+              {item.microText}
+            </p>
           ) : null}
           <p className="mt-3 text-caption text-fg-muted">
             Odpověď neuvidíš, dokud si ji nezkušíš vybavit.
@@ -172,45 +189,46 @@ export function LearningSessionPlayer({
               Pokračovat k otázce
             </Button>
           </div>
-        </section>
+        </StudyPhaseFrame>
       ) : (
-        <section className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-fg-muted">
-            {item.stepKind === "confidence"
-              ? "Jistota"
-              : item.stepKind === "follow_up"
-                ? "Follow-up"
-                : "Vybavení"}
-          </p>
-          <h2 className="mt-2 font-display text-xl font-semibold text-fg">
-            {item.prompt}
-          </h2>
-
-          {item.clozeTemplate ? (
-            <p className="mt-3 rounded-lg bg-subtle px-3 py-2 font-mono text-body-sm text-fg">
-              {item.clozeTemplate}
+        <>
+          <StudyPhaseFrame phase="question">
+            <p className="mb-2 text-caption font-medium text-fg-muted">
+              {item.stepKind === "confidence"
+                ? "Jistota"
+                : item.stepKind === "follow_up"
+                  ? "Doplňující"
+                  : "Vybavení"}
             </p>
-          ) : null}
+            <h2 className="font-display text-xl font-semibold text-fg">
+              {item.prompt}
+            </h2>
 
-          {item.pairs.length > 0 ? (
-            <ul className="mt-3 space-y-1 text-body-sm text-fg-secondary">
-              {item.pairs.map((p) => (
-                <li key={p.leftId}>
-                  <span className="font-semibold text-fg">{p.left}</span> ↔ ?
-                </li>
-              ))}
-            </ul>
-          ) : null}
+            {item.clozeTemplate ? (
+              <p className="mt-3 rounded-lg bg-subtle px-3 py-2 font-mono text-body-sm text-fg">
+                {item.clozeTemplate}
+              </p>
+            ) : null}
 
-          {item.orderItems.length > 0 && !revealAllowed ? (
-            <p className="mt-2 text-caption text-fg-muted">
-              Napiš pořadí názvů oddělené šipkou →
-            </p>
-          ) : null}
+            {item.pairs.length > 0 ? (
+              <ul className="mt-3 space-y-1 text-body-sm text-fg-secondary">
+                {item.pairs.map((p) => (
+                  <li key={p.leftId}>
+                    <span className="font-semibold text-fg">{p.left}</span> ↔ ?
+                  </li>
+                ))}
+              </ul>
+            ) : null}
 
-          {/* Answer UI — never shows idealAnswer here */}
+            {item.orderItems.length > 0 && !revealAllowed ? (
+              <p className="mt-2 text-caption text-fg-muted">
+                Napiš pořadí názvů oddělené šipkou →
+              </p>
+            ) : null}
+          </StudyPhaseFrame>
+
           {!revealAllowed ? (
-            <div className="mt-4 space-y-3">
+            <StudyPhaseFrame phase="answer">
               {item.choices.length > 0 ? (
                 <ul className="space-y-2">
                   {item.choices.map((c) => (
@@ -219,10 +237,10 @@ export function LearningSessionPlayer({
                         type="button"
                         onClick={() => setSelectedChoice(c.id)}
                         className={cn(
-                          "flex min-h-12 w-full items-center rounded-xl px-3 text-left text-body-sm font-medium ring-1 transition",
+                          "flex min-h-12 w-full items-center rounded-xl px-3 text-left text-body-sm font-medium ring-1 transition duration-fast",
                           selectedChoice === c.id
-                            ? "bg-action/10 ring-action"
-                            : "bg-subtle ring-border",
+                            ? "bg-action/10 ring-action shadow-xs"
+                            : "bg-surface ring-border hover:ring-border-strong",
                         )}
                       >
                         {c.label}
@@ -231,17 +249,17 @@ export function LearningSessionPlayer({
                   ))}
                 </ul>
               ) : (
-                <textarea
+                  <textarea
                   value={answer}
                   onChange={(e) => setAnswer(e.target.value)}
                   rows={4}
                   placeholder="Napiš odpověď…"
-                  className="w-full rounded-xl border border-border bg-canvas px-3 py-2 text-body-sm text-fg"
-                  aria-label="Odpověď"
+                  className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-base text-fg shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  aria-label="Tvoje odpověď"
                 />
               )}
 
-              <div className="flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap gap-2">
                 <Button
                   type="button"
                   onClick={onPrimarySubmit}
@@ -260,9 +278,9 @@ export function LearningSessionPlayer({
                   </Button>
                 ) : null}
               </div>
-            </div>
+            </StudyPhaseFrame>
           ) : null}
-        </section>
+        </>
       )}
 
       {error ? (
@@ -272,57 +290,64 @@ export function LearningSessionPlayer({
       ) : null}
 
       {grade ? (
-        <section className="space-y-3 rounded-2xl border border-border bg-surface p-4 sm:p-5">
-          <Badge
-            tone={
-              grade.result === "correct"
-                ? "success"
-                : grade.result === "partial"
-                  ? "warning"
-                  : "danger"
-            }
-          >
-            {grade.resultLabelCs}
-          </Badge>
+        <div className="space-y-3" aria-live="polite" aria-atomic="false">
+          <StudyPhaseFrame phase="feedback">
+            <Badge
+              tone={
+                grade.result === "correct"
+                  ? "success"
+                  : grade.result === "partial"
+                    ? "warning"
+                    : "danger"
+              }
+            >
+              {grade.resultLabelCs}
+            </Badge>
 
-          {grade.whatWasMissing.length > 0 ? (
-            <div>
-              <p className="text-caption font-semibold text-fg-muted">
-                Chybějící koncepty
-              </p>
-              <ul className="mt-1 list-disc pl-5 text-body-sm text-fg">
-                {grade.whatWasMissing.map((m) => (
-                  <li key={m}>{m}</li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
+            {grade.whatWasMissing.length > 0 ? (
+              <div className="mt-3">
+                <p className="text-caption font-semibold text-fg-muted">
+                  Chybějící koncepty
+                </p>
+                <ul className="mt-1 list-disc pl-5 text-body-sm text-fg">
+                  {grade.whatWasMissing.map((m) => (
+                    <li key={m}>{m}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
 
-          {grade.whatWasCorrect.length > 0 ? (
-            <div>
-              <p className="text-caption font-semibold text-fg-muted">
-                Co sedělo
-              </p>
-              <ul className="mt-1 list-disc pl-5 text-body-sm text-fg">
-                {grade.whatWasCorrect.map((m) => (
-                  <li key={m}>{m}</li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
+            {grade.whatWasCorrect.length > 0 ? (
+              <div className="mt-3">
+                <p className="text-caption font-semibold text-fg-muted">
+                  Co sedělo
+                </p>
+                <ul className="mt-1 list-disc pl-5 text-body-sm text-fg">
+                  {grade.whatWasCorrect.map((m) => (
+                    <li key={m}>{m}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </StudyPhaseFrame>
 
-          <div>
-            <p className="text-caption font-semibold text-fg-muted">
-              Stručné vysvětlení
-            </p>
-            <p className="mt-1 whitespace-pre-wrap text-body-sm text-fg">
+          <StudyPhaseFrame phase="explanation">
+            <p className="whitespace-pre-wrap text-body-sm text-fg">
               {grade.conciseExplanation}
             </p>
-          </div>
+            {simple ? (
+              <Alert
+                className="mt-3"
+                tone={simple.insufficient ? "warning" : "info"}
+                title="Jednoduše ze zdroje"
+              >
+                <p className="whitespace-pre-wrap text-body-sm">{simple.text}</p>
+              </Alert>
+            ) : null}
+          </StudyPhaseFrame>
 
-          <div>
-            <p className="text-caption font-semibold text-fg-muted">Zdroj</p>
-            <p className="mt-1 text-caption text-fg-muted">
+          <StudyPhaseFrame phase="source">
+            <p className="text-caption text-fg-muted">
               {grade.source.sourceTitle}
               {grade.source.headingPath
                 ? ` · ${grade.source.headingPath}`
@@ -331,38 +356,35 @@ export function LearningSessionPlayer({
                 ? ` · znaky ${grade.source.charStart}–${grade.source.charEnd ?? "?"}`
                 : ""}
             </p>
-            <p className="mt-1 whitespace-pre-wrap rounded-lg bg-subtle px-3 py-2 text-body-sm text-fg-secondary">
+            <p className="mt-2 whitespace-pre-wrap rounded-lg bg-subtle/80 px-3 py-2 text-body-sm text-fg-secondary">
               {grade.source.excerpt.slice(0, 420)}
               {grade.source.excerpt.length > 420 ? "…" : ""}
             </p>
-          </div>
+            {grade.scheduledDueAt ? (
+              <p className="mt-3 text-caption text-fg-muted">
+                Další opakování:{" "}
+                {new Date(grade.scheduledDueAt).toLocaleString("cs-CZ")}
+              </p>
+            ) : null}
+          </StudyPhaseFrame>
 
-          {grade.scheduledDueAt ? (
-            <p className="text-caption text-fg-muted">
-              Další opakování:{" "}
-              {new Date(grade.scheduledDueAt).toLocaleString("cs-CZ")}
-            </p>
-          ) : null}
-
-          <div className="flex flex-wrap gap-2 pt-1">
-            <Button type="button" variant="outline" onClick={onExplainSimply} disabled={pending}>
-              Vysvětli mi to jednoduše
-            </Button>
-            <Button type="button" onClick={onNext} disabled={pending}>
-              Další
-            </Button>
-          </div>
-
-          {simple ? (
-            <Alert
-              tone={simple.insufficient ? "warning" : "info"}
-              title="Jednoduše ze zdroje"
-            >
-              <p className="whitespace-pre-wrap text-body-sm">{simple.text}</p>
-            </Alert>
-          ) : null}
-        </section>
+          <StudyPhaseFrame phase="next" showLabel={false}>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onExplainSimply}
+                disabled={pending}
+              >
+                Vysvětli mi to jednoduše
+              </Button>
+              <Button type="button" onClick={onNext} disabled={pending}>
+                Další otázka
+              </Button>
+            </div>
+          </StudyPhaseFrame>
+        </div>
       ) : null}
-    </div>
+    </StudySessionChrome>
   );
 }

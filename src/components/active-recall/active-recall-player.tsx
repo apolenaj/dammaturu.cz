@@ -297,7 +297,7 @@ export function ActiveRecallPlayer({
             ) : null}
           </div>
 
-          <div className="sticky-study-cta mt-4">
+          <div className="study-action-dock mt-4 border-t border-border pt-3">
             <Button
               fullWidth
               size="lg"

@@ -66,11 +66,12 @@ export function generateQuestionsFromKnowledgeUnits(
   for (const unit of units) {
     if (
       unit.verification !== "verified_from_source" &&
-      unit.verification !== "corrected"
+      unit.verification !== "corrected" &&
+      unit.verification !== "source_grounded"
     ) {
       skipped.push({
         knowledgeUnitId: unit.id,
-        reason: "KU není verified_from_source / corrected.",
+        reason: "KU nemá ověřený ani source-grounded status.",
       });
       continue;
     }

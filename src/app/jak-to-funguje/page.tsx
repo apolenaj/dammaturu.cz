@@ -1,30 +1,35 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { MarketingShell } from "@/components/shell/MarketingShell";
+import { buildPublicMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPublicMetadata({
   title: "Jak to funguje",
-};
+  description:
+    "Od mezery k jistotě: denní mise, vybavení, oprava chyb a pokrok podle výsledků — ne podle dojmu z čtení.",
+  path: "/jak-to-funguje",
+});
 
 const steps = [
   {
-    title: "Diagnostika",
-    text: "Zjistíme, co už umíš a kde jsou mezery — bez tipování.",
+    title: "Začni materiály nebo katalogem",
+    text: "Nahraješ poznámky, nebo použiješ připravený ČJL katalog. Otázky vycházejí ze zdroje.",
   },
   {
-    title: "Plán",
-    text: "Každý den dostaneš jasnou misi. Nemusíš řešit, co dál.",
+    title: "Dnešní mise",
+    text: "Jedna obrazovka řekne, co dělat teď — bez hledání „kde začít“.",
   },
   {
-    title: "Učení + active recall",
-    text: "Krátký výklad a hned vybavování. Pasivní čtení nestačí.",
+    title: "Vybavení a zpětná vazba",
+    text: "Nejdřív si vzpomeneš, pak uvidíš vysvětlení a zdroj. Pasivní čtení nestačí.",
   },
   {
-    title: "Test a oprava chyb",
-    text: "Chyby se automaticky vracejí do opakování.",
+    title: "Chyby se vracejí",
+    text: "Špatné odpovědi jdou do opakování. Víš, co ještě není jistota.",
   },
   {
-    title: "Spaced repetition + mastery",
-    text: "Opakuješ ve správný čas. Vidíš skutečnou připravenost.",
+    title: "Vidíš, co umíš",
+    text: "Pokrok podle cvičení — Nové / Učím se / K procvičení / Silné.",
   },
 ];
 
@@ -32,33 +37,41 @@ export default function JakToFungujePage() {
   return (
     <MarketingShell>
       <div className="mx-auto max-w-3xl px-4 py-14 sm:px-6">
-        <p className="text-sm font-semibold uppercase tracking-wider text-brand">
+        <p className="text-sm font-semibold uppercase tracking-wider text-action">
           Metoda
         </p>
-        <h1 className="mt-2 font-display text-4xl font-semibold tracking-tight text-ink">
+        <h1 className="mt-2 font-display text-4xl font-semibold tracking-tight text-fg">
           Jak to funguje
         </h1>
-        <p className="mt-4 text-lg text-ink-muted">
-          Learning loop, ne chat. Systém tě provede od mezery k mastery.
+        <p className="mt-4 text-lg text-fg-secondary">
+          Studijní systém, ne chatbot. Od nahrání materiálů k pocitu jistoty
+          před maturitou.
         </p>
         <ol className="mt-10 space-y-6">
           {steps.map((step, index) => (
             <li key={step.title} className="flex gap-4">
               <span
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-soft text-sm font-bold text-brand"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-action-soft text-sm font-bold text-action"
                 aria-hidden
               >
                 {index + 1}
               </span>
               <div>
-                <h2 className="font-display text-xl font-semibold text-ink">
+                <h2 className="font-display text-xl font-semibold text-fg">
                   {step.title}
                 </h2>
-                <p className="mt-1 text-ink-muted">{step.text}</p>
+                <p className="mt-1 text-fg-secondary">{step.text}</p>
               </div>
             </li>
           ))}
         </ol>
+        <p className="mt-10 text-body-sm text-fg-secondary">
+          Veřejné přehledy témat:{" "}
+          <Link href="/priprava" className="font-semibold text-action underline">
+            Příprava k maturitě
+          </Link>
+          .
+        </p>
       </div>
     </MarketingShell>
   );

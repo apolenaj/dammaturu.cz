@@ -104,19 +104,31 @@ export async function submitQuestionAttemptAction(input: {
       itemId: input.questionId,
       correct,
     });
-    await recordProductEvent({
+    const { emitLessonStart, emitRetrievalAnswerEvents } = await import(
+      "@/server/product-analytics/emit"
+    );
+    const completedCount = progress.completedQuestionIds.length;
+    if (completedCount <= 1) {
+      await emitLessonStart({
+        learnerKey: learnerId,
+        featureId: "question_engine",
+        topicSlug: pack.slug,
+      });
+    }
+    await emitRetrievalAnswerEvents({
       learnerKey: learnerId,
-      event: "study_session_started",
-      featureId: "question_engine",
-    });
-    await recordProductEvent({
-      learnerKey: learnerId,
-      event: "question_answered",
+      result: grade.result === "incorrect" ? "incorrect" : grade.result,
       featureId: "question_engine",
       topicSlug: pack.slug,
-      correct,
-      count: 1,
     });
+    if (completedCount >= pack.questions.length) {
+      await recordProductEvent({
+        learnerKey: learnerId,
+        event: "lesson_complete",
+        featureId: "question_engine",
+        topicSlug: pack.slug,
+      });
+    }
     if (!correct) {
       await recordProductEvent({
         learnerKey: learnerId,

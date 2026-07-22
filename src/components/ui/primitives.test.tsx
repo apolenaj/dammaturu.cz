@@ -30,7 +30,7 @@ describe("Score", () => {
     render(<Score value={72} label="Připravenost" mastery="stable" />);
     expect(
       screen.getByRole("img", {
-        name: /Připravenost: 72 procent.*Stabilní/i,
+        name: /Připravenost: 72 procent.*Silné/i,
       }),
     ).toBeInTheDocument();
   });

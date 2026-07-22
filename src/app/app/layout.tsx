@@ -1,9 +1,15 @@
+import type { Metadata } from "next";
 import { LearnerAppShell } from "@/components/shell/LearnerAppShell";
 import { GuestPersistenceBridge } from "@/components/guest/guest-persistence-bridge";
 import { GuestStudyBanner } from "@/components/guest/guest-study-banner";
 import { ensureGuestLearner } from "@/server/guest/ensure-guest-learner";
 import { getViewerSession } from "@/server/viewer-session";
 import { recordProductEvent } from "@/server/product-analytics/store";
+
+/** Student app — never index private / personalized surfaces. */
+export const metadata: Metadata = {
+  robots: { index: false, follow: false, nocache: true },
+};
 
 export default async function AppLayout({
   children,
@@ -17,6 +23,11 @@ export default async function AppLayout({
   if (viewer) {
     if (viewer.kind === "guest") {
       await ensureGuestLearner(viewer.learnerId);
+      void recordProductEvent({
+        learnerKey: viewer.learnerId,
+        event: "guest_start",
+        funnelStep: "start",
+      });
     }
     void recordProductEvent({
       learnerKey: viewer.learnerId,

@@ -87,6 +87,12 @@ export async function startFlashcardSessionAction(input: {
     });
     await recordProductEvent({
       learnerKey: learnerId,
+      event: "review_start",
+      featureId: "flashcards",
+      topicSlug: deck.slug,
+    });
+    await recordProductEvent({
+      learnerKey: learnerId,
       event: "study_session_started",
       featureId: "flashcards",
     });
@@ -186,6 +192,12 @@ export async function gradeFlashcardAction(input: {
             Math.max(1, summary.total),
         ),
         minutes: Math.max(1, Math.round(summary.total * 0.4)),
+      });
+      await recordProductEvent({
+        learnerKey: learnerId,
+        event: "review_complete",
+        featureId: "flashcards",
+        topicSlug: session.deckSlug,
       });
       await markTodayMissionStepFromActivity({
         learnerId,

@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import {
@@ -17,6 +18,7 @@ import {
   listDocuments,
 } from "@/server/ingestion/store";
 import type { IngestedSourceDocument } from "@/server/ingestion/types";
+import { assertPathInsideRoot } from "@/server/safe-path";
 
 function filenameFromPath(inventoryPath: string): string {
   const parts = inventoryPath.split("/");
@@ -249,25 +251,31 @@ function resolveExcludedOrDerived(
   };
 }
 
-/** Full registry resolution — catalog DOCX + explicit exclusions. */
-export async function getStudyContentRegistry(): Promise<StudyContentEntry[]> {
-  const entries: StudyContentEntry[] = [];
+/** Full registry resolution — catalog DOCX + explicit exclusions.
+ * Request-memoized so list/detail/home don't re-walk the catalog repeatedly.
+ */
+export const getStudyContentRegistry = cache(
+  async (): Promise<StudyContentEntry[]> => {
+    const entries: StudyContentEntry[] = [];
 
-  for (const row of CATALOG_DOCX_MANIFEST) {
-    const abs = path.join(process.cwd(), row.inventoryPath);
-    const onDisk = await fileExists(abs);
-    const doc =
-      (await findDocumentByPath(row.inventoryPath)) ??
-      (await findDocumentByFilename(filenameFromPath(row.inventoryPath)));
-    entries.push(resolveCatalogEntry(row, doc, onDisk));
-  }
+    for (const row of CATALOG_DOCX_MANIFEST) {
+      const abs = assertPathInsideRoot(
+        path.join(process.cwd(), row.inventoryPath),
+      );
+      const onDisk = await fileExists(abs);
+      const doc =
+        (await findDocumentByPath(row.inventoryPath)) ??
+        (await findDocumentByFilename(filenameFromPath(row.inventoryPath)));
+      entries.push(resolveCatalogEntry(row, doc, onDisk));
+    }
 
-  for (const row of EXPLICIT_EXCLUSION_MANIFEST) {
-    entries.push(resolveExcludedOrDerived(row));
-  }
+    for (const row of EXPLICIT_EXCLUSION_MANIFEST) {
+      entries.push(resolveExcludedOrDerived(row));
+    }
 
-  return entries;
-}
+    return entries;
+  },
+);
 
 async function findDocumentByFilename(
   filename: string,
@@ -469,9 +477,16 @@ export async function validateInventoryCoverage(): Promise<InventoryValidationRe
 export async function getOriginalSourceAbsolutePath(
   sourceId: string,
 ): Promise<string | null> {
+  if (!/^[a-z0-9-]{3,80}$/.test(sourceId)) return null;
   const row = CATALOG_DOCX_MANIFEST.find((m) => m.sourceId === sourceId);
   if (!row) return null;
-  const abs = path.join(process.cwd(), row.inventoryPath);
+  // Manifest path must stay under cwd — never follow ../ escapes
+  let abs: string;
+  try {
+    abs = assertPathInsideRoot(path.join(process.cwd(), row.inventoryPath));
+  } catch {
+    return null;
+  }
   if (!(await fileExists(abs))) return null;
   return abs;
 }

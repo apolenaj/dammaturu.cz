@@ -8,7 +8,6 @@ import {
   buildMaterialsSessionSummary,
   gradeMaterialsSessionItem,
 } from "@/server/materials-study/session-runtime";
-import { materialsSessionItemKinds } from "@/domain/learning/materials-study-session";
 
 const LEARNER = "materials_session_e2e_learner";
 
@@ -34,12 +33,15 @@ const SAMPLE_DOC = [
   "1. Romantismus",
   "",
   "Karel Hynek Mácha napsal skladbu Máj v roce 1836. Je to klíčové dílo českého romantismu.",
-  "Mácha žil v letech 1810 až 1836.",
+  "Mácha žil v letech 1810 až 1836. Hlavními motivy jsou láska, vina a trest.",
+  "Romantismus klade důraz na cit, individualitu a konflikt jedince se společností.",
   "",
   "2. Realismus",
   "",
   "Jan Neruda psal Povídky malostranské. Realismus popisuje všední život měšťanů.",
-  "Neruda patří k majovým autorům a českému realismu.",
+  "Neruda patří k majovým autorům a českému realismu 19. století.",
+  "Realismus zobrazuje skutečnost bez idealizace a často kritizuje sociální poměry.",
+  "Typickými znaky jsou všední hrdina, detailní popis prostředí a kauzalita děje.",
 ].join("\n");
 
 describe("materials study session E2E (uploaded sample)", () => {
@@ -68,18 +70,23 @@ describe("materials study session E2E (uploaded sample)", () => {
     });
     expect(smart.items.length).toBeGreaterThanOrEqual(1);
     const kindsUsed = new Set(smart.items.map((i) => i.kind));
-    expect(kindsUsed.size).toBeGreaterThanOrEqual(
-      Math.min(materialsSessionItemKinds.length, smart.items.length),
-    );
+    expect(kindsUsed.size).toBe(3);
 
     const topics = smart.availableTopics;
     expect(topics.length).toBeGreaterThanOrEqual(1);
+
+    // Topic mode needs ≥1 eligible KU (likely/verified_from_source) matching the topic.
+    // Prefer a topic already used by smart-mix items — those are guaranteed eligible.
+    // (availableTopics is A–Z; topics[0] may be a heading with only needs_review units.)
+    const topicForSession =
+      smart.items.map((i) => i.topic).find((t): t is string => Boolean(t?.trim())) ??
+      topics[0]!;
 
     const topicSession = buildMaterialsStudySession({
       learnerId: LEARNER,
       materials: [processed],
       mode: "topic",
-      topic: topics[0],
+      topic: topicForSession,
       masteryBefore: {},
       maxItems: 6,
     });

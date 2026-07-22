@@ -110,12 +110,20 @@ function makeMaterial(units: LearnerKnowledgeUnit[]): LearnerMaterial {
 }
 
 describe("confidence mapping", () => {
-  it("maps verified / likely / needs_review", () => {
+  it("never auto-claims verified without trustAuthoritative", () => {
     expect(
       mapEvidenceConfidence({
         confidence: 0.62,
         flags: [],
         hasSourceText: true,
+      }),
+    ).toBe("likely");
+    expect(
+      mapEvidenceConfidence({
+        confidence: 0.62,
+        flags: [],
+        hasSourceText: true,
+        trustAuthoritative: true,
       }),
     ).toBe("verified_from_source");
     expect(
@@ -192,7 +200,7 @@ describe("study session generation", () => {
 
     expect(session.items.length).toBe(1);
     expect(session.skippedNeedsReview).toBe(1);
-    expect(session.items[0]!.confidence).toBe("verified_from_source");
+    expect(session.items[0]!.confidence).toBe("likely");
     expect(session.items[0]!.citations[0]!.sourceText).toContain("Mácha");
   });
 });

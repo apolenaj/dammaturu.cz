@@ -32,7 +32,7 @@ export function MajExamPrepView({ pack }: { pack: MajExamPrepPack }) {
         <Badge tone="brand">Máj exam prep</Badge>
         <h1 className="font-display text-display-md text-fg">{pack.title}</h1>
         <p className="text-body-md text-fg-secondary">
-          {pack.author} · SOURCE {pack.sourceFilename}
+          {pack.author} · ověřený studijní zdroj
         </p>
         <p className="text-body-sm text-fg-secondary">{pack.summary}</p>
         <p className="text-caption text-fg-muted">

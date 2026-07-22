@@ -6,6 +6,7 @@ import {
   computeMasteryAggregate,
   emptyMasteryState,
   masteryConfig,
+  MASTERY_TRANSPARENCY_DISCLAIMER_CS,
   toTransparentMasteryState,
 } from "@/domain/learning/mastery-engine";
 
@@ -336,7 +337,10 @@ describe("mastery-engine", () => {
       ],
     });
     expect(agg.labeledAs).toBe("mastery_aggregate");
-    expect(agg.disclaimer.toLowerCase()).toContain("pravděpodobnost");
+    expect(agg.disclaimer).toBe(MASTERY_TRANSPARENCY_DISCLAIMER_CS);
+    expect(agg.disclaimer.toLowerCase()).toMatch(
+      /neříkají|jestli maturitu/,
+    );
     expect(agg.lowEvidence).toBe(true);
   });
 });

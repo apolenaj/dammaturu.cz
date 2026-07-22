@@ -36,6 +36,7 @@ export type RouteMeta = {
 /** Public marketing + auth routes */
 export const publicNav: NavItem[] = [
   { href: "/jak-to-funguje", label: "Jak to funguje" },
+  { href: "/priprava", label: "Příprava" },
   { href: "/predmety", label: "Předměty" },
   { href: "/maturitni-priprava", label: "Maturitní příprava" },
   { href: "/cenik", label: "Ceník" },
@@ -128,6 +129,7 @@ export const adminNav: NavItem[] = [
   { href: "/admin/sources", label: "Zdroje" },
   { href: "/admin/questions", label: "Otázky" },
   { href: "/admin/reviews", label: "Content QA" },
+  { href: "/admin/content-trust", label: "Content Trust" },
   { href: "/admin/users", label: "Uživatelé" },
   { href: "/admin/analytics", label: "Analytika" },
 ];
@@ -163,11 +165,19 @@ export const routeCatalog: RouteMeta[] = [
     nextStep: "Zjisti, jak tě systém dovede k maturitě.",
   },
   {
+    href: "/priprava",
+    title: "Příprava k maturitě",
+    description:
+      "Veřejné přehledy ČJL — didaktický test, jazyk, směry, četba. Bez tenkých AI stránek.",
+    availability: "ready",
+    nextStep: "Procházej témata a začni denní misi v appce.",
+  },
+  {
     href: "/cenik",
     title: "Ceník",
-    description: "FREE · SMART · AI PRO · MATURITA MAX.",
+    description: "Beta je teď zdarma. Placené plány až po zapnutí plateb.",
     availability: "ready",
-    nextStep: "Vyber plán a pokračuj v přípravě.",
+    nextStep: "Začni zdarma — cenu uvidíš, až bude platba aktivní.",
   },
   {
     href: "/o-projektu",
@@ -392,6 +402,14 @@ export const routeCatalog: RouteMeta[] = [
     description: "SOURCE → NORMALIZED → FINAL + REASON.",
     availability: "ready",
     nextStep: "Zkontroluj označené položky před publikací.",
+  },
+  {
+    href: "/admin/content-trust",
+    title: "Admin · Content Trust",
+    description:
+      "Trust pipeline DRAFT→VERIFIED, detektory, report kvality — autoritativní feedback jen VERIFIED.",
+    availability: "ready",
+    nextStep: "Projdi prioritní frontu a ověř zdroje.",
   },
   {
     href: "/admin/content",

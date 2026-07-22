@@ -118,6 +118,15 @@ export async function startOralSimulationAction(input: {
       evidenceSufficient: brief.evidenceSufficient,
       checklist: brief.checklist.length,
     });
+    const { recordProductEvent } = await import(
+      "@/server/product-analytics/store"
+    );
+    await recordProductEvent({
+      learnerKey: learnerId,
+      event: "simulation_start",
+      featureId: "oral_simulation",
+      topicSlug: (input.mode ?? "oral").slice(0, 120),
+    });
     return { ok: true, brief };
   } catch (error) {
     return {
@@ -229,6 +238,19 @@ export async function gradeOralSimulationAction(input: {
       insufficient: report.insufficientEvidence,
       modality,
       personality,
+    });
+    const { recordProductEvent } = await import(
+      "@/server/product-analytics/store"
+    );
+    await recordProductEvent({
+      learnerKey: learnerId,
+      event: "simulation_complete",
+      featureId: "oral_simulation",
+      topicSlug: (brief.bookTitleCs ?? brief.mode ?? "oral")
+        .toString()
+        .slice(0, 120)
+        .toLowerCase()
+        .replace(/\s+/g, "-"),
     });
     revalidatePath("/app/simulation");
     revalidatePath("/app/literature");

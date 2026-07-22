@@ -80,7 +80,6 @@ export async function saveOnboardingAction(
       await recordProductEvent({
         learnerKey: record.id,
         event: "onboarding_completed",
-        funnelStep: "onboarding_completed",
       });
     }
     track("study_plan_generated", {

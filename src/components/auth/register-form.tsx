@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { signUpWithPasswordAction } from "@/server/actions/auth";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -112,45 +113,57 @@ export function RegisterForm({
         </p>
       ) : null}
 
-      <form onSubmit={onSubmit} className="space-y-4">
-        <label className="block space-y-1.5">
-          <span className="text-caption font-medium text-fg-muted">E-mail</span>
-          <Input
-            type="email"
-            inputMode="email"
-            autoComplete="email"
-            autoCapitalize="none"
-            autoCorrect="off"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </label>
-        <label className="block space-y-1.5">
-          <span className="text-caption font-medium text-fg-muted">Heslo</span>
-          <Input
-            type="password"
-            autoComplete="new-password"
-            required
-            minLength={8}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <span className="text-caption text-fg-muted">Minimálně 8 znaků.</span>
-        </label>
-        <label className="block space-y-1.5">
-          <span className="text-caption font-medium text-fg-muted">
-            Heslo znovu
-          </span>
-          <Input
-            type="password"
-            autoComplete="new-password"
-            required
-            minLength={8}
-            value={password2}
-            onChange={(e) => setPassword2(e.target.value)}
-          />
-        </label>
+      <form onSubmit={onSubmit} className="space-y-4" noValidate>
+        <Field label="E-mail">
+          {({ id, describedBy }) => (
+            <Input
+              id={id}
+              name="email"
+              aria-describedby={describedBy}
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              autoCapitalize="none"
+              autoCorrect="off"
+              placeholder="E-mail"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          )}
+        </Field>
+        <Field label="Heslo" hint="Minimálně 8 znaků.">
+          {({ id, describedBy }) => (
+            <Input
+              id={id}
+              name="password"
+              aria-describedby={describedBy}
+              type="password"
+              autoComplete="new-password"
+              placeholder="Heslo"
+              required
+              minLength={8}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          )}
+        </Field>
+        <Field label="Heslo znovu">
+          {({ id, describedBy }) => (
+            <Input
+              id={id}
+              name="passwordConfirm"
+              aria-describedby={describedBy}
+              type="password"
+              autoComplete="new-password"
+              placeholder="Heslo znovu"
+              required
+              minLength={8}
+              value={password2}
+              onChange={(e) => setPassword2(e.target.value)}
+            />
+          )}
+        </Field>
         <Button type="submit" fullWidth size="lg" className="min-h-12" disabled={pending}>
           {pending ? "Vytvářím účet…" : "Vytvořit účet"}
         </Button>

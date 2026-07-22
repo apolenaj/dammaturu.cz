@@ -32,5 +32,10 @@ export default defineConfig({
     url: process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    env: {
+      ...process.env,
+      // Prefer local-dev auth so /registrace shows the real form in E2E.
+      AUTH_DEV_ENABLED: process.env.AUTH_DEV_ENABLED ?? "true",
+    },
   },
 });

@@ -3,12 +3,16 @@ import { MarketingShell } from "@/components/shell/MarketingShell";
 import { Badge } from "@/components/ui/badge";
 import { LoginForm } from "@/components/auth/login-form";
 import { safeInternalPath } from "@/lib/security/hardening";
-import {
-  getAuthCapabilitiesAction,
-} from "@/server/actions/auth";
+import { getAuthCapabilitiesAction } from "@/server/actions/auth";
+import { buildPublicMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Přihlášení",
+  ...buildPublicMetadata({
+    title: "Přihlášení",
+    description: "Přihlášení do DámMaturu — studijní prostor k maturitě z češtiny.",
+    path: "/prihlaseni",
+  }),
+  robots: { index: false, follow: true },
 };
 
 type PageProps = {

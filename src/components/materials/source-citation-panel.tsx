@@ -4,6 +4,7 @@ import { useState } from "react";
 import {
   evidenceConfidenceLabelsCs,
   formatCitationLocation,
+  formatStudentCitationLabel,
   type EvidenceConfidence,
   type SourceCitation,
 } from "@/domain/learning/grounded-study";
@@ -37,6 +38,10 @@ export function ConfidenceBadge({
   );
 }
 
+/**
+ * Student-facing source — simple label by default, optional detail.
+ * Never shows internal file paths.
+ */
 export function SourceCitationPanel({
   citations,
   confidence,
@@ -47,20 +52,31 @@ export function SourceCitationPanel({
   const [open, setOpen] = useState(false);
 
   if (!citations.length) return null;
+  const primary = citations[0]!;
 
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap items-center gap-2">
         {confidence ? <ConfidenceBadge confidence={confidence} /> : null}
+        <p className="text-body-sm font-medium text-fg">
+          {formatStudentCitationLabel(primary)}
+        </p>
         <Button
           type="button"
           variant="outline"
           size="sm"
           onClick={() => setOpen((v) => !v)}
         >
-          {open ? "Skrýt zdroj" : "Zobrazit zdroj"}
+          {open ? "Skrýt detail" : "Detail zdroje"}
         </Button>
       </div>
+      {confidence && confidence !== "verified_from_source" ? (
+        <p className="text-caption text-fg-muted" role="status">
+          {confidence === "insufficient"
+            ? "V dostupných materiálech to nemám dostatečně podložené."
+            : "Podklad ještě není plně ověřen — jistota je omezená."}
+        </p>
+      ) : null}
       {open ? (
         <ul className="space-y-3 rounded-lg border border-border bg-subtle/40 p-3">
           {citations.map((c, i) => (

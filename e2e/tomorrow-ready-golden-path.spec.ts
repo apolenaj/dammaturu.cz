@@ -1,4 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
+import {
+  answerLearningSessionSteps,
+  waitForLearningSessionReady,
+} from "./helpers/learning-session";
 
 /**
  * P0 release readiness — anonymous guest golden path.
@@ -37,7 +41,7 @@ test.describe("P0 tomorrow-ready guest golden path", () => {
       timeout: 25_000,
     });
     const cta = page.getByRole("link", {
-      name: /Začít se učit bez registrace/i,
+      name: /Začít se učit zdarma/i,
     });
     await expect(cta.first()).toBeVisible();
     await cta.first().click();
@@ -51,7 +55,14 @@ test.describe("P0 tomorrow-ready guest golden path", () => {
     await expect(page.locator("body")).toContainText(/literatura/i);
 
     // 6. Moje materiály — catalog sources
-    await page.getByRole("link", { name: /^Materiály$/i }).first().click();
+    const materialsNav = page
+      .getByRole("link", { name: /Moje materiály|^Materiály$/i })
+      .first();
+    if (await materialsNav.count()) {
+      await materialsNav.click();
+    } else {
+      await page.goto("/app/materials");
+    }
     await expect(page).toHaveURL(/\/app\/materials/, { timeout: 20_000 });
     await assertNoAuthWall(page);
     await expect(page.locator("body")).toContainText(/Realismus|Katalog/i, {
@@ -62,108 +73,26 @@ test.describe("P0 tomorrow-ready guest golden path", () => {
     expect(catalogText).toMatch(/Realismus/i);
     expect(catalogText).toMatch(/Romantismus|Národní|Máj|Kytice|Babička/i);
 
-    // 7–8. Open real source + start learning session
-    const openLearn = page
-      .getByRole("link", { name: /Učit|Otevřít|Realismus/i })
-      .first();
-    // Prefer catalog card link to Realismus detail
-    const realismLink = page.locator('a[href*="cjl-realismus"]').first();
-    if (await realismLink.count()) {
-      await realismLink.click();
-    } else {
-      await page.goto("/app/materials/katalog/cjl-realismus?mode=learn");
-    }
+    // Open Realismus learn session directly (avoid overview race)
+    await page.goto("/app/materials/katalog/cjl-realismus?mode=learn");
     await expect(page).toHaveURL(/katalog\/cjl-realismus/, {
       timeout: 25_000,
     });
     await assertNoAuthWall(page);
 
-    // Ensure learn mode / session
     const learnTab = page.getByRole("button", { name: /^Učení$/i });
     if (await learnTab.count()) await learnTab.click();
-    await expect(
-      page.getByText(/Připravuji učební session|Kontext|Vybavení|Pokračovat/i),
-    ).toBeVisible({ timeout: 45_000 });
+    await waitForLearningSessionReady(page);
 
     // 9–11. Answer ≥5 interactions; force at least one mistake via Nevím
-    let answered = 0;
-    for (let i = 0; i < 24 && answered < 5; i++) {
-      await assertNoAuthWall(page);
-      const continueBtn = page.getByRole("button", {
-        name: /Pokračovat k otázce/i,
-      });
-      if (await continueBtn.isVisible().catch(() => false)) {
-        await continueBtn.click();
-        await page.waitForTimeout(400);
-        continue;
-      }
-
-      const nevim = page.getByRole("button", { name: /^Nevím$/i });
-      const odeslat = page.getByRole("button", { name: /^Odeslat$/i });
-      const dalsi = page.getByRole("button", { name: /^Další$|^K vybavení$/i });
-
-      if (await nevim.isVisible().catch(() => false)) {
-        // First graded answer: Nevím → mistake; later try to submit something
-        if (answered === 0) {
-          await nevim.click();
-        } else if (await odeslat.isVisible().catch(() => false)) {
-          const choice = page.locator("button").filter({ hasText: /./ }).nth(2);
-          const textarea = page.locator("textarea");
-          if (await textarea.count()) {
-            await textarea.fill(
-              answered % 2 === 0
-                ? "Realismus zobrazuje skutečnost bez idealizace"
-                : "xyz",
-            );
-            await odeslat.click();
-          } else if (await choice.isVisible().catch(() => false)) {
-            await choice.click();
-            if (await odeslat.isVisible().catch(() => false)) {
-              await odeslat.click();
-            }
-          } else {
-            await nevim.click();
-          }
-        } else {
-          await nevim.click();
-        }
-        await expect(page.locator("body")).toContainText(
-          /Správně|Částečně|Nesprávně|Vysvětlení|Zdroj|Chybějící/i,
-          { timeout: 20_000 },
-        );
-        answered += 1;
-        if (await dalsi.isVisible().catch(() => false)) {
-          await dalsi.click();
-          await page.waitForTimeout(300);
-        }
-        continue;
-      }
-
-      if (await dalsi.isVisible().catch(() => false)) {
-        await dalsi.click();
-        await page.waitForTimeout(300);
-        continue;
-      }
-
-      // Confidence choices
-      const conf = page.getByRole("button", {
-        name: /Umím to jistě|Skoro|Ještě si nejsem/i,
-      });
-      if (await conf.first().isVisible().catch(() => false)) {
-        await conf.last().click();
-        if (await odeslat.isVisible().catch(() => false)) await odeslat.click();
-        await page.waitForTimeout(500);
-        if (await dalsi.isVisible().catch(() => false)) await dalsi.click();
-        answered += 1;
-      }
-    }
+    const answered = await answerLearningSessionSteps(page, 5);
     expect(answered).toBeGreaterThanOrEqual(5);
 
     // 12. Moje chyby
     await page.goto("/app/mistakes");
     await assertNoAuthWall(page);
     await expect(
-      page.getByRole("heading", { name: /Moje chyby/i }),
+      page.getByRole("heading", { name: /Moje chyby/i }).first(),
     ).toBeVisible({ timeout: 25_000 });
     await expect(page.locator("body")).toContainText(
       /Aktivní|Procvičit|chyba|Správný|Proč|Výskyt|otáz/i,
@@ -243,7 +172,6 @@ test.describe("P0 tomorrow-ready guest golden path", () => {
     ).toBeVisible({ timeout: 25_000 });
 
     await assertNoConsoleBreakers(page, pageErrors);
-    void openLearn;
   });
 });
 
@@ -262,7 +190,7 @@ test.describe("P0 mobile guest smoke", () => {
     await context.clearCookies();
     await page.goto("/");
     await page
-      .getByRole("link", { name: /Začít se učit bez registrace/i })
+      .getByRole("link", { name: /Začít se učit zdarma/i })
       .first()
       .click();
     await expect(page).toHaveURL(/\/app\/learn/, { timeout: 35_000 });

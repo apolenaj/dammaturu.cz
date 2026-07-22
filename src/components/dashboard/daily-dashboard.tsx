@@ -154,7 +154,7 @@ export function DailyDashboard({
       ) : null}
 
       {!view.completed ? (
-        <section className="space-y-6 rounded-2xl border border-border bg-surface p-5 shadow-sm sm:p-6">
+        <section className="space-y-6 rounded-2xl border border-border bg-surface p-5 shadow-xs sm:p-6">
           <div className="space-y-3">
             <div className="flex items-baseline justify-between gap-3">
               <p className="text-overline text-action">{view.planTitleCs}</p>

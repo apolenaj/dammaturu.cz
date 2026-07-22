@@ -467,7 +467,7 @@ export function OralMaturitySimulationView({
               className="w-full rounded-xl border border-border bg-canvas px-3 py-3 text-base"
             />
           </label>
-          <div className="sticky-study-cta">
+          <div className="study-action-dock mt-4 border-t border-border pt-3">
             <Button
               type="button"
               fullWidth
@@ -515,7 +515,7 @@ export function OralMaturitySimulationView({
             rows={5}
             className="w-full rounded-xl border border-border bg-canvas px-3 py-3 text-base"
           />
-          <div className="sticky-study-cta">
+          <div className="study-action-dock mt-4 border-t border-border pt-3">
             <Button type="button" fullWidth size="lg" className="min-h-12" onClick={nextFollowUp}>
               {followIndex + 1 >= followTurns.length
                 ? "K sebehodnocení"
@@ -545,7 +545,7 @@ export function OralMaturitySimulationView({
               </button>
             ))}
           </div>
-          <div className="sticky-study-cta">
+          <div className="study-action-dock mt-4 border-t border-border pt-3">
             <Button
               type="button"
               fullWidth

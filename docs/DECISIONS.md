@@ -10,7 +10,7 @@ Záznam rozhodnutí (ADR-lite). Nová rozhodnutí přidávej nahoru pod „Index
 
 ## D-062 — Privacy-conscious product analytics + feature flags (2026-07-21)
 
-**Rozhodnutí:** Interní product analytics sleduje funnel (homepage → registrace → onboarding → první dokument → první session → 10 otázek → day 2/7 return → mock exam → upgrade) a learning outcomes (otázky, mastery Δ, weak topic slugy, studijní minuty, retence). **Žádný student content / PII** v analytics store ani admin UI — allowlist eventů, hashované learner klíče v exportu. Feature flags + lightweight experimenty jsou **oddělené od billing entitlements**. Kód: `src/domain/product-analytics`, `src/domain/feature-flags`, admin `/admin/analytics`.
+**Rozhodnutí:** Interní product analytics sleduje **learning conversion funnel** (homepage → guest start → first material → first answer → first lesson complete → return next day) a metriky (čas do první interakce, dokončení lekcí, návrat, opravené chyby, review completion, topic abandonment). **Žádný student content / PII** — allowlist eventů, hashované learner klíče v exportu. Feature flags + lightweight experimenty jsou **oddělené od billing entitlements**. Bez těžkého analytics stacku — file store. Spec: `docs/PRODUCT_ANALYTICS.md`. Kód: `src/domain/product-analytics`, `src/server/product-analytics`, admin `/admin/analytics`.
 
 ---
 

@@ -101,7 +101,6 @@ export async function handleStripeWebhookEvent(
         await recordProductEvent({
           learnerKey: learnerId,
           event: "upgrade_completed",
-          funnelStep: "upgrade",
           planId,
         });
       }

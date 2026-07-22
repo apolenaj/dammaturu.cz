@@ -120,8 +120,9 @@ describe("evidence-based readiness", () => {
   it("never claims P(pass) in disclaimer", () => {
     const book = buildDemoReadinessBook("learner", NOW);
     const snap = buildReadinessSnapshot(book, NOW);
+    expect(snap.disclaimerCs).toBe(readinessDisclaimerCs);
     expect(snap.disclaimerCs.toLowerCase()).toMatch(
-      /predikce|šance|maturity/,
+      /předpověď|jestli maturitu/,
     );
   });
 });

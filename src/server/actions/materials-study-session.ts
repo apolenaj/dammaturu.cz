@@ -108,6 +108,12 @@ export async function startMaterialsStudySessionAction(input: {
       topic: input.topic,
       masteryBefore,
     });
+    const { emitLessonStart } = await import("@/server/product-analytics/emit");
+    await emitLessonStart({
+      learnerKey: learnerId,
+      featureId: "materials_study",
+      topicSlug: (input.topic ?? materials[0]?.id ?? "materials").slice(0, 120),
+    });
     return { ok: true, session };
   } catch (e) {
     return {
@@ -145,6 +151,15 @@ export async function submitMaterialsSessionAnswerAction(input: {
     item: itemParsed.data,
     studentAnswer: input.studentAnswer,
     flashcardGrade: input.flashcardGrade,
+  });
+  const { emitRetrievalAnswerEvents } = await import(
+    "@/server/product-analytics/emit"
+  );
+  await emitRetrievalAnswerEvents({
+    learnerKey: learnerId,
+    result: grade.attempt.result,
+    featureId: "materials_study",
+    topicSlug: (itemParsed.data.topic ?? "materials").slice(0, 120),
   });
   return { ok: true, grade };
 }
@@ -189,6 +204,18 @@ export async function finishMaterialsStudySessionAction(input: {
   await markTodayMissionStepFromActivity({
     learnerId,
     stepKind: "review",
+  });
+
+  const { emitSimpleProductEvent } = await import(
+    "@/server/product-analytics/emit"
+  );
+  await emitSimpleProductEvent({
+    learnerKey: learnerId,
+    event: "lesson_complete",
+    featureId: "materials_study",
+    topicSlug: (
+      sessionParsed.data.topic ?? sessionParsed.data.id
+    ).slice(0, 120),
   });
 
   return { ok: true, summary };

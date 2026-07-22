@@ -2,54 +2,31 @@ import type { Metadata } from "next";
 import { HomepageAnalyticsBeacon } from "@/components/analytics/homepage-analytics-beacon";
 import { MarketingShell } from "@/components/shell/MarketingShell";
 import {
-  HomeCermat,
+  HomeCzechContent,
   HomeFaq,
   HomeFinalCta,
+  HomeFreeBeta,
   HomeHero,
   HomeHowItWorks,
-  HomeOralSimulation,
-  HomeOwnMaterials,
-  HomePricingPreview,
-  HomeReadiness,
-  HomeSuccessJourney,
-  HomeTestingDemo,
-  HomeUploadDemo,
+  HomeMistakesReview,
+  HomeProgressConcept,
   homeFaqItems,
 } from "@/components/marketing/home/home-sections";
+import { absoluteUrl, buildPublicMetadata, getSiteUrl } from "@/lib/seo";
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
-  "https://dammaturu.cz";
-
-const promise =
-  "Nahraj, co se musíš naučit. My tě připravíme až k maturitě.";
+const siteUrl = getSiteUrl();
+const promise = "Víš, co se naučit. Víš, co už umíš.";
 
 export const metadata: Metadata = {
+  ...buildPublicMetadata({
+    title: "DámMaturu.cz — maturita z češtiny bez chaosu",
+    description:
+      "Otázky, zpětná vazba ze zdroje, chyby k opakování a jasný pokrok. Víš, co se naučit — a co už umíš. Beta zdarma, bez registrace.",
+    path: "/",
+    ogTitle: `DámMaturu.cz — ${promise}`,
+  }),
   title: {
     absolute: `DámMaturu.cz — ${promise}`,
-  },
-  description:
-    "Nahraj poznámky a PDF. DámMaturu ti dá denní misi, procvičování z tvých textů, cvičný CERMAT a ústní nanečisto — až k maturitě z češtiny.",
-  alternates: {
-    canonical: siteUrl,
-  },
-  openGraph: {
-    type: "website",
-    locale: "cs_CZ",
-    url: siteUrl,
-    siteName: "DámMaturu.cz",
-    title: `DámMaturu.cz — ${promise}`,
-    description:
-      "Materiály → denní mise → testy a ústní. Skutečná appka, ne chatbot.",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "DámMaturu.cz",
-    description: promise,
-  },
-  robots: {
-    index: true,
-    follow: true,
   },
 };
 
@@ -71,13 +48,13 @@ const jsonLd = {
       operatingSystem: "Web",
       url: siteUrl,
       description:
-        "Studijní systém k maturitě: nahrání materiálů, denní mise, procvičování, cvičný CERMAT a ústní nanečisto.",
+        "Studijní systém k maturitě z češtiny: otázky, zpětná vazba, chyby a pokrok. Beta zdarma.",
       inLanguage: "cs-CZ",
       offers: {
         "@type": "Offer",
         price: "0",
         priceCurrency: "CZK",
-        description: "FREE · SMART · AI PRO · MATURITA MAX — entitlements v kódu",
+        description: "Beta zdarma — placené plány zatím neprodáváme",
       },
     },
     {
@@ -90,6 +67,30 @@ const jsonLd = {
           text: item.a,
         },
       })),
+    },
+    {
+      "@type": "ItemList",
+      name: "Příprava k maturitě — veřejná témata",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          url: absoluteUrl("/priprava"),
+          name: "Příprava k maturitě z češtiny",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          url: absoluteUrl("/priprava/narodni-obrozeni"),
+          name: "Národní obrození",
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          url: absoluteUrl("/priprava/romantismus"),
+          name: "Romantismus",
+        },
+      ],
     },
   ],
 };
@@ -104,14 +105,10 @@ export default function HomePage() {
       />
       <HomeHero />
       <HomeHowItWorks />
-      <HomeUploadDemo />
-      <HomeTestingDemo />
-      <HomeReadiness />
-      <HomeCermat />
-      <HomeOralSimulation />
-      <HomeOwnMaterials />
-      <HomeSuccessJourney />
-      <HomePricingPreview />
+      <HomeMistakesReview />
+      <HomeProgressConcept />
+      <HomeCzechContent />
+      <HomeFreeBeta />
       <HomeFaq />
       <HomeFinalCta />
     </MarketingShell>

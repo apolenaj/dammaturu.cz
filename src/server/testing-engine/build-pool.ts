@@ -118,7 +118,7 @@ export function atomsFromLearnerMaterial(
       flags: unit.flags,
       hasSourceText: Boolean(unit.provenance.sourceText?.trim()),
     });
-    if (confidence !== "verified_from_source") continue;
+    if (confidence === "insufficient" || confidence === "needs_review") continue;
     if (
       unit.flags.includes("conflicting") ||
       unit.flags.includes("ambiguous")

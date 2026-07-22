@@ -153,7 +153,6 @@ export async function signUpWithPasswordAction(input: {
     await recordProductEvent({
       learnerKey: res.userId,
       event: "registration_completed",
-      funnelStep: "registration",
     });
     revalidatePath("/", "layout");
     return { ok: true };
@@ -190,7 +189,6 @@ export async function signUpWithPasswordAction(input: {
       await recordProductEvent({
         learnerKey: data.user.id,
         event: "registration_completed",
-        funnelStep: "registration",
       });
     }
 

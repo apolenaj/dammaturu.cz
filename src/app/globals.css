@@ -21,8 +21,9 @@
   /* Foreground — ink with room to breathe */
   --fg-primary: #0f1724;
   --fg-secondary: #3a465c;
-  --fg-muted: #5a6880;
-  --fg-disabled: #8a96a8;
+  /* Darker muted for WCAG AA on canvas (~4.6:1+) */
+  --fg-muted: #4a5568;
+  --fg-disabled: #7a8699;
   --fg-inverse: #f4f6f8;
   --fg-on-brand: #ffffff;
   --fg-on-accent: #1a1408;
@@ -48,13 +49,19 @@
 
   /* Feedback */
   --feedback-success: #1a7f52;
+  /* Ink on soft bg — WCAG AA ≥4.5:1 at caption size */
+  --feedback-success-ink: #0f5c3a;
   --feedback-success-soft: #d7f2e5;
   --feedback-warning: #9a6700;
+  --feedback-warning-ink: #6b4700;
   --feedback-warning-soft: #f8ebc8;
   --feedback-danger: #b42318;
   --feedback-danger-soft: #fce8e6;
   --feedback-info: #1a5fd0;
   --feedback-info-soft: #e0eaff;
+
+  /* Action text on soft teal wash (badges / chips) */
+  --action-on-soft: #085447;
 
   /* Mastery spectrum */
   --mastery-unknown: #8a96a8;
@@ -125,7 +132,7 @@
 
   --fg-primary: #eef2f7;
   --fg-secondary: #b4becf;
-  --fg-muted: #8793a8;
+  --fg-muted: #9aa6bb;
   --fg-disabled: #5f6b80;
   --fg-inverse: #0f1724;
   --fg-on-brand: #ffffff;
@@ -148,8 +155,10 @@
   --accent-soft: rgba(224, 166, 58, 0.16);
 
   --feedback-success: #3dbf7a;
+  --feedback-success-ink: #7ee0a8;
   --feedback-success-soft: rgba(61, 191, 122, 0.16);
   --feedback-warning: #e0a63a;
+  --feedback-warning-ink: #f0c56a;
   --feedback-warning-soft: rgba(224, 166, 58, 0.16);
   --feedback-danger: #f07066;
   --feedback-danger-soft: rgba(240, 112, 102, 0.16);
@@ -226,22 +235,40 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
+
+    .dm-press,
+    button,
+    a,
+    [role="button"] {
+      transform: none !important;
+    }
   }
 }
 
 @layer components {
   .dm-surface {
-    @apply rounded-xl border border-border bg-surface shadow-sm;
+    @apply rounded-xl border border-border bg-surface shadow-xs;
   }
 
   .dm-surface-interactive {
     @apply dm-surface transition duration-base ease-out;
-    @apply hover:-translate-y-px hover:border-border-strong hover:shadow-md;
-    @apply active:translate-y-0 active:shadow-sm;
+    @apply hover:-translate-y-px hover:border-border-strong hover:shadow-sm;
+    @apply active:translate-y-0 active:shadow-xs;
   }
 
   .dm-press {
     @apply transition duration-fast ease-out active:scale-[0.985];
+  }
+
+  /* Focused study session — quieter than browsing chrome */
+  .dm-study-shell {
+    @apply mx-auto w-full max-w-lg space-y-5 pb-24;
+  }
+
+  .dm-study-primary {
+    @apply flex min-h-12 w-full items-center justify-center rounded-xl bg-action px-4 text-body-sm font-semibold tracking-wide text-fg-on-brand shadow-xs transition duration-fast ease-out;
+    @apply hover:bg-action-hover hover:shadow-sm active:scale-[0.985];
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2;
   }
 }
 
@@ -270,23 +297,23 @@
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
 
-  .sticky-study-cta {
-    @apply sticky z-20 -mx-1 border-t border-border px-1 pt-3 backdrop-blur-md;
-    background-color: color-mix(in srgb, var(--bg-surface) 95%, transparent);
-    bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
-    padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+  /**
+   * Study primary actions — in document flow above bottom nav.
+   * Do NOT use position:fixed/sticky here: sticky docks covered
+   * answer fields and textareas on mobile keyboards.
+   */
+  .study-action-dock {
+    @apply relative z-10 w-full;
+    padding-bottom: max(0.25rem, env(safe-area-inset-bottom, 0px));
   }
 
-  @media (min-width: 1024px) {
-    .sticky-study-cta {
-      position: static;
-      bottom: auto;
-      margin-left: 0;
-      margin-right: 0;
-      border-top-width: 0;
-      background: transparent;
-      padding: 0;
-      backdrop-filter: none;
-    }
+  /* Legacy alias — same in-flow behavior */
+  .sticky-study-cta {
+    @apply study-action-dock mt-4 border-t border-border pt-3;
+  }
+
+  /* Prevent zoom layout bugs from wide children */
+  .dm-contain-x {
+    @apply min-w-0 max-w-full overflow-x-clip;
   }
 }

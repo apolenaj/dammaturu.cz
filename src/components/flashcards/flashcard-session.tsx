@@ -398,13 +398,13 @@ function FlashcardSessionPlayer({
       ) : null}
 
       {!flipped ? (
-        <div className="sticky-study-cta lg:static">
+        <div className="study-action-dock mt-4 border-t border-border pt-3">
           <Button fullWidth size="lg" className="min-h-12" onClick={flip}>
             Ukázat odpověď
           </Button>
         </div>
       ) : (
-        <div className="sticky-study-cta grid grid-cols-1 gap-2 sm:grid-cols-3 lg:static lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
+        <div className="study-action-dock mt-4 grid grid-cols-1 gap-2 border-t border-border pt-3 sm:grid-cols-3">
           <GradeButton
             tone="danger"
             shortcut="1"

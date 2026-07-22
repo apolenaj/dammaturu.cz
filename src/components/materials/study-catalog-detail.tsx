@@ -25,7 +25,7 @@ export type CatalogMode = "overview" | "learn" | "test" | "source";
 export function StudyCatalogDetail({
   entry,
   initialProgress,
-  learnSteps: _learnSteps,
+  learnSteps: _unusedLearnSteps,
   quickTest,
   initialMode = "overview",
   continueLearning = false,
@@ -38,7 +38,7 @@ export function StudyCatalogDetail({
   initialMode?: CatalogMode;
   continueLearning?: boolean;
 }) {
-  const [mode, setMode] = useState<CatalogMode>(
+  void _unusedLearnSteps;  const [mode, setMode] = useState<CatalogMode>(
     continueLearning ? "learn" : initialMode,
   );
   const [progress, setProgress] = useState(initialProgress);
@@ -57,16 +57,23 @@ export function StudyCatalogDetail({
   function startLearningSession() {
     setError(null);
     startTransition(async () => {
-      const res = await startCatalogLearningSessionAction({
-        sourceId: entry.sourceId,
-        preferUnitId: initialProgress?.completedUnitIds.at(-1) ?? null,
-      });
-      if (!res.ok) {
-        setError(res.error);
+      try {
+        const res = await startCatalogLearningSessionAction({
+          sourceId: entry.sourceId,
+          preferUnitId: initialProgress?.completedUnitIds.at(-1) ?? null,
+        });
+        if (!res.ok) {
+          setError(res.error);
+          setSession(null);
+          return;
+        }
+        setSession(res.session);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Nepovedlo se spustit učení.",
+        );
         setSession(null);
-        return;
       }
-      setSession(res.session);
     });
   }
 

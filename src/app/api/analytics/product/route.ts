@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import {
+  clientBeaconEventNames,
+  funnelStepForEvent,
+} from "@/domain/product-analytics";
 import { recordProductEvent } from "@/server/product-analytics/store";
 import {
   clientIpFromHeaders,
@@ -9,12 +13,24 @@ import {
 export const runtime = "nodejs";
 
 const bodySchema = z.object({
-  event: z.enum(["homepage_viewed"]),
+  event: z.enum(clientBeaconEventNames),
+  topicSlug: z
+    .string()
+    .min(1)
+    .max(120)
+    .regex(/^[a-z0-9][a-z0-9_-]*$/i)
+    .optional(),
+  featureId: z
+    .string()
+    .min(1)
+    .max(80)
+    .regex(/^[a-z0-9][a-z0-9_-]*$/i)
+    .optional(),
 });
 
 /**
- * Anonymous product funnel beacon (homepage).
- * No cookies required; never accepts free text / PII.
+ * Anonymous / guest product funnel beacon.
+ * No free text. Optional opaque learner key from session cookies only.
  */
 export async function POST(request: Request) {
   const ip = clientIpFromHeaders(request.headers);
@@ -44,10 +60,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false }, { status: 400 });
   }
 
+  let learnerKey: string | null = null;
+  try {
+    const { getViewerSession } = await import("@/server/viewer-session");
+    const viewer = await getViewerSession({ createGuestIfMissing: false });
+    learnerKey = viewer?.learnerId ?? null;
+  } catch {
+    learnerKey = null;
+  }
+
+  const event =
+    parsed.data.event === "homepage_viewed"
+      ? ("homepage_view" as const)
+      : parsed.data.event;
+
   await recordProductEvent({
-    learnerKey: null,
-    event: parsed.data.event,
-    funnelStep: "homepage",
+    learnerKey,
+    event,
+    funnelStep: funnelStepForEvent(event),
+    topicSlug: parsed.data.topicSlug,
+    featureId: parsed.data.featureId,
   });
 
   return NextResponse.json({ ok: true });

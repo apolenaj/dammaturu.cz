@@ -16,6 +16,13 @@ export default async function AdminReviewsPage() {
         <Link href="/admin/sources" className="font-semibold text-action hover:underline">
           Zdroje / import
         </Link>
+        {" · "}
+        <Link
+          href="/admin/content-trust"
+          className="font-semibold text-action hover:underline"
+        >
+          Content Trust report
+        </Link>
       </p>
       <ContentQaPanel items={items} lastRun={lastRun} />
     </div>

@@ -1,7 +1,7 @@
 # CERMAT coverage — Maturita CERMAT – Český jazyk a literatura
 
 > Internal admin report. School year **2025/2026**.
-> Generated: `2026-07-22T01:01:05.621Z`
+> Generated: `2026-07-22T03:35:38.389Z`
 > Curriculum id: `maturita-cermat-cjl-didactic`
 
 ## Authority

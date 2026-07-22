@@ -215,27 +215,34 @@ export function mapEvidenceConfidence(params: {
   confidence: number;
   flags: string[];
   hasSourceText: boolean;
+  /** Human / Content QA verification — only then claim „Ověřeno ze zdroje“. */
+  trustAuthoritative?: boolean;
 }): EvidenceConfidence {
   if (!params.hasSourceText) return "insufficient";
+  if (params.trustAuthoritative === true) return "verified_from_source";
   if (
     params.flags.includes("conflicting") ||
-    params.flags.includes("ambiguous")
+    params.flags.includes("ambiguous") ||
+    params.flags.includes("needs_human_review")
   ) {
     return "needs_review";
   }
+  // Heuristic extraction must never claim full verification.
   if (
     params.confidence >= 0.55 &&
     !params.flags.includes("low_confidence") &&
     !params.flags.includes("unclear_formulation")
   ) {
-    return "verified_from_source";
+    return "likely";
   }
   if (params.confidence >= 0.4) return "likely";
   return "needs_review";
 }
 
 export function formatCitationLocation(citation: SourceCitation): string {
-  const parts: string[] = [citation.documentTitle];
+  // Student-safe: title only + optional page/section — never file paths.
+  const title = citation.documentTitle.replace(/^.*[/\\]/, "").trim();
+  const parts: string[] = [title || "Studijní materiál"];
   if (citation.pageStart != null) {
     parts.push(
       citation.pageEnd != null && citation.pageEnd !== citation.pageStart
@@ -249,4 +256,14 @@ export function formatCitationLocation(citation: SourceCitation): string {
     parts.push(citation.sectionPath.join(" › "));
   }
   return parts.join(" · ");
+}
+
+/** Compact student label — „Zdroj: … – studijní materiál“. */
+export function formatStudentCitationLabel(citation: SourceCitation): string {
+  const title = citation.documentTitle.replace(/^.*[/\\]/, "").trim();
+  const base = title || "studijní materiál";
+  const friendly = /studijní materiál/i.test(base)
+    ? base
+    : `${base} – studijní materiál`;
+  return `Zdroj: ${friendly}`;
 }

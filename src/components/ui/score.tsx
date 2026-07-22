@@ -9,12 +9,12 @@ export type MasteryLevel =
   | "mastered";
 
 const masteryLabel: Record<MasteryLevel, string> = {
-  unknown: "Neznámé",
-  exposed: "Viděno",
-  fragile: "Křehké",
-  stable: "Stabilní",
-  proficient: "Jisté",
-  mastered: "Zvládnuto",
+  unknown: "Nové",
+  exposed: "Učím se",
+  fragile: "K procvičení",
+  stable: "Silné",
+  proficient: "Silné",
+  mastered: "Silné",
 };
 
 const masteryColor: Record<MasteryLevel, string> = {

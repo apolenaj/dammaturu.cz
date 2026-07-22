@@ -134,6 +134,16 @@ export async function startTestingSessionAction(input: {
       return { ok: false, error: emptyByMode[input.mode] };
     }
 
+    const { recordProductEvent } = await import(
+      "@/server/product-analytics/store"
+    );
+    await recordProductEvent({
+      learnerKey: learnerId,
+      event: "test_start",
+      featureId: "testing_engine",
+      topicSlug: input.mode,
+    });
+
     return { ok: true, session };
   } catch (error) {
     return {
@@ -217,6 +227,16 @@ export async function submitTestingAnswerAction(input: {
       });
     }
 
+    const { emitRetrievalAnswerEvents } = await import(
+      "@/server/product-analytics/emit"
+    );
+    await emitRetrievalAnswerEvents({
+      learnerKey: learnerId,
+      result: grade.result,
+      featureId: "testing_engine",
+      topicSlug: question.topic.slice(0, 120),
+    });
+
     return { ok: true, grade };
   } catch (error) {
     return {
@@ -230,6 +250,18 @@ export async function summarizeTestingSessionAction(input: {
   mode: TestingMode;
   attempts: TestingAttemptRecord[];
 }): Promise<{ ok: true; summary: TestingSessionSummary }> {
+  const learnerId = await resolveLearnerIdForAction();
+  if (learnerId) {
+    const { recordProductEvent } = await import(
+      "@/server/product-analytics/store"
+    );
+    await recordProductEvent({
+      learnerKey: learnerId,
+      event: "test_complete",
+      featureId: "testing_engine",
+      topicSlug: input.mode,
+    });
+  }
   return {
     ok: true,
     summary: buildTestingSessionSummary({

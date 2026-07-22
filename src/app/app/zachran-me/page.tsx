@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { EntitlementGate } from "@/components/billing/entitlement-gate";
-import { ZachranMeWizard } from "@/components/zachran-me/zachran-me-wizard";
+import { LazyZachranMeWizard } from "@/components/learning/lazy-heavy-features";
 import { getZachranMeDefaultsAction } from "@/server/actions/zachran-me";
 
 export const metadata: Metadata = { title: "Zachraň mě" };
@@ -11,7 +11,7 @@ export default async function ZachranMePage() {
   return (
     <div className="px-3 pb-10 sm:px-0">
       <EntitlementGate feature="zachran_me">
-        <ZachranMeWizard
+        <LazyZachranMeWizard
           defaults={{
             examDate: defaults.examDate,
             dailyMinutes: defaults.dailyMinutes,

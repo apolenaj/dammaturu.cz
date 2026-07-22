@@ -80,7 +80,7 @@ describe("information architecture catalog", () => {
     expect(appPrimaryNav).toHaveLength(5);
     expect(appPrimaryNav.map((i) => i.label)).toEqual([
       "Dnes",
-      "Učit se",
+      "ČJL",
       "Moje materiály",
       "Testy",
       "Pokrok",
@@ -90,13 +90,14 @@ describe("information architecture catalog", () => {
 
   it("exposes secondary JTBD destinations only", () => {
     expect(appSecondaryNav.map((i) => i.label)).toEqual([
+      "CERMAT příprava",
       "Opakování",
       "Moje chyby",
       "Plán",
       "Zkouška nanečisto",
       "Profil",
     ]);
-    expect(getVisibleSecondaryNav()).toHaveLength(5);
+    expect(getVisibleSecondaryNav()).toHaveLength(6);
   });
 
   it("never surfaces non-ready destinations in chrome", () => {

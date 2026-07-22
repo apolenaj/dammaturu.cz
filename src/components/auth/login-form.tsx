@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
   requestPasswordResetAction,
@@ -129,9 +130,15 @@ export function LoginForm({
         </p>
       ) : null}
 
-      <div className="flex flex-wrap gap-2 text-body-sm">
+      <div
+        className="flex flex-wrap gap-2 text-body-sm"
+        role="tablist"
+        aria-label="Způsob přihlášení"
+      >
         <button
           type="button"
+          role="tab"
+          aria-selected={mode === "password"}
           className={tabClass(mode === "password")}
           onClick={() => setMode("password")}
         >
@@ -140,6 +147,8 @@ export function LoginForm({
         {caps.magicLink ? (
           <button
             type="button"
+            role="tab"
+            aria-selected={mode === "magic"}
             className={tabClass(mode === "magic")}
             onClick={() => setMode("magic")}
           >
@@ -148,6 +157,8 @@ export function LoginForm({
         ) : null}
         <button
           type="button"
+          role="tab"
+          aria-selected={mode === "reset"}
           className={tabClass(mode === "reset")}
           onClick={() => setMode("reset")}
         >
@@ -155,32 +166,38 @@ export function LoginForm({
         </button>
       </div>
 
-      <form onSubmit={onSubmit} className="space-y-4">
-        <label className="block space-y-1.5">
-          <span className="text-caption font-medium text-fg-muted">E-mail</span>
-          <Input
-            type="email"
-            inputMode="email"
-            autoComplete="email"
-            autoCapitalize="none"
-            autoCorrect="off"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </label>
+      <form onSubmit={onSubmit} className="space-y-4" noValidate>
+        <Field label="E-mail">
+          {({ id, describedBy }) => (
+            <Input
+              id={id}
+              aria-describedby={describedBy}
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              autoCapitalize="none"
+              autoCorrect="off"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          )}
+        </Field>
 
         {mode === "password" ? (
-          <label className="block space-y-1.5">
-            <span className="text-caption font-medium text-fg-muted">Heslo</span>
-            <Input
-              type="password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </label>
+          <Field label="Heslo">
+            {({ id, describedBy }) => (
+              <Input
+                id={id}
+                aria-describedby={describedBy}
+                type="password"
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            )}
+          </Field>
         ) : null}
 
         <Button type="submit" fullWidth size="lg" className="min-h-12" disabled={pending}>
@@ -224,7 +241,7 @@ export function LoginForm({
 
 function tabClass(active: boolean) {
   return [
-    "min-h-11 touch-manipulation rounded-md px-3 py-2 font-medium transition",
+    "min-h-11 touch-manipulation rounded-md px-3 py-2 font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2",
     active
       ? "bg-action text-fg-on-brand"
       : "bg-subtle text-fg-secondary hover:text-fg",

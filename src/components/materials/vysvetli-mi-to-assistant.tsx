@@ -226,8 +226,25 @@ export function VysvetliMiToAssistant({
         </label>
 
         {error ? (
-          <Alert title="Chyba" tone="danger">
-            {error}
+          <Alert title="Teď to nejde" tone="danger">
+            <p>{error}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Button type="button" variant="outline" onClick={submit}>
+                Zkusit znovu
+              </Button>
+              <Link
+                href="/app/materials"
+                className="inline-flex min-h-11 items-center text-body-sm font-semibold text-action underline-offset-2 hover:underline"
+              >
+                Vrátit se k materiálům
+              </Link>
+              <Link
+                href="/app/learn"
+                className="inline-flex min-h-11 items-center text-body-sm font-semibold text-action underline-offset-2 hover:underline"
+              >
+                Pokračovat offline
+              </Link>
+            </div>
           </Alert>
         ) : null}
 

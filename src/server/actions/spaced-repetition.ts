@@ -96,6 +96,15 @@ export async function startMixedReviewAction(input?: {
       packSlug: pack.slug,
       queue: session.queue.length,
     });
+    const { recordProductEvent } = await import(
+      "@/server/product-analytics/store"
+    );
+    await recordProductEvent({
+      learnerKey: learnerId,
+      event: "review_start",
+      featureId: "spaced_review",
+      topicSlug: pack.slug,
+    });
     revalidatePath("/app/dashboard");
     revalidatePath("/app/review");
     revalidatePath("/app/review/mixed");
@@ -202,6 +211,15 @@ export async function gradeMixedReviewAction(input: {
         topicSlug: pack.slug,
         rating: spacedGradeToRating(input.grade),
         minutes: Math.max(1, Math.round(result.session.queue.length * 0.5)),
+      });
+      const { recordProductEvent } = await import(
+        "@/server/product-analytics/store"
+      );
+      await recordProductEvent({
+        learnerKey: learnerId,
+        event: "review_complete",
+        featureId: "spaced_review",
+        topicSlug: pack.slug,
       });
       await markTodayMissionStepFromActivity({
         learnerId,

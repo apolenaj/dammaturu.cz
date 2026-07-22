@@ -185,7 +185,11 @@ function gatherCatalogEvidence(
       hits.push({
         snippet: unit.statement.slice(0, 400),
         score: score / Math.max(1, terms.length),
-        confidence: unit.confidence >= 0.55 ? "verified_from_source" : "likely",
+        confidence: mapEvidenceConfidence({
+          confidence: unit.confidence,
+          flags: [],
+          hasSourceText: Boolean(sourceText.trim()),
+        }),
         citation: toVysvetliCitation(
           {
             documentId: synthetic,
@@ -200,7 +204,7 @@ function gatherCatalogEvidence(
             sectionPath: [],
             headingPath: chunk?.headingPath ?? null,
             sourceText,
-            sourceRef: entry.provenance.inventoryPath,
+            sourceRef: null,
           },
           "approved_catalog",
         ),

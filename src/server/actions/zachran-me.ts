@@ -8,7 +8,6 @@ import {
   buildZachranMePlan,
   zachranMeConfig,
   zachranMeInputSchema,
-  zachranMeScopes,
   type TriageCandidate,
   type ZachranMeInput,
   type ZachranMePlan,
@@ -16,6 +15,7 @@ import {
 } from "@/domain/learning/zachran-me";
 import { listActiveMemories } from "@/domain/learning/error-memory";
 import { track } from "@/lib/analytics";
+import { clientSafeError } from "@/lib/security/hardening";
 import { getLearnerIdFromCookies } from "@/server/learner-session";
 import { getLearner } from "@/server/learner-store";
 import { getDueSummaryForLearner } from "@/server/spaced-repetition/store";
@@ -178,14 +178,12 @@ export async function buildZachranMePlanAction(
   } catch (error) {
     return {
       ok: false,
-      error: error instanceof Error ? error.message : String(error),
+      error: clientSafeError(
+        error,
+        "Plán teď nejde sestavit. Pokračuj denní misí nebo materiály.",
+      ),
     };
   }
-}
-
-/** Validate scope enum for callers. */
-export function isZachranMeScope(value: string): value is ZachranMeScope {
-  return (zachranMeScopes as readonly string[]).includes(value);
 }
 
 export type { ZachranMeInput };

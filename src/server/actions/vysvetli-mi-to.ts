@@ -6,6 +6,7 @@ import {
   type VysvetliResponse,
 } from "@/domain/learning/vysvetli-mi-to";
 import { track } from "@/lib/analytics";
+import { clientSafeError } from "@/lib/security/hardening";
 import { getLearnerIdFromCookies } from "@/server/learner-session";
 import {
   getLearnerMaterial,
@@ -18,6 +19,11 @@ import {
 import { getStudyContentRegistry } from "@/server/study-content/registry";
 import { getLearnerEntitlements } from "@/server/billing/entitlements";
 import type { LearnerMaterialListItem } from "@/domain/learning/learner-materials";
+import {
+  clientIpFromHeaders,
+  rateLimit,
+} from "@/server/security/rate-limit";
+import { headers } from "next/headers";
 
 type Fail = { ok: false; error: string };
 
@@ -60,6 +66,20 @@ export async function runVysvetliMiToAction(
   try {
     const learnerId = await getLearnerIdFromCookies();
     if (!learnerId) return { ok: false, error: "Nejdřív se přihlas." };
+
+    const h = await headers();
+    const ip = clientIpFromHeaders(h);
+    const limited = rateLimit({
+      key: `vysvetli:${learnerId}:${ip}`,
+      limit: 20,
+      windowMs: 60_000,
+    });
+    if (!limited.ok) {
+      return {
+        ok: false,
+        error: "Příliš mnoho dotazů. Zkus to za chvíli — materiály můžeš studovat dál.",
+      };
+    }
 
     const req: VysvetliRequest = parsed.data;
     const materials = [];
@@ -124,7 +144,10 @@ export async function runVysvetliMiToAction(
   } catch (error) {
     return {
       ok: false,
-      error: error instanceof Error ? error.message : String(error),
+      error: clientSafeError(
+        error,
+        "Vysvětlení teď nejde. Pokračuj studiem materiálů — jádro funguje bez AI.",
+      ),
     };
   }
 }

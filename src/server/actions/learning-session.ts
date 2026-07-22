@@ -53,6 +53,16 @@ export async function startCatalogLearningSessionAction(input: {
       };
     }
     await touchStudyContentOpen({ learnerId, sourceId: input.sourceId });
+    try {
+      const { emitLessonStart } = await import("@/server/product-analytics/emit");
+      await emitLessonStart({
+        learnerKey: learnerId,
+        featureId: "catalog_learning",
+        topicSlug: input.sourceId.slice(0, 120),
+      });
+    } catch (analyticsError) {
+      console.error("[learning-session] analytics emit failed", analyticsError);
+    }
     return { ok: true, session };
   } catch (error) {
     return {
@@ -144,6 +154,18 @@ export async function submitLearningSessionAnswerAction(input: {
       });
     }
 
+    const { emitRetrievalAnswerEvents } = await import(
+      "@/server/product-analytics/emit"
+    );
+    void emitRetrievalAnswerEvents({
+      learnerKey: learnerId,
+      result: base.result,
+      featureId: "catalog_learning",
+      topicSlug: parsed.data.source.sourceId.slice(0, 120),
+    }).catch((analyticsError) => {
+      console.error("[learning-session] analytics emit failed", analyticsError);
+    });
+
     return {
       ok: true,
       grade: { ...base, scheduledDueAt },
@@ -151,7 +173,7 @@ export async function submitLearningSessionAnswerAction(input: {
   } catch (error) {
     return {
       ok: false,
-      error: error instanceof Error ? error.message : "Hodnocení selhalo.",
+      error: error instanceof Error ? error.message : "Nepovedlo se hodnotit.",
     };
   }
 }

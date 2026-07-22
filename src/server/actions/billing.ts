@@ -164,7 +164,6 @@ export async function grantPlanForTestingAction(input: {
     await recordProductEvent({
       learnerKey: identity.learnerId,
       event: "upgrade_completed",
-      funnelStep: "upgrade",
       planId,
     });
   }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { BrandMark } from "@/components/brand/BrandMark";
 import { NavLinkList } from "@/components/navigation/NavLinkList";
@@ -73,7 +73,20 @@ export function AppBottomNav() {
 export function AppMobileHeader() {
   const [open, setOpen] = useState(false);
   const panelId = useId();
+  const menuBtnRef = useRef<HTMLButtonElement>(null);
   const secondary = getVisibleSecondaryNav();
+
+  useEffect(() => {
+    if (!open) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setOpen(false);
+        menuBtnRef.current?.focus();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
 
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-paper-raised/95 pt-[env(safe-area-inset-top)] backdrop-blur-md lg:hidden">
@@ -81,6 +94,7 @@ export function AppMobileHeader() {
         <BrandMark href="/app/dashboard" size="sm" />
         {secondary.length > 0 ? (
           <button
+            ref={menuBtnRef}
             type="button"
             className="inline-flex min-h-11 min-w-11 touch-manipulation items-center justify-center rounded-lg border border-line px-3 text-sm font-semibold text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
             aria-expanded={open}
@@ -95,6 +109,8 @@ export function AppMobileHeader() {
         <div
           id={panelId}
           className="border-t border-line bg-paper-raised px-3 py-3"
+          role="region"
+          aria-label="Další navigace"
         >
           <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-wider text-ink-muted">
             Další

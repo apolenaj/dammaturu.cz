@@ -44,8 +44,7 @@ export function KyticeExperienceView({ pack }: { pack: KyticeExperiencePack }) {
         </p>
         <p className="text-body-sm text-fg-secondary">{pack.summary}</p>
         <p className="text-caption text-fg-muted">
-          Motiv: {pack.motifOverviewCs} · SOURCE {pack.sourceFilename} · verified
-          KU only
+          Motiv: {pack.motifOverviewCs} · ověřené studijní jednotky
         </p>
       </header>
 

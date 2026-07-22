@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { KyticeExperienceView } from "@/components/kytice/kytice-experience-view";
-import {
-  Card,
-  CardDescription,
-} from "@/components/ui/card";
+import { KyticeExperienceLazy } from "@/components/learning/lazy-experiences";
+import { ContentUnavailableState } from "@/components/shell/study-recovery";
 import { getKyticeExperienceAction } from "@/server/actions/kytice-experience";
 
 export const metadata: Metadata = { title: "Kytice — 13 balad" };
@@ -14,25 +10,12 @@ export default async function KyticeExperiencePage() {
   const { pack } = await getKyticeExperienceAction();
 
   if (!pack) {
-    return (
-      <div className="mx-auto w-full max-w-2xl space-y-4 px-3 pb-10">
-        <h1 className="font-display text-display-md text-fg">Kytice</h1>
-        <Card>
-          <CardDescription>
-Tento obsah zatím není k dispozici. Zkus jinou aktivitu nebo se vrať později.
-            ingest Kytice.docx).
-          </CardDescription>
-        </Card>
-        <Link href="/app/learn" className="text-body-sm font-semibold text-action">
-          ← Učit se
-        </Link>
-      </div>
-    );
+    return <ContentUnavailableState title="Kytice" />;
   }
 
   return (
     <div className="px-3 pb-10 sm:px-0">
-      <KyticeExperienceView pack={pack} />
+      <KyticeExperienceLazy pack={pack} />
     </div>
   );
 }

@@ -52,16 +52,20 @@ Pro každý ze 12 sources:
 - [ ] Žádný horizontal scroll na mobile
 - [ ] Klávesnice nepřekrývá submit u short-answer (visual viewport)
 
-## F. Accessibility (WCAG baseline)
+## F. Accessibility (WCAG 2.2 AA baseline)
+
+See [`docs/ACCESSIBILITY.md`](./ACCESSIBILITY.md) for hardened items, automated commands, and **remaining known issues**.
 
 - [ ] Semantické headingy
 - [ ] Focus visible
-- [ ] Form labely
+- [ ] Form labely + error `role="alert"`
 - [ ] Buttons ne div onClick
 - [ ] Alt text u smysluplných obrázků (dekorace aria-hidden)
 - [ ] Color not sole indicator (správně/špatně)
-- [ ] Prefer reduced motion respektován u non-essential animací
-
+- [ ] Prefer reduced motion respektován
+- [ ] Study CTA nepřekrývá odpověď / input
+- [ ] `npm test -- src/components/ui/a11y.test.tsx`
+- [ ] `npx playwright test e2e/a11y-mobile.spec.ts`
 ## G. Auth & security
 
 - [ ] Odhlášený uživatel nevidí cizí progress

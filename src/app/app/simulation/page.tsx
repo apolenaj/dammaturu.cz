@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { EntitlementGate } from "@/components/billing/entitlement-gate";
-import { MockExamView } from "@/components/mock-exam/mock-exam-view";
-import { OralMaturitySimulationView } from "@/components/oral/oral-maturity-simulation-view";
+import {
+  LazyMockExamView,
+  LazyOralMaturitySimulationView,
+} from "@/components/learning/lazy-heavy-features";
+import { ContentUnavailableState } from "@/components/shell/study-recovery";
 import { Card, CardDescription } from "@/components/ui/card";
 import { getMockExamAction } from "@/server/actions/mock-exam";
 import { getOralSimulationSelectAction } from "@/server/actions/oral-maturity-simulation";
@@ -22,33 +25,16 @@ export default async function SimulationPage({
     const { pack } = await getMockExamAction();
     if (!pack) {
       return (
-        <div className="mx-auto w-full max-w-2xl space-y-4 px-3 pb-10">
-          <h1 className="font-display text-display-md text-fg">
-            Zkouška nanečisto
-          </h1>
-          <Card>
-            <CardDescription>
-              Simulace ještě není připravená. Vrať se po doplnění literatury, nebo
-              otevři{" "}
-              <Link href="/app/literature" className="font-semibold text-action">
-                Literaturu
-              </Link>
-              .
-            </CardDescription>
-          </Card>
-          <Link
-            href="/app/simulation"
-            className="text-body-sm font-semibold text-action"
-          >
-            ← Ústní maturita (evidence)
-          </Link>
-        </div>
+        <ContentUnavailableState
+          title="Zkouška nanečisto"
+          description="Simulace ještě není připravená. Vrať se k literatuře nebo materiálům a pokračuj v přípravě."
+        />
       );
     }
     return (
       <div className="px-3 pb-10 sm:px-0">
         <EntitlementGate feature="mock_exam">
-          <MockExamView pack={pack} />
+          <LazyMockExamView pack={pack} />
         </EntitlementGate>
       </div>
     );
@@ -64,6 +50,10 @@ export default async function SimulationPage({
             <Link href="/prihlaseni" className="font-semibold text-action">
               přihlas
             </Link>
+            , nebo pokračuj v{" "}
+            <Link href="/app/learn" className="font-semibold text-action">
+              učení
+            </Link>
             .
           </CardDescription>
         </Card>
@@ -74,7 +64,7 @@ export default async function SimulationPage({
   return (
     <div className="px-3 pb-10 sm:px-0">
       <EntitlementGate feature="oral_simulation">
-        <OralMaturitySimulationView selectView={view} />
+        <LazyOralMaturitySimulationView selectView={view} />
       </EntitlementGate>
     </div>
   );

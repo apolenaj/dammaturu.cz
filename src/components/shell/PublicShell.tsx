@@ -4,11 +4,14 @@ import { PublicNav } from "@/components/navigation/PublicNav";
 
 export function PublicHeader() {
   return (
-    <header className="relative sticky top-0 z-30 border-b border-line/80 bg-paper/80 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-        <BrandMark size="sm" />
+    <header className="relative sticky top-0 z-30 overflow-x-clip border-b border-line/80 bg-paper/80 backdrop-blur-md">
+      <div className="mx-auto flex max-w-6xl min-w-0 items-center justify-between gap-3 px-4 py-3 sm:px-6">
+        <div className="min-w-0 shrink-0">
+          <BrandMark size="sm" />
+        </div>
         <PublicNav />
-        <div className="hidden items-center gap-2 sm:flex">
+        {/* lg+: full auth; below that auth lives in the mobile/tablet menu */}
+        <div className="hidden shrink-0 items-center gap-2 lg:flex">
           <Link
             href="/prihlaseni"
             className="inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium text-ink-muted transition hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
@@ -35,21 +38,33 @@ export function PublicFooter() {
           <div>
             <BrandMark size="sm" />
             <p className="mt-2 max-w-sm text-body-sm text-fg-muted">
-              Nahraj, co se musíš naučit. My tě připravíme až k maturitě.
+              Víš, co se naučit. Víš, co už umíš.
             </p>
           </div>
           <nav aria-label="Patička" className="flex flex-wrap gap-x-4 gap-y-2 text-body-sm">
+            <Link href="/priprava" className="text-fg-secondary hover:text-fg">
+              Příprava k maturitě
+            </Link>
+            <Link href="/priprava/narodni-obrozeni" className="text-fg-secondary hover:text-fg">
+              Národní obrození
+            </Link>
+            <Link href="/priprava/romantismus" className="text-fg-secondary hover:text-fg">
+              Romantismus
+            </Link>
             <Link href="/jak-to-funguje" className="text-fg-secondary hover:text-fg">
               Jak to funguje
             </Link>
             <Link href="/maturitni-priprava" className="text-fg-secondary hover:text-fg">
               Maturitní příprava
             </Link>
+            <Link href="/cenik" className="text-fg-secondary hover:text-fg">
+              Ceník
+            </Link>
             <Link href="/#faq" className="text-fg-secondary hover:text-fg">
               FAQ
             </Link>
-            <Link href="/registrace" className="text-fg-secondary hover:text-fg">
-              Začít
+            <Link href="/app/learn" className="text-fg-secondary hover:text-fg">
+              Začít se učit
             </Link>
           </nav>
         </div>

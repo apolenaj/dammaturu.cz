@@ -89,8 +89,12 @@ export const verifiedKnowledgeUnitInputSchema = z.object({
   kind: kuKindSchema,
   statement: z.string().min(1).max(2000),
   sourceEvidence: sourceEvidenceSchema,
-  /** Only verified / corrected units may enter generation. */
-  verification: z.enum(["verified_from_source", "corrected"]),
+  /** Catalog: verified/corrected. Learner extracts: source_grounded (not authoritative). */
+  verification: z.enum([
+    "verified_from_source",
+    "corrected",
+    "source_grounded",
+  ]),
   author: z.string().max(200).nullable().optional(),
   literaryWork: z.string().max(240).nullable().optional(),
   literaryMovement: z.string().max(120).nullable().optional(),

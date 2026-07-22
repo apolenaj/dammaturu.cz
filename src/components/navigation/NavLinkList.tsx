@@ -62,7 +62,7 @@ export function NavLinkList({
               className={cn(
                 "flex items-center rounded-lg text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand",
                 variant === "bottom" &&
-                  "min-h-12 touch-manipulation flex-col justify-center gap-0.5 px-0.5 py-1.5 text-[10px] font-semibold leading-tight tracking-tight",
+                  "min-h-12 touch-manipulation flex-col justify-center gap-0.5 px-0.5 py-1.5 text-[11px] font-semibold leading-tight tracking-tight",
                 variant === "sidebar" && "min-h-11 gap-2.5 px-3 py-2",
                 variant === "top" && "min-h-10 px-3 py-2",
                 variant === "admin" && "min-h-11 px-3 py-2",

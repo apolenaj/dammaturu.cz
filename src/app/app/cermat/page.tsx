@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { EntitlementGate } from "@/components/billing/entitlement-gate";
-import { CermatPrepHub } from "@/components/cermat/cermat-prep-hub";
+import { LazyCermatPrepHub } from "@/components/learning/lazy-heavy-features";
 import { AppPageHeader } from "@/components/shell/app-screen";
 import { Alert } from "@/components/ui/alert";
 import { Card, CardDescription } from "@/components/ui/card";
@@ -66,7 +66,7 @@ export default async function CermatPrepPage() {
         <p className="mt-2 text-caption text-fg-muted">{CERMAT_HONEST_SCOPE_CS}</p>
       </Alert>
       <EntitlementGate feature="cermat_prep">
-        <CermatPrepHub initialView={view} />
+        <LazyCermatPrepHub initialView={view} />
       </EntitlementGate>
     </div>
   );

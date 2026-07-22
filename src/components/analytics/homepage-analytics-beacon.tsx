@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { trackProductBeacon } from "@/lib/product-analytics-beacon";
 
 /** Fire-once homepage funnel beacon — no PII. */
 export function HomepageAnalyticsBeacon() {
@@ -9,14 +10,7 @@ export function HomepageAnalyticsBeacon() {
   useEffect(() => {
     if (sent.current) return;
     sent.current = true;
-    void fetch("/api/analytics/product", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ event: "homepage_viewed" }),
-      keepalive: true,
-    }).catch(() => {
-      // ignore beacon failures
-    });
+    trackProductBeacon("homepage_view");
   }, []);
 
   return null;

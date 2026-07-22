@@ -17,6 +17,11 @@ import {
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { StudyPhaseFrame } from "@/components/ui/study-phase";
+import {
+  StudyHelpedPrompt,
+  markMeaningfulStudyLocal,
+} from "@/components/feedback/study-helped-prompt";
 import { cn } from "@/lib/cn";
 import {
   noteGuestMistake,
@@ -110,7 +115,11 @@ export function QuestionEnginePlayer({
 
   function next() {
     setGrade(null);
-    setIndex((i) => i + 1);
+    const nextIndex = index + 1;
+    setIndex(nextIndex);
+    if (nextIndex >= questions.length) {
+      markMeaningfulStudyLocal();
+    }
   }
 
   function restart() {
@@ -161,6 +170,7 @@ export function QuestionEnginePlayer({
         <Button onClick={restart} disabled={pending || !learnerId}>
           Spustit znovu
         </Button>
+        <StudyHelpedPrompt context={`question_pack:${pack.slug}`} />
       </div>
     );
   }
@@ -216,37 +226,39 @@ function QuestionPrompt({
   onSubmit: (a: StudentAnswer) => void;
 }) {
   return (
-    <section className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
-      <h2 className="font-display text-xl font-semibold text-fg sm:text-2xl">
-        {question.stem}
-      </h2>
-      {question.kind === "identify_from_clues" ? (
-        <ul className="mt-3 list-disc space-y-1 pl-5 text-body-sm text-fg-secondary">
-          {question.clues.map((c) => (
-            <li key={c}>{c}</li>
+    <div className="space-y-4">
+      <StudyPhaseFrame phase="question">
+        <h2 className="font-display text-xl font-semibold text-fg sm:text-2xl">
+          {question.stem}
+        </h2>
+        {question.kind === "identify_from_clues" ? (
+          <ul className="mt-3 list-disc space-y-1 pl-5 text-body-sm text-fg-secondary">
+            {question.clues.map((c) => (
+              <li key={c}>{c}</li>
+            ))}
+          </ul>
+        ) : null}
+        {question.kind === "error_spotting" ? (
+          <p className="mt-3 rounded-lg bg-subtle/60 px-3 py-2 text-body-sm text-fg-secondary">
+            {question.passage}
+          </p>
+        ) : null}
+        <div className="mt-2 flex flex-wrap gap-1">
+          {question.knowledgeUnits.map((ku) => (
+            <Badge key={ku.id} tone="info">
+              {ku.title}
+            </Badge>
           ))}
-        </ul>
-      ) : null}
-      {question.kind === "error_spotting" ? (
-        <p className="mt-3 rounded-lg bg-subtle/60 px-3 py-2 text-body-sm text-fg-secondary">
-          {question.passage}
-        </p>
-      ) : null}
-      <div className="mt-2 flex flex-wrap gap-1">
-        {question.knowledgeUnits.map((ku) => (
-          <Badge key={ku.id} tone="info">
-            {ku.title}
-          </Badge>
-        ))}
-      </div>
-      <div className="mt-5">
+        </div>
+      </StudyPhaseFrame>
+      <StudyPhaseFrame phase="answer">
         <AnswerControls
           question={question}
           pending={pending}
           onSubmit={onSubmit}
         />
-      </div>
-    </section>
+      </StudyPhaseFrame>
+    </div>
   );
 }
 
@@ -697,15 +709,16 @@ function ExplanationPanel({
 
   return (
     <section className="space-y-4">
-      <Alert title={grade.headline} tone={tone}>
-        Skóre {Math.round(grade.score * 100)}% ·{" "}
-        {open ? open.resultLabel : grade.result}. Nejen barva — níže je rozbor.
-      </Alert>
+      <StudyPhaseFrame phase="feedback">
+        <Alert title={grade.headline} tone={tone}>
+          Skóre {Math.round(grade.score * 100)}% ·{" "}
+          {open ? open.resultLabel : grade.result}. Nejen barva — níže je rozbor.
+        </Alert>
+      </StudyPhaseFrame>
 
-      <div className="rounded-2xl border border-border bg-surface p-4">
-        <h3 className="text-body-sm font-semibold text-fg">Vysvětlení</h3>
-        <p className="mt-2 text-body-md text-fg">{grade.explanation}</p>
-      </div>
+      <StudyPhaseFrame phase="explanation">
+        <p className="text-body-md text-fg">{grade.explanation}</p>
+      </StudyPhaseFrame>
 
       {open ? (
         <div className="space-y-3 rounded-2xl border border-border bg-subtle/40 p-4">
@@ -760,11 +773,8 @@ function ExplanationPanel({
             </p>
           </div>
           {open.sourceEvidence ? (
-            <div>
-              <p className="text-caption font-semibold text-fg">
-                Zdrojová evidence
-              </p>
-              <p className="mt-1 text-caption text-fg-muted">
+            <StudyPhaseFrame phase="source" className="mt-3">
+              <p className="text-caption text-fg-muted">
                 {open.sourceEvidence.sourceLabel}
                 {open.sourceEvidence.pageStart != null
                   ? ` · str. ${open.sourceEvidence.pageStart}`
@@ -773,12 +783,12 @@ function ExplanationPanel({
               <blockquote className="mt-1 border-l-2 border-action pl-3 text-body-sm text-fg-secondary">
                 {open.sourceEvidence.quote}
               </blockquote>
-            </div>
+            </StudyPhaseFrame>
           ) : null}
         </div>
       ) : (
-        <div className="rounded-2xl border border-border bg-subtle/40 p-4">
-          <h3 className="text-body-sm font-semibold text-fg">Rozbor</h3>
+        <StudyPhaseFrame phase="explanation">
+          <p className="text-body-sm font-semibold text-fg">Rozbor</p>
           <ul className="mt-2 space-y-1 text-body-sm text-fg-secondary">
             {grade.details.map((d) => (
               <li key={d}>{d}</li>
@@ -790,11 +800,11 @@ function ExplanationPanel({
               {grade.expectedSummary}
             </p>
           ) : null}
-        </div>
+        </StudyPhaseFrame>
       )}
 
-      <div className="rounded-2xl border border-border bg-surface p-4">
-        <h3 className="text-body-sm font-semibold text-fg">Knowledge units</h3>
+      <StudyPhaseFrame phase="feedback" showLabel={false}>
+        <p className="text-body-sm font-semibold text-fg">Studijní jednotky</p>
         <ul className="mt-2 space-y-2">
           {grade.knowledgeUnits.map((ku) => (
             <li
@@ -808,11 +818,13 @@ function ExplanationPanel({
             </li>
           ))}
         </ul>
-      </div>
+      </StudyPhaseFrame>
 
-      <Button fullWidth size="lg" onClick={onNext} disabled={pending}>
-        Další otázka
-      </Button>
+      <StudyPhaseFrame phase="next" showLabel={false}>
+        <Button fullWidth size="lg" onClick={onNext} disabled={pending}>
+          Další otázka
+        </Button>
+      </StudyPhaseFrame>
     </section>
   );
 }

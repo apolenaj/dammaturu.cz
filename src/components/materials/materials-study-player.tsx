@@ -19,6 +19,14 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  StudyPhaseFrame,
+  StudySessionChrome,
+} from "@/components/ui/study-phase";
+import {
+  StudyHelpedPrompt,
+  markMeaningfulStudyLocal,
+} from "@/components/feedback/study-helped-prompt";
 
 type GradeView = {
   feedback: string;
@@ -120,6 +128,7 @@ export function MaterialsStudyPlayer({
           setError(res.error);
           return;
         }
+        markMeaningfulStudyLocal();
         setSummary(res.summary);
       });
     }
@@ -131,7 +140,7 @@ export function MaterialsStudyPlayer({
   }
 
   return (
-    <div className="mx-auto w-full max-w-2xl space-y-6">
+    <StudySessionChrome title="Studijní sesit" progressLabel={progressLabel}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Link
           href="/app/materials"
@@ -139,18 +148,10 @@ export function MaterialsStudyPlayer({
         >
           ← Moje materiály
         </Link>
-        <Badge tone="neutral">{progressLabel}</Badge>
-      </div>
-
-      <div>
-        <h1 className="font-display text-display-sm text-fg">
-          Studijní sesit
-        </h1>
-        <p className="mt-1 text-body-sm text-fg-secondary">
+        <p className="text-caption text-fg-muted">
           {session.mode === "topic"
             ? `Téma: ${session.topic ?? "—"}`
-            : "Chytrý mix"}{" "}
-          · {session.materialTitles.join(", ")}
+            : "Chytrý mix"}
         </p>
       </div>
 
@@ -161,95 +162,104 @@ export function MaterialsStudyPlayer({
       ) : null}
 
       {summary ? (
-        <SessionSummaryCard summary={summary} />
+        <>
+          <SessionSummaryCard summary={summary} />
+          <StudyHelpedPrompt
+            className="mt-4"
+            context={`materials_study:${session.id}`}
+          />
+        </>
       ) : item ? (
-        <Card>
-          <CardHeader className="space-y-3">
-            <div className="flex flex-wrap items-center gap-2">
+        <div className="space-y-4">
+          <StudyPhaseFrame phase="question">
+            <div className="mb-3 flex flex-wrap items-center gap-2">
               <Badge tone="brand">
                 {materialsSessionItemKindLabelsCs[item.kind]}
               </Badge>
               {item.topic ? <Badge tone="neutral">{item.topic}</Badge> : null}
-              <ConfidenceBadge confidence="verified_from_source" />
+              <ConfidenceBadge confidence="likely" />
             </div>
-            <CardTitle className="text-title-md">{item.prompt}</CardTitle>
-            <CardDescription>
-              Po odpovědi dostaneš hodnocení, vysvětlení ze zdroje, aktualizaci
-              mastery a plán opakování.
-            </CardDescription>
-          </CardHeader>
+            <h2 className="font-display text-xl font-semibold text-fg">
+              {item.prompt}
+            </h2>
+            <p className="mt-2 text-caption text-fg-muted">
+              Po odpovědi uvidíš hodnocení, vysvětlení ze zdroje a další
+              opakování.
+            </p>
+          </StudyPhaseFrame>
 
-          <div className="space-y-4 px-6 pb-6">
-            {item.kind === "flashcard" ? (
-              <div className="space-y-3">
-                <p className="rounded-lg border border-border bg-subtle/40 px-4 py-6 text-center text-title-sm text-fg">
-                  {item.flashcardFront}
-                </p>
-                {revealed ? (
-                  <p className="rounded-lg border border-border bg-surface px-4 py-3 text-body-sm text-fg-secondary">
-                    {item.flashcardBack}
+          {!grade ? (
+            <StudyPhaseFrame phase="answer">
+              {item.kind === "flashcard" ? (
+                <div className="space-y-3">
+                  <p className="rounded-lg border border-border bg-subtle/40 px-4 py-6 text-center text-title-sm text-fg">
+                    {item.flashcardFront}
                   </p>
-                ) : (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setRevealed(true)}
-                    disabled={pending || Boolean(grade)}
-                  >
-                    Ukázat odpověď
-                  </Button>
-                )}
-                {revealed && !grade ? (
-                  <div className="flex flex-wrap gap-2">
+                  {revealed ? (
+                    <p className="rounded-lg border border-border bg-surface px-4 py-3 text-body-sm text-fg-secondary">
+                      {item.flashcardBack}
+                    </p>
+                  ) : (
                     <Button
                       type="button"
                       variant="outline"
+                      onClick={() => setRevealed(true)}
                       disabled={pending}
-                      onClick={() => submitFlashcard("dont_know")}
                     >
-                      Nevím
+                      Ukázat odpověď
                     </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      disabled={pending}
-                      onClick={() => submitFlashcard("almost")}
-                    >
-                      Skoro
-                    </Button>
-                    <Button
-                      type="button"
-                      disabled={pending}
-                      onClick={() => submitFlashcard("know")}
-                    >
-                      Umím
-                    </Button>
-                  </div>
-                ) : null}
-              </div>
-            ) : (
-              <>
-                <textarea
-                  className="min-h-28 w-full rounded-lg border border-border bg-surface px-3 py-2 text-body-md text-fg"
-                  value={answer}
-                  onChange={(e) => setAnswer(e.target.value)}
-                  placeholder="Napiš odpověď vlastními slovy…"
-                  disabled={pending || Boolean(grade)}
-                />
-                {!grade ? (
+                  )}
+                  {revealed ? (
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={pending}
+                        onClick={() => submitFlashcard("dont_know")}
+                      >
+                        Nevím
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={pending}
+                        onClick={() => submitFlashcard("almost")}
+                      >
+                        Skoro
+                      </Button>
+                      <Button
+                        type="button"
+                        disabled={pending}
+                        onClick={() => submitFlashcard("know")}
+                      >
+                        Umím
+                      </Button>
+                    </div>
+                  ) : null}
+                </div>
+              ) : (
+                <>
+                  <textarea
+                    className="min-h-28 w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-body-md text-fg shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                    value={answer}
+                    onChange={(e) => setAnswer(e.target.value)}
+                    placeholder="Napiš odpověď vlastními slovy…"
+                    disabled={pending}
+                  />
                   <Button
                     type="button"
+                    className="mt-3"
                     disabled={pending || !answer.trim()}
                     onClick={submitOpen}
                   >
                     Odeslat a vyhodnotit
                   </Button>
-                ) : null}
-              </>
-            )}
-
-            {grade ? (
-              <div className="space-y-3">
+                </>
+              )}
+            </StudyPhaseFrame>
+          ) : (
+            <div className="space-y-3">
+              <StudyPhaseFrame phase="feedback">
                 <Badge
                   tone={
                     grade.result === "correct"
@@ -265,45 +275,54 @@ export function MaterialsStudyPlayer({
                       ? "Částečně"
                       : "Nesprávně"}
                 </Badge>
-                <p className="text-body-sm text-fg-secondary">{grade.feedback}</p>
+                <p className="mt-2 text-body-sm text-fg-secondary">
+                  {grade.feedback}
+                </p>
                 {grade.whatWasCorrect.length > 0 ? (
-                  <p className="text-body-sm">
+                  <p className="mt-2 text-body-sm">
                     <span className="font-semibold text-success">Správně: </span>
                     {grade.whatWasCorrect.join(", ")}
                   </p>
                 ) : null}
                 {grade.whatWasMissing.length > 0 ? (
-                  <p className="text-body-sm">
+                  <p className="mt-1 text-body-sm">
                     <span className="font-semibold text-warning">Chybí: </span>
                     {grade.whatWasMissing.join(", ")}
                   </p>
                 ) : null}
                 {grade.whatWasWrong.length > 0 ? (
-                  <p className="text-body-sm">
+                  <p className="mt-1 text-body-sm">
                     <span className="font-semibold text-danger">Pozor: </span>
                     {grade.whatWasWrong.join(" ")}
                   </p>
                 ) : null}
-                <div className="rounded-lg border border-border bg-subtle/30 p-3">
-                  <p className="text-caption font-semibold text-fg-muted">
-                    Ideální odpověď ze zdroje
-                  </p>
-                  <p className="mt-1 text-body-sm text-fg">{grade.idealAnswer}</p>
-                </div>
+              </StudyPhaseFrame>
+
+              <StudyPhaseFrame phase="explanation">
+                <p className="text-caption font-semibold text-fg-muted">
+                  Ideální odpověď ze zdroje
+                </p>
+                <p className="mt-1 text-body-sm text-fg">{grade.idealAnswer}</p>
+              </StudyPhaseFrame>
+
+              <StudyPhaseFrame phase="source">
                 <SourceCitationPanel citations={item.citations} />
+              </StudyPhaseFrame>
+
+              <StudyPhaseFrame phase="next" showLabel={false}>
                 <Button type="button" disabled={pending} onClick={advance}>
                   {index + 1 >= session.items.length
                     ? "Ukázat shrnutí"
-                    : "Další"}
+                    : "Další otázka"}
                 </Button>
-              </div>
-            ) : null}
-          </div>
-        </Card>
+              </StudyPhaseFrame>
+            </div>
+          )}
+        </div>
       ) : awaitingSummary ? (
         <p className="text-body-sm text-fg-muted">Počítám shrnutí…</p>
       ) : null}
-    </div>
+    </StudySessionChrome>
   );
 }
 
@@ -321,7 +340,7 @@ function SessionSummaryCard({ summary }: { summary: MaterialsSessionSummary }) {
         <section className="space-y-2">
           <h2 className="font-semibold text-fg">Co se zlepšilo</h2>
           {summary.whatImproved.length === 0 ? (
-            <p className="text-fg-muted">Zatím bez výrazného posunu mastery.</p>
+            <p className="text-fg-muted">Zatím bez výrazného posunu ve zvládnutí.</p>
           ) : (
             <ul className="list-disc space-y-1 pl-5 text-fg-secondary">
               {summary.whatImproved.map((w) => (

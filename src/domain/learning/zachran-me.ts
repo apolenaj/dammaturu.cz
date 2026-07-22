@@ -17,6 +17,10 @@ import { BETA_TARGET_DATE } from "@/domain/onboarding/schema";
 export const zachranMeScopes = ["materials", "cermat", "both"] as const;
 export type ZachranMeScope = (typeof zachranMeScopes)[number];
 
+export function isZachranMeScope(value: string): value is ZachranMeScope {
+  return (zachranMeScopes as readonly string[]).includes(value);
+}
+
 export const zachranMeScopeLabelsCs: Record<ZachranMeScope, string> = {
   materials: "Moje materiály",
   cermat: "CERMAT",

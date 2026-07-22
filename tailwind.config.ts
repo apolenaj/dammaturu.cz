@@ -39,6 +39,7 @@ const config: Config = {
           hover: "var(--action-primary-hover)",
           pressed: "var(--action-primary-pressed)",
           soft: "var(--action-primary-soft)",
+          "on-soft": "var(--action-on-soft)",
           secondary: "var(--action-secondary)",
           "secondary-hover": "var(--action-secondary-hover)",
         },
@@ -49,10 +50,12 @@ const config: Config = {
         },
         success: {
           DEFAULT: "var(--feedback-success)",
+          ink: "var(--feedback-success-ink)",
           soft: "var(--feedback-success-soft)",
         },
         warning: {
           DEFAULT: "var(--feedback-warning)",
+          ink: "var(--feedback-warning-ink)",
           soft: "var(--feedback-warning-soft)",
         },
         danger: {

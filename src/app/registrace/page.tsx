@@ -4,8 +4,14 @@ import { Badge } from "@/components/ui/badge";
 import { RegisterForm } from "@/components/auth/register-form";
 import { getAuthCapabilitiesAction } from "@/server/actions/auth";
 import { safeInternalPath } from "@/lib/security/hardening";
+import { buildPublicMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Registrace" };
+export const metadata: Metadata = buildPublicMetadata({
+  title: "Registrace",
+  description:
+    "Vytvoř účet DámMaturu — nebo začni bez registrace a uč se hned.",
+  path: "/registrace",
+});
 
 type PageProps = {
   searchParams: Promise<{ next?: string }>;

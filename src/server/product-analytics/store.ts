@@ -45,7 +45,12 @@ function statePath(learnerKey: string) {
 
 async function readIndex(): Promise<IndexFile> {
   try {
-    return JSON.parse(await fs.readFile(INDEX_PATH, "utf8")) as IndexFile;
+    const raw = await fs.readFile(INDEX_PATH, "utf8");
+    const parsed = JSON.parse(raw) as IndexFile;
+    if (!Array.isArray(parsed.eventIds) || !Array.isArray(parsed.learnerKeys)) {
+      throw new Error("Neplatný index shape");
+    }
+    return parsed;
   } catch (error) {
     const err = error as NodeJS.ErrnoException;
     if (err.code === "ENOENT") {
@@ -55,13 +60,19 @@ async function readIndex(): Promise<IndexFile> {
         updatedAt: new Date(0).toISOString(),
       };
     }
-    throw error;
+    // Concurrent writers can leave truncated/concatenated JSON — recover empty.
+    console.error("[product-analytics] corrupt index, resetting", error);
+    return {
+      eventIds: [],
+      learnerKeys: [],
+      updatedAt: new Date(0).toISOString(),
+    };
   }
 }
 
 async function writeIndex(index: IndexFile): Promise<void> {
   await ensureDirs();
-  const tmp = `${INDEX_PATH}.tmp`;
+  const tmp = `${INDEX_PATH}.${process.pid}.${Date.now()}.${Math.random().toString(16).slice(2)}.tmp`;
   await fs.writeFile(tmp, `${JSON.stringify(index, null, 2)}\n`, "utf8");
   await fs.rename(tmp, INDEX_PATH);
 }
@@ -91,7 +102,8 @@ export async function getProductLearnerState(
   } catch (error) {
     const err = error as NodeJS.ErrnoException;
     if (err.code === "ENOENT") return null;
-    throw error;
+    console.error("[product-analytics] corrupt learner state", learnerKey, error);
+    return null;
   }
 }
 
@@ -101,7 +113,7 @@ export async function saveProductLearnerState(
   await ensureDirs();
   const parsed = productLearnerStateSchema.parse(state);
   const file = statePath(parsed.learnerKey);
-  const tmp = `${file}.tmp`;
+  const tmp = `${file}.${process.pid}.${Date.now()}.${Math.random().toString(16).slice(2)}.tmp`;
   await fs.writeFile(tmp, `${JSON.stringify(parsed, null, 2)}\n`, "utf8");
   await fs.rename(tmp, file);
 
@@ -149,16 +161,26 @@ export async function recordProductEvent(
     const funnelStep = input.funnelStep ?? funnelStepForEvent(input.event);
     const primary = buildProductEvent({ ...input, funnelStep });
 
-    // Deduplicate noisy app_opened: at most one event file per learner per day.
-    if (primary.event === "app_opened" && primary.learnerKey) {
+    // Deduplicate noisy app_opened / guest_start / czech_hub_view: at most one event file per learner per day.
+    if (
+      (primary.event === "app_opened" ||
+        primary.event === "guest_start" ||
+        primary.event === "czech_hub_view") &&
+      primary.learnerKey
+    ) {
       const loaded = await getProductLearnerState(primary.learnerKey);
       const existing =
         loaded ?? emptyProductLearnerState(primary.learnerKey, primary.at);
       const sameDay =
         Boolean(loaded) && loaded!.lastSeenAt.slice(0, 10) === primary.dateKey;
+      const guestAlready =
+        primary.event === "guest_start" && Boolean(existing.guestStartedAt);
       const { state, milestones } = applyProductEventToState(existing, primary);
       await saveProductLearnerState(state);
-      if (!sameDay) {
+      const skipFile =
+        sameDay ||
+        (primary.event === "guest_start" && guestAlready);
+      if (!skipFile) {
         await appendEventFile(primary);
         written.push(primary);
       }

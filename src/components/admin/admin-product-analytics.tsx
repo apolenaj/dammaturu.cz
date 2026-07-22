@@ -135,6 +135,72 @@ export function AdminProductAnalyticsView({
       </section>
 
       <section className="space-y-3">
+        <h2 className="font-display text-xl text-fg">Learning funnel metrics</h2>
+        <dl className="grid gap-3 sm:grid-cols-2">
+          <OutcomeStat
+            label="Čas do první interakce (medián)"
+            value={
+              o.learning.timeToFirstInteractionSecMedian != null
+                ? `${o.learning.timeToFirstInteractionSecMedian} s`
+                : "—"
+            }
+          />
+          <OutcomeStat
+            label="Dokončení lekcí"
+            value={
+              o.learning.lessonCompletionPct != null
+                ? `${o.learning.lessonCompletionPct} %`
+                : "—"
+            }
+          />
+          <OutcomeStat
+            label="Návrat další den"
+            value={
+              o.learning.returnNextDayPct != null
+                ? `${o.learning.returnNextDayPct} % (${o.learning.returnNextDayCount}/${o.learning.returnNextDayEligible})`
+                : "—"
+            }
+          />
+          <OutcomeStat
+            label="Chyby později opravené"
+            value={
+              o.learning.mistakesCorrectedPct != null
+                ? `${o.learning.mistakesCorrectedPct} %`
+                : "—"
+            }
+          />
+          <OutcomeStat
+            label="Dokončení opakování"
+            value={
+              o.learning.reviewCompletionPct != null
+                ? `${o.learning.reviewCompletionPct} %`
+                : "—"
+            }
+          />
+        </dl>
+        {o.learning.topicAbandonment.length > 0 ? (
+          <div className="space-y-2 pt-2">
+            <h3 className="text-body-sm font-semibold text-fg">
+              Odchody z témat (otevřeno bez dokončení)
+            </h3>
+            <ul className="space-y-1">
+              {o.learning.topicAbandonment.map((t) => (
+                <li
+                  key={t.topicSlug}
+                  className="flex justify-between text-body-sm text-fg-secondary"
+                >
+                  <code className="text-fg">{t.topicSlug}</code>
+                  <span className="tabular-nums">
+                    {t.abandonPct} % · {t.completes}/{t.opens}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+      </section>
+
+      <section className="space-y-3">
         <h2 className="font-display text-xl text-fg">Learning outcomes</h2>
         <dl className="grid gap-3 sm:grid-cols-2">
           <OutcomeStat

@@ -20,6 +20,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  StudyHelpedPrompt,
+  markMeaningfulStudyLocal,
+} from "@/components/feedback/study-helped-prompt";
 
 export function GroundedStudyPlayer({
   session,
@@ -63,7 +67,11 @@ export function GroundedStudyPlayer({
   function onNext() {
     setGrade(null);
     setAnswer("");
-    setIndex((i) => i + 1);
+    const nextIndex = index + 1;
+    setIndex(nextIndex);
+    if (nextIndex >= session.items.length) {
+      markMeaningfulStudyLocal();
+    }
   }
 
   function onAsk() {
@@ -116,15 +124,20 @@ export function GroundedStudyPlayer({
       ) : null}
 
       {done ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>Sesit hotový</CardTitle>
-            <CardDescription>
-              Prošel jsi {session.items.length} otázek ze svých materiálů. Můžeš
-              se zeptat na vysvětlení níže — pořád jen ze zdroje.
-            </CardDescription>
-          </CardHeader>
-        </Card>
+        <>
+          <Card>
+            <CardHeader>
+              <CardTitle>Sesit hotový</CardTitle>
+              <CardDescription>
+                Prošel jsi {session.items.length} otázek ze svých materiálů. Můžeš
+                se zeptat na vysvětlení níže — pořád jen ze zdroje.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+          <StudyHelpedPrompt
+            context={`grounded_study:${session.materialIds[0] ?? "materials"}`}
+          />
+        </>
       ) : item ? (
         <Card>
           <CardHeader className="space-y-3">

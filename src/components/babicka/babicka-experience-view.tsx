@@ -44,8 +44,8 @@ export function BabickaExperienceView({
           {pack.author} · {pack.subtitle}
         </p>
         <p className="text-caption text-fg-muted">
-          {pack.knowledgeUnits.length} KU · karty / mapy / pasti — ne dlouhé
-          odstavce · SOURCE {pack.sourceFilename}
+          {pack.knowledgeUnits.length} jednotek · karty / mapy / pasti — ne
+          dlouhé odstavce
         </p>
       </header>
 

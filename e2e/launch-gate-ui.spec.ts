@@ -1,7 +1,12 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import path from "node:path";
 import { mkdirSync, writeFileSync } from "node:fs";
 import os from "node:os";
+import { getEmailField } from "./helpers/auth-form";
+import {
+  completeOnboardingWizard,
+  futureExamDate,
+} from "./helpers/onboarding";
 
 /**
  * UI launch-gate companion — real browser, real local-dev account, real Czech TXT upload.
@@ -16,47 +21,6 @@ const CZECH_DOC = [
   "Jan Neruda psal Povídky malostranské. Realismus popisuje všední život měšťanů.",
 ].join("\n");
 
-async function clickNext(page: Page) {
-  const btn = page.getByRole("button", {
-    name: /Další|Pokračovat|Dokončit|Uložit|Hotovo/i,
-  });
-  await expect(btn).toBeVisible({ timeout: 10_000 });
-  await btn.click();
-}
-
-async function completeOnboarding(page: Page, name: string, examDate: string) {
-  await page.goto("/onboarding");
-  await expect(page.getByRole("heading", { level: 1 })).toBeVisible({
-    timeout: 20_000,
-  });
-
-  await page.getByLabel(/Jméno/i).fill(name);
-  await clickNext(page);
-
-  // Date step
-  await page.getByLabel(/Cílové datum|maturita/i).fill(examDate);
-  await clickNext(page);
-
-  // School + subjects — ČJL should be default/selected
-  const cjl = page.getByRole("button", { name: /Český jazyk|literatur/i });
-  if (await cjl.first().isVisible().catch(() => false)) {
-    await cjl.first().click();
-  }
-  await clickNext(page);
-
-  // Remaining wizard steps with defaults
-  for (let i = 0; i < 6; i++) {
-    if (page.url().includes("/app/")) break;
-    const next = page.getByRole("button", {
-      name: /Další|Pokračovat|Dokončit|Uložit|Hotovo/i,
-    });
-    if (!(await next.isVisible().catch(() => false))) break;
-    await next.click();
-    await page.waitForTimeout(500);
-  }
-  await expect(page).toHaveURL(/\/app\//, { timeout: 30_000 });
-}
-
 test.describe("launch gate UI", () => {
   test("desktop: home → register → onboard → upload Czech doc → study entry", async ({
     page,
@@ -65,7 +29,7 @@ test.describe("launch gate UI", () => {
     const stamp = Date.now();
     const email = `ui.gate.${stamp}@example.com`;
     const password = "UiGate-Pass-99";
-    const examDate = "2026-05-20";
+    const examDate = futureExamDate(90);
 
     // 1. Homepage
     await page.goto("/");
@@ -76,14 +40,22 @@ test.describe("launch gate UI", () => {
 
     // 2. Register
     await page.goto("/registrace");
-    if (await page.getByText(/Registrace teď není dostupná/i).isVisible().catch(() => false)) {
+    const emailField = await getEmailField(page);
+    if (!emailField) {
       test.skip(true, "Auth unavailable");
+      return;
     }
-    await page.getByLabel(/E-mail/i).fill(email);
-    await page.getByLabel(/^Heslo$/i).fill(password);
-    const confirm = page.getByLabel(/Heslo znovu|Potvrď|znovu/i);
-    if (await confirm.isVisible().catch(() => false)) {
-      await confirm.fill(password);
+    await emailField.fill(email);
+    await page
+      .getByLabel(/^Heslo$/i)
+      .or(page.getByPlaceholder(/^Heslo$/i))
+      .first()
+      .fill(password);
+    const confirm = page
+      .getByLabel(/Heslo znovu|Potvrď|znovu/i)
+      .or(page.getByPlaceholder(/Heslo znovu/i));
+    if (await confirm.first().isVisible().catch(() => false)) {
+      await confirm.first().fill(password);
     }
     await page.getByRole("button", { name: /Vytvořit účet|Registrovat/i }).click();
     await page.waitForTimeout(1500);
@@ -95,7 +67,10 @@ test.describe("launch gate UI", () => {
     if (!page.url().includes("/onboarding")) {
       await page.goto("/onboarding");
     }
-    await completeOnboarding(page, `Tereza UI ${stamp}`, examDate);
+    await completeOnboardingWizard(page, {
+      displayName: `Tereza UI ${stamp}`,
+      examDate,
+    });
 
     // 6–7. Materials upload
     await page.goto("/app/materials");
@@ -173,7 +148,11 @@ test.describe("launch gate UI", () => {
     expect(await page.locator("body").innerText()).not.toMatch(/npm run seed/i);
 
     await page.goto("/registrace");
-    const email = page.getByLabel(/E-mail/i).first();
+    const email = await getEmailField(page);
+    if (!email) {
+      test.skip(true, "Auth not configured — no registration form");
+      return;
+    }
     await expect(email).toBeVisible();
     const box = await email.boundingBox();
     expect(box?.height ?? 0).toBeGreaterThanOrEqual(40);

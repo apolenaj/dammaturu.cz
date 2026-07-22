@@ -22,6 +22,10 @@ import {
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  StudyPhaseFrame,
+  StudySessionChrome,
+} from "@/components/ui/study-phase";
 
 export function MistakesHub({
   initialBook,
@@ -125,105 +129,109 @@ export function MistakesHub({
 
   if (session && current) {
     return (
-      <div className="mx-auto w-full max-w-3xl space-y-5">
+      <StudySessionChrome
+        title={current.knowledgeUnit.title}
+        progressLabel={`${session.cursor + 1} / ${session.queue.length}`}
+      >
         <div className="flex flex-wrap items-center gap-2">
           <Badge tone="warning">Procvičit moje chyby</Badge>
-          <span className="text-caption text-fg-muted">
-            {session.cursor + 1} / {session.queue.length}
-          </span>
           <Badge tone="neutral">
             {mistakeClassLabelsCs[current.errorType]}
           </Badge>
           <StatusBadge status={current.status} />
         </div>
 
-        <h1 className="font-display text-display-md text-fg">
-          {current.knowledgeUnit.title}
-        </h1>
-
-        <div className="space-y-3 rounded-xl border border-border bg-canvas px-4 py-5">
-          <p className="text-caption font-semibold uppercase text-fg-muted">
-            Otázka
-          </p>
+        <StudyPhaseFrame phase="question">
           <p className="font-display text-lg text-fg">{current.question}</p>
-
           {!revealed ? (
-            <Button fullWidth onClick={() => setRevealed(true)}>
+            <Button className="mt-4" fullWidth onClick={() => setRevealed(true)}>
               Odhalit správnou odpověď
             </Button>
-          ) : (
-            <div className="space-y-3 border-t border-border pt-4">
+          ) : null}
+        </StudyPhaseFrame>
+
+        {revealed ? (
+          <>
+            <StudyPhaseFrame phase="feedback">
               <div>
                 <p className="text-caption text-fg-muted">Tvá tehdejší odpověď</p>
                 <p className="text-body-md text-fg-secondary">
                   {current.studentAnswer}
                 </p>
               </div>
+            </StudyPhaseFrame>
+            <StudyPhaseFrame phase="explanation">
               <div>
                 <p className="text-caption text-fg-muted">Správný koncept</p>
                 <p className="font-display text-lg text-fg">
                   {current.correctConcept}
                 </p>
               </div>
-              <div>
+              <div className="mt-3">
                 <p className="text-caption text-fg-muted">Proč to bylo špatně</p>
                 <p className="text-body-md text-fg-secondary">{current.whyWrong}</p>
               </div>
-              <p className="text-caption text-fg-muted">
+              <p className="mt-3 text-caption text-fg-muted">
                 Výskytů: {current.occurrenceCount} · Pokusů o nápravu:{" "}
                 {current.recoveryAttempts}
                 {current.nextReviewAt
-                  ? ` · Další review: ${new Date(current.nextReviewAt).toLocaleString("cs-CZ")}`
+                  ? ` · Další opakování: ${new Date(current.nextReviewAt).toLocaleString("cs-CZ")}`
                   : ""}
               </p>
-              {current.sourceLabel || current.sourceExcerpt ? (
-                <div>
-                  <p className="text-caption text-fg-muted">Zdroj</p>
-                  <p className="text-body-sm text-fg-secondary">
-                    {current.sourceLabel ?? "Materiál"}
-                    {current.sourceExcerpt
-                      ? ` — ${current.sourceExcerpt.slice(0, 220)}`
-                      : ""}
-                  </p>
-                </div>
-              ) : null}
-            </div>
-          )}
-        </div>
+            </StudyPhaseFrame>
+            {(current.sourceLabel || current.sourceExcerpt) && (
+              <StudyPhaseFrame phase="source">
+                <p className="text-body-sm text-fg-secondary">
+                  {current.sourceLabel ?? "Materiál"}
+                  {current.sourceExcerpt
+                    ? ` — ${current.sourceExcerpt.slice(0, 220)}`
+                    : ""}
+                </p>
+              </StudyPhaseFrame>
+            )}
+            <StudyPhaseFrame phase="next" showLabel={false}>
+              <div className="grid gap-2 sm:grid-cols-2">
+                <Button
+                  fullWidth
+                  variant="secondary"
+                  disabled={pending}
+                  onClick={() => grade("again")}
+                >
+                  Pořád nejisté
+                </Button>
+                <Button
+                  fullWidth
+                  disabled={pending}
+                  onClick={() => grade("good")}
+                >
+                  Už vím
+                </Button>
+              </div>
+            </StudyPhaseFrame>
+          </>
+        ) : null}
 
         {error ? (
           <Alert title="Chyba" tone="danger">
             {error}
           </Alert>
         ) : null}
-
-        {revealed ? (
-          <div className="grid gap-2 sm:grid-cols-2">
-            <Button
-              fullWidth
-              variant="secondary"
-              disabled={pending}
-              onClick={() => grade("again")}
-            >
-              Pořád nejisté
-            </Button>
-            <Button fullWidth disabled={pending} onClick={() => grade("good")}>
-              Už vím
-            </Button>
-          </div>
-        ) : null}
-      </div>
+      </StudySessionChrome>
     );
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-6">
+    <div className="mx-auto w-full max-w-lg space-y-6">
       <header className="space-y-2">
-        <Badge tone="warning">Moje chyby</Badge>
-        <h1 className="font-display text-display-md text-fg">Moje chyby</h1>
-        <p className="text-body-md text-fg-secondary">
-          Ukládáme jen skutečné chyby z testů a studia. Po jedné správné odpovědi
-          chybu nemazeme — historie zůstává, dokud ji několikrát neprokážeš.
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-fg-muted">
+          Slabiny
+        </p>
+        <h1 className="font-display text-title-lg tracking-tight text-fg sm:text-display-sm">
+          Moje chyby
+        </h1>
+        <p className="text-body-sm text-fg-secondary sm:text-body-md">
+          Jen skutečné chyby z testů a studia. Jedna správná nestačí — historii
+          držíme, dokud to několikrát neprokážeš.
         </p>
       </header>
 
@@ -281,7 +289,7 @@ export function MistakesHub({
       {mastered.length > 0 ? (
         <section className="space-y-3">
           <h2 className="font-display text-xl text-fg">
-            Zvládnuté ({mastered.length})
+            Silné ({mastered.length})
           </h2>
           <ul className="space-y-2">
             {mastered.slice(0, 12).map((m) => (

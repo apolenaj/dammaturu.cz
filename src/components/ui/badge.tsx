@@ -12,10 +12,10 @@ export type BadgeTone =
 
 const tones: Record<BadgeTone, string> = {
   neutral: "bg-subtle text-fg-secondary ring-1 ring-inset ring-border-subtle",
-  brand: "bg-action-soft text-action ring-1 ring-inset ring-action/15",
+  brand: "bg-action-soft text-action-on-soft ring-1 ring-inset ring-action/15",
   accent: "bg-accent-soft text-accent-hover ring-1 ring-inset ring-accent/20",
-  success: "bg-success-soft text-success ring-1 ring-inset ring-success/15",
-  warning: "bg-warning-soft text-warning ring-1 ring-inset ring-warning/15",
+  success: "bg-success-soft text-success-ink ring-1 ring-inset ring-success/15",
+  warning: "bg-warning-soft text-warning-ink ring-1 ring-inset ring-warning/15",
   danger: "bg-danger-soft text-danger ring-1 ring-inset ring-danger/15",
   info: "bg-info-soft text-info ring-1 ring-inset ring-info/15",
 };

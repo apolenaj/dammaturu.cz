@@ -101,6 +101,14 @@ export async function startMistakePracticeAction(): Promise<
     track("mistake_practice_started", {
       queue: result.session.queue.length,
     });
+    const { recordProductEvent } = await import(
+      "@/server/product-analytics/store"
+    );
+    await recordProductEvent({
+      learnerKey: learnerId,
+      event: "review_start",
+      featureId: "mistakes",
+    });
     revalidatePath("/app/mistakes");
     return { ok: true, session: result.session, book: result.book };
   } catch (error) {
@@ -136,6 +144,16 @@ export async function gradeMistakePracticeAction(input: {
       grade: input.grade,
       completed: result.completed,
     });
+    if (input.grade === "good") {
+      const { recordProductEvent } = await import(
+        "@/server/product-analytics/store"
+      );
+      await recordProductEvent({
+        learnerKey: learnerId,
+        event: "mistake_relearned",
+        featureId: "mistakes",
+      });
+    }
     if (result.completed) {
       const { markTodayMissionStepFromActivity } = await import(
         "@/server/daily-dashboard/mission-progress"
@@ -143,6 +161,14 @@ export async function gradeMistakePracticeAction(input: {
       await markTodayMissionStepFromActivity({
         learnerId,
         stepKind: "mistakes",
+      });
+      const { recordProductEvent } = await import(
+        "@/server/product-analytics/store"
+      );
+      await recordProductEvent({
+        learnerKey: learnerId,
+        event: "review_complete",
+        featureId: "mistakes",
       });
     }
     revalidatePath("/app/mistakes");

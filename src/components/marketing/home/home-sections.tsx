@@ -3,50 +3,50 @@ import {
   CtaPair,
   SectionHeading,
 } from "@/components/marketing/home/section-primitives";
-import {
-  CermatPreview,
-  DashboardPreview,
-  JourneyPreview,
-  MaterialsTestPreview,
-  ReadinessPreview,
-  SimulationPreview,
-  UploadPreview,
-} from "@/components/marketing/previews/product-previews";
+import { InteractiveLearningPreview } from "@/components/marketing/interactive-learning-preview";
+import { cn } from "@/lib/cn";
 
 export const homeFaqItems = [
   {
     q: "Je DámMaturu chatbot?",
-    a: "Ne. Je to studijní systém: nahráváš materiály, dostáváš denní misi, procvičuješ, testuješ se a vidíš pokrok. Ne „povídej si s AI místo učení“.",
+    a: "Ne. Je to studijní systém: otázky, zpětná vazba ze zdroje, chyby k opakování a pokrok podle výsledků — ne „povídej si s AI místo učení“.",
   },
   {
-    q: "Odkud berete otázky k mým materiálům?",
-    a: "Ze textu, který nahraješ. U odpovědí uvidíš vysvětlení a odkaz na úryvek — ne vymyšlená fakta mimo tvůj soubor.",
+    q: "Musím se hned registrovat?",
+    a: "Ne. Můžeš začít bez účtu během pár sekund. Registrace je volitelná, až budeš chtít pokrok na více zařízeních.",
+  },
+  {
+    q: "Odkud berete otázky?",
+    a: "Z ověřených studijních materiálů k češtině a z textů, které nahraješ. U odpovědí uvidíš vysvětlení a odkaz na úryvek — ne vymyšlená fakta mimo zdroj.",
   },
   {
     q: "Jsou otázky CERMAT oficiální?",
-    a: "Ne. CERMAT modul nabízí cvičné otázky ve stylu didaktického testu. Jsou jasně označené jako cvičné, ne jako oficiální zadání.",
+    a: "Ne. Cvičné otázky ve stylu didaktického testu jsou jasně označené jako cvičné, ne jako oficiální zadání CERMAT.",
   },
   {
-    q: "Dá mi appka známku z ústní?",
-    a: "Ne. Ústní simulace dává zpětnou vazbu podle kritérií (obsah, struktura, fakta…) — ne oficiální školní známku 1–5.",
+    q: "Kolik to stojí?",
+    a: "Teď je beta zdarma. Placené plány zatím neprodáváme — až bude platba opravdu zapnutá, napíšeme to na Ceníku na rovinu.",
   },
   {
-    q: "Kolik času denně potřebuju?",
-    a: "Nastavíš si rozpočet. Dnešní mise ti řekne konkrétní kroky na ten den — typicky desítky minut, ne nekonečné scrollování.",
+    q: "Pro koho je to teď?",
+    a: "Pro přípravu z češtiny k maturitě. Další předměty zatím nejsou — neukazujeme je jako dostupné.",
   },
   {
     q: "Funguje to na telefonu?",
     a: "Ano. Hlavní věci (Dnes, Učit se, Materiály, Testy, Pokrok) máš v dolní navigaci.",
   },
-  {
-    q: "Kolik to stojí?",
-    a: "FREE je zdarma. SMART od 99 Kč/měsíc (launch) / 149 Kč standardně, AI PRO 249 Kč/měsíc, MATURITA MAX 499 Kč / 90 dní. Detaily na Ceníku. Po vypršení nepřijdeš o nahrané materiály.",
-  },
-  {
-    q: "Pro koho je to teď?",
-    a: "Beta je zaměřená na češtinu k maturitě (didaktický test, literatura, ústní). Další předměty přijdou později.",
-  },
 ];
+
+const czechTopics = [
+  { slug: "narodni-obrozeni", title: "Národní obrození" },
+  { slug: "romantismus", title: "Romantismus" },
+  { slug: "realismus", title: "Realismus" },
+  { slug: "maj", title: "Máj" },
+  { slug: "babicka", title: "Babička" },
+  { slug: "kytice", title: "Kytice" },
+  { slug: "pravopis", title: "Pravopis" },
+  { slug: "porozumeni-textu", title: "Porozumění textu" },
+] as const;
 
 function SectionShell({
   id,
@@ -67,12 +67,12 @@ function SectionShell({
   );
 }
 
-/** Hero — brand + one promise + one support line + CTAs + product visual. */
+/** Hero — brand + promise + CTA + real interactive preview. */
 export function HomeHero() {
   return (
     <section className="relative overflow-hidden">
       <div
-        className="pointer-events-none absolute inset-0 bg-paper-wash"
+        className="pointer-events-none absolute inset-0 bg-paper-wash opacity-70"
         aria-hidden
       />
       <div className="relative mx-auto grid max-w-6xl gap-12 px-4 pb-16 pt-12 sm:px-6 sm:pb-20 sm:pt-16 lg:grid-cols-[1.05fr_0.95fr] lg:items-end lg:gap-14 lg:pt-20">
@@ -82,22 +82,25 @@ export function HomeHero() {
             <span className="text-action">.cz</span>
           </p>
           <h1 className="mt-6 max-w-xl font-display text-display-sm font-semibold tracking-tight text-fg text-balance sm:text-display-md">
-            Nahraj, co se musíš naučit. My tě připravíme až k&nbsp;maturitě.
+            Víš, co se naučit. Víš, co už&nbsp;umíš.
           </h1>
           <p className="mt-4 max-w-lg text-body-lg text-fg-secondary">
-            Z tvých materiálů, denní mise, cvičné testy a ústní nanečisto —
-            v jedné appce pro češtinu.
+            Otázka, zpětná vazba ze zdroje, chyby k opakování a jasný pokrok —
+            příprava na češtinu k&nbsp;maturitě.
           </p>
           <CtaPair
             className="mt-8"
-            primaryLabel="Začít se učit bez registrace"
+            primaryLabel="Začít se učit zdarma"
             primaryHref="/app/learn"
             secondaryLabel="Jak to funguje"
             secondaryHref="#jak-to-funguje"
           />
+          <p className="mt-3 text-body-sm text-fg-muted">
+            Bez registrace. Začni během pár sekund.
+          </p>
         </div>
         <div className="lg:justify-self-end lg:w-full lg:max-w-md">
-          <DashboardPreview className="w-full" />
+          <InteractiveLearningPreview className="w-full" />
         </div>
       </div>
     </section>
@@ -108,23 +111,23 @@ export function HomeHowItWorks() {
   const steps = [
     {
       n: "1",
-      title: "Nahraješ materiály",
-      body: "PDF, DOCX nebo text — poznámky, výpisky, co opravdu potřebuješ.",
+      title: "Odpovíš na otázku",
+      body: "Nejdřív vybavení — ne scrollování výpisků.",
     },
     {
       n: "2",
-      title: "Dostaneš dnešní misi",
-      body: "Jedna obrazovka řekne, co dělat teď. Bez hledání „kde začít“.",
+      title: "Dostaneš zpětnou vazbu",
+      body: "Správně / ještě ne, vysvětlení a úryvek ze zdroje.",
     },
     {
       n: "3",
-      title: "Procvičíš a ověříš",
-      body: "Otázky z tvých textů, cvičný CERMAT a ústní nanečisto.",
+      title: "Vrátíš se k chybám",
+      body: "To, co nesedělo, jde do opakování — ne do zapomnění.",
     },
     {
       n: "4",
       title: "Vidíš, kde stojíš",
-      body: "Pokrok podle výsledků — ne podle dojmu, že „to asi umím“.",
+      body: "Nové → Učím se → K procvičení → Silné podle výsledků.",
     },
   ];
 
@@ -133,8 +136,8 @@ export function HomeHowItWorks() {
       <SectionHeading
         align="center"
         eyebrow="Jak to funguje"
-        title="Čtyři kroky. Žádný chaos."
-        description="Jednoduchá cesta od nahrání materiálů až po pocit jistoty před maturitou."
+        title="Learning loop, ne marketing slide"
+        description="Stejný rytmus jako v appce: otázka → odpověď → zpětná vazba → další."
       />
       <ol className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {steps.map((s) => (
@@ -158,161 +161,155 @@ export function HomeHowItWorks() {
   );
 }
 
-export function HomeUploadDemo() {
+export function HomeMistakesReview() {
   return (
-    <SectionShell id="nahrani" className="bg-surface/50">
+    <SectionShell id="chyby" className="bg-surface/50">
       <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
         <SectionHeading
-          eyebrow="Nahrání"
-          title="Nahraj, co se musíš naučit"
-          description="Vlastní poznámky a PDF patří do Moje materiály. Školní seznam literatury a kritéria ústní máš odděleně v Profilu maturity."
+          eyebrow="Chyby a opakování"
+          title="Co nesedělo, se vrací"
+          description="Po špatné nebo částečné odpovědi si appka pamatuje slabinu. V Moje chyby a v denní misi se k tomu vrátíš — nejednou a hotovo."
         />
-        <UploadPreview />
-      </div>
-    </SectionShell>
-  );
-}
-
-export function HomeTestingDemo() {
-  return (
-    <SectionShell id="procvicovani">
-      <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
-        <div className="order-2 lg:order-1">
-          <MaterialsTestPreview />
-        </div>
-        <div className="order-1 lg:order-2">
-          <SectionHeading
-            eyebrow="Procvičování"
-            title="Otázky z toho, co jsi nahrál"
-            description="Odpovíš, hned uvidíš vysvětlení a odkaz na úryvek z tvého souboru. Žádné vágní „AI ti to nějak řekne“."
-          />
-        </div>
-      </div>
-    </SectionShell>
-  );
-}
-
-export function HomeReadiness() {
-  return (
-    <SectionShell id="pripravenost" className="bg-surface/50">
-      <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
-        <SectionHeading
-          eyebrow="Připravenost"
-          title="Vidíš, kde stojíš — podle výsledků"
-          description="Pokrok ukazuje oblasti (didaktický test, ústní, jazyk…) a slabší místa. Není to předpověď, že maturitu dáš — je to mapa toho, co už umíš a co ještě ne."
-        />
-        <ReadinessPreview />
-      </div>
-    </SectionShell>
-  );
-}
-
-export function HomeCermat() {
-  return (
-    <SectionShell id="cermat">
-      <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
-        <div className="order-2 lg:order-1">
-          <CermatPreview />
-        </div>
-        <div className="order-1 lg:order-2">
-          <SectionHeading
-            eyebrow="CERMAT"
-            title="Cvičný didaktický test ČJL"
-            description="Pravopis, skladba, porozumění textu a další kategorie. Časovaná simulace nebo klidný trénink. Položky jsou cvičné — vždy jasně označené, ne oficiální CERMAT."
-          />
+        <div className="rounded-2xl border border-border bg-surface p-5 shadow-xs sm:p-6">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-action">
+            Ukázka smyčky
+          </p>
+          <ol className="mt-4 space-y-3 text-body-sm text-fg-secondary">
+            <li>
+              <span className="font-semibold text-fg">1.</span> Odpověď mimo —
+              uvidíš, co chybělo, a úryvek ze zdroje.
+            </li>
+            <li>
+              <span className="font-semibold text-fg">2.</span> Položka jde do
+              Moje chyby / opakování.
+            </li>
+            <li>
+              <span className="font-semibold text-fg">3.</span> Až se vrátíš a
+              sedne to, stav se posune směrem k Silné.
+            </li>
+          </ol>
+          <Link
+            href="/app/mistakes"
+            className="mt-5 inline-flex min-h-11 items-center text-body-sm font-semibold text-action underline-offset-2 hover:underline"
+          >
+            Otevřít Moje chyby
+          </Link>
         </div>
       </div>
     </SectionShell>
   );
 }
 
-export function HomeOralSimulation() {
+export function HomeProgressConcept() {
   return (
-    <SectionShell id="ustni" className="bg-surface/50">
-      <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
-        <SectionHeading
-          eyebrow="Ústní"
-          title="Zkouška nanečisto z tvé knihy"
-          description="Losování z tvého seznamu, příprava, odpověď a doplňující otázky. Zpětná vazba podle kritérií — ne falešná školní známka."
-        />
-        <SimulationPreview />
-      </div>
-    </SectionShell>
-  );
-}
-
-export function HomeOwnMaterials() {
-  return (
-    <SectionShell id="materialy">
-      <div className="mx-auto max-w-3xl text-center">
-        <SectionHeading
-          align="center"
-          eyebrow="Tvoje podklady"
-          title="Učíš se z toho, co máš ve škole"
-          description="Appka nestaví přípravu jen na obecném kurikulu. Tvoje nahrané materiály jdou do studia. Literatura k ústní si spravuješ v Literatuře — včetně karet a procvičování."
-        />
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
-          {[
-            "Moje materiály",
-            "Studium z textu",
-            "Literatura k ústní",
-            "Profil maturity",
-          ].map((label) => (
+    <SectionShell id="pokrok">
+      <SectionHeading
+        align="center"
+        eyebrow="Pokrok"
+        title="Čtyři stavy. Žádné falešné procento maturity."
+        description="Stavy vycházejí z cvičení — neříkají, jestli maturitu dáš. Říkají, co už držíš a co ještě ne."
+      />
+      <ul className="mx-auto mt-10 grid max-w-3xl gap-3 sm:grid-cols-2">
+        {(
+          [
+            [
+              "Nové",
+              "bg-subtle text-fg-secondary ring-border-subtle",
+              "Ještě jsi to nezkoušel — první kontakt.",
+            ],
+            [
+              "Učím se",
+              "bg-action-soft text-action-on-soft ring-action/20",
+              "Učíš se — odpovědi zatím kolísají.",
+            ],
+            [
+              "K procvičení",
+              "bg-warning-soft text-warning-ink ring-warning/25",
+              "Umíš to křehce — potřebuješ znovu vybavit.",
+            ],
+            [
+              "Silné",
+              "bg-success-soft text-success-ink ring-success/20",
+              "Sedí to opakovaně — držíš to.",
+            ],
+          ] as const
+        ).map(([label, style, body]) => (
+          <li
+            key={label}
+            className="flex items-start gap-3 rounded-xl border border-border bg-surface px-4 py-4 shadow-xs"
+          >
             <span
-              key={label}
-              className="rounded-full border border-border bg-surface px-4 py-2 text-body-sm font-semibold text-fg shadow-xs"
+              className={cn(
+                "inline-flex shrink-0 items-center rounded-md px-2 py-0.5 text-caption font-semibold tracking-wide ring-1 ring-inset",
+                style,
+              )}
             >
               {label}
             </span>
-          ))}
-        </div>
-      </div>
+            <p className="text-body-sm text-fg-secondary">{body}</p>
+          </li>
+        ))}
+      </ul>
     </SectionShell>
   );
 }
 
-export function HomeSuccessJourney() {
+export function HomeCzechContent() {
   return (
-    <SectionShell id="cesta" className="bg-surface/50">
+    <SectionShell id="obsah" className="bg-surface/50">
       <SectionHeading
         align="center"
-        eyebrow="Cesta studenta"
-        title="Od nahrání k jistotě před termínem"
-        description="Každý den jedna mise. Průběžně testy a ústní. Pokrok, který vidíš."
+        eyebrow="Čeština k maturitě"
+        title="Dostupný obsah — ne „brzy i matematika“"
+        description="Veřejné přehledy a cvičení z literatury, směrů a jazyka. Další předměty zatím nejsou."
       />
-      <div className="mt-10">
-        <JourneyPreview />
-      </div>
-      <p className="mx-auto mt-6 max-w-2xl text-center text-body-sm text-fg-secondary">
-        Když zbývá málo času, Zachraň mě sestaví nouzový plán z termínu, hodin a
-        složek maturity, které appka opravdu umí.
+      <ul className="mx-auto mt-10 grid max-w-4xl gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        {czechTopics.map((t) => (
+          <li key={t.slug}>
+            <Link
+              href={`/priprava/${t.slug}`}
+              className="flex min-h-12 items-center rounded-xl border border-border bg-surface px-4 text-body-sm font-semibold text-fg shadow-xs transition hover:border-action/40 hover:bg-canvas"
+            >
+              {t.title}
+            </Link>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-6 text-center">
+        <Link
+          href="/priprava"
+          className="text-body-sm font-semibold text-action underline-offset-2 hover:underline"
+        >
+          Všechna témata v Přípravě
+        </Link>
       </p>
     </SectionShell>
   );
 }
 
-export function HomePricingPreview() {
+/** Honest free beta — no dead pricing ladder. */
+export function HomeFreeBeta() {
   return (
-    <SectionShell id="cenik">
+    <SectionShell id="beta">
       <div className="mx-auto max-w-2xl rounded-2xl border border-border bg-surface p-6 text-center shadow-sm sm:p-8">
         <SectionHeading
           align="center"
-          eyebrow="Cena"
-          title="FREE · SMART · AI PRO · MATURITA MAX"
-          description="Entitlements jsou v kódu. SMART launch 99 Kč/měsíc (standard 149). AI PRO 249 Kč/měsíc. MATURITA MAX 499 Kč / 90 dní. Po vypršení nepřijdeš o nahrané materiály."
+          eyebrow="Teď"
+          title="Beta je zdarma"
+          description="Placené plány zatím neprodáváme. Učíš se z dostupného obsahu češtiny k maturitě — bez fiktivních cen a bez „čekáme na data“."
         />
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
             href="/app/learn"
             className="inline-flex min-h-12 items-center justify-center rounded-lg bg-action px-6 text-body-sm font-semibold text-fg-on-brand shadow-xs transition hover:bg-action-hover"
           >
-            Začít se učit bez registrace
+            Začít se učit zdarma
           </Link>
           <Link
             href="/cenik"
             className="inline-flex min-h-12 items-center justify-center rounded-lg border border-border bg-canvas px-6 text-body-sm font-semibold text-fg transition hover:bg-subtle"
           >
-            Zobrazit ceník
+            Jak to bude s cenou
           </Link>
         </div>
       </div>
@@ -351,22 +348,25 @@ export function HomeFaq() {
 export function HomeFinalCta() {
   return (
     <section className="border-t border-border-subtle px-4 py-16 sm:px-6 sm:py-24">
-      <div className="mx-auto max-w-3xl rounded-2xl bg-fg px-6 py-12 text-center sm:px-10 sm:py-14">
-        <p className="text-overline text-accent">Teď</p>
-        <h2 className="mt-3 font-display text-title-lg tracking-tight text-fg-inverse text-balance sm:text-display-sm">
-          Nahraj materiály. Začni dnešní misí.
+      <div className="mx-auto max-w-3xl rounded-2xl border border-border bg-surface px-6 py-12 text-center shadow-sm sm:px-10 sm:py-14">
+        <p className="text-overline text-action">Teď</p>
+        <h2 className="mt-3 font-display text-title-lg tracking-tight text-fg text-balance sm:text-display-sm">
+          Víš, co se naučit. Víš, co už&nbsp;umíš.
         </h2>
-        <p className="mx-auto mt-4 max-w-lg text-body-md text-fg-inverse/75">
+        <p className="mx-auto mt-4 max-w-lg text-body-md text-fg-secondary">
           Začni česky studovat hned — bez účtu. Registrace je volitelná, až
           budeš chtít pokrok na více zařízeních.
         </p>
         <CtaPair
           className="mt-8 justify-center"
           primaryHref="/app/learn"
-          primaryLabel="Začít se učit bez registrace"
-          secondaryHref="/registrace"
-          secondaryLabel="Vytvořit účet"
+          primaryLabel="Začít se učit zdarma"
+          secondaryHref="/priprava"
+          secondaryLabel="Prohlédnout témata"
         />
+        <p className="mt-3 text-body-sm text-fg-muted">
+          Bez registrace. Začni během pár sekund.
+        </p>
       </div>
     </section>
   );
