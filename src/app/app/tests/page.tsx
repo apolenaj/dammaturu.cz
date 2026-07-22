@@ -9,44 +9,48 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AppPageHeader } from "@/components/shell/app-screen";
-import { EmptyState } from "@/components/ui/empty-state";
+import { TestingModeHub } from "@/components/testing/testing-session-player";
 import { getCurrentLearnerAction } from "@/server/actions/onboarding";
+import { listTestingModesAction } from "@/server/actions/testing-engine";
 import { listQuestionPacks } from "@/server/question-engine/store";
 import { getLearner } from "@/server/learner-store";
 import { getLearnerIdFromCookies } from "@/server/learner-session";
+import { testingModes, type TestingMode } from "@/domain/learning/testing-engine";
 
 export const metadata: Metadata = { title: "Testy" };
 export const dynamic = "force-dynamic";
 
 type PageProps = {
-  searchParams: Promise<{ intent?: string }>;
+  searchParams: Promise<{ intent?: string; mode?: string; topic?: string }>;
 };
 
 export default async function TestsPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const diagnostic = params.intent === "diagnostic";
-  const [learner, packs, learnerId] = await Promise.all([
+  const initialMode =
+    params.mode && testingModes.includes(params.mode as TestingMode)
+      ? (params.mode as TestingMode)
+      : null;
+  const initialTopic = params.topic?.trim() || null;
+
+  const [learner, packs, learnerId, testing] = await Promise.all([
     getCurrentLearnerAction(),
     listQuestionPacks(),
     getLearnerIdFromCookies(),
+    listTestingModesAction(),
   ]);
   const record = learnerId ? await getLearner(learnerId) : null;
   const baselineDone = Boolean(record?.diagnosticBaseline);
   const primaryPack = packs[0] ?? null;
-  const primaryHref = primaryPack
-    ? diagnostic
-      ? `/app/tests/otazky/${primaryPack.slug}?diagnostic=1`
-      : `/app/tests/otazky/${primaryPack.slug}`
-    : "/app/cermat";
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6 px-1">
       <AppPageHeader
         title="Testy"
-        purpose="Ověř znalosti s vysvětlením po odpovědi. Chyby jdou do Moje chyby."
+        purpose="Ověř znalosti z validovaných materiálů. Chyby jdou do Moje chyby a ovlivní opakování."
         primaryAction={{
-          label: primaryPack ? "Spustit test" : "CERMAT trénink",
-          href: primaryHref,
+          label: "Rychlých 5",
+          href: "/app/tests?mode=quick_5",
         }}
         secondaryAction={{
           label: "Moje chyby",
@@ -91,7 +95,8 @@ export default async function TestsPage({ searchParams }: PageProps) {
                 </div>
               ) : (
                 <p className="mt-2 text-body-sm">
-                  Pack otázek zatím není nasazený — zkus CERMAT trénink.
+                  Diagnostický pack zatím není nasazený — použij režimy výše
+                  nebo CERMAT trénink.
                 </p>
               )}
             </>
@@ -107,38 +112,45 @@ export default async function TestsPage({ searchParams }: PageProps) {
         </Alert>
       ) : null}
 
+      <section className="space-y-3">
+        <h2 className="font-display text-xl font-semibold text-fg">
+          Režimy testu
+        </h2>
+        <TestingModeHub
+          modes={testing.modes}
+          topics={testing.topics}
+          poolSize={testing.poolSize}
+          initialMode={initialMode}
+          initialTopic={initialTopic}
+        />
+      </section>
+
       <Card>
         <CardHeader>
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
               <CardTitle>
                 <Link href="/app/cermat" className="hover:text-action">
-                  CERMAT ČJL — didaktický trénink
+                  CERMAT příprava — Maturita CERMAT ČJL
                 </Link>
               </CardTitle>
               <CardDescription className="mt-1">
-                Kategorie didaktického testu · časovaná simulace · slabiny.
-                Cvičné exam-style položky, ne oficiální CERMAT.
+                Společný didaktický test podle katalogu 2025/2026. Oddělené od
+                Moje materiály a školní ústní. Cvičné položky — ne oficiální
+                minulá zadání CERMAT, pokud není výslovně uvedeno.
               </CardDescription>
             </div>
-            <Badge tone="brand">CERMAT</Badge>
+            <Badge tone="brand">CERMAT příprava</Badge>
           </div>
         </CardHeader>
       </Card>
 
-      <section className="space-y-3">
-        <h2 className="font-display text-xl font-semibold text-fg">
-          Question packs
-        </h2>
-        {packs.length === 0 ? (
-          <EmptyState
-            title="Zatím žádný pack"
-            description="Obsah testů ještě není nasazený. Mezitím můžeš trénovat CERMAT kategorie."
-            actionLabel="Otevřít CERMAT"
-            actionHref="/app/cermat"
-          />
-        ) : (
-          packs.map((pack) => {
+      {packs.length > 0 ? (
+        <section className="space-y-3">
+          <h2 className="font-display text-xl font-semibold text-fg">
+            Další balíčky
+          </h2>
+          {packs.map((pack) => {
             const kinds = new Set(pack.questions.map((q) => q.kind));
             return (
               <Card key={pack.id}>
@@ -165,15 +177,15 @@ export default async function TestsPage({ searchParams }: PageProps) {
                       </p>
                     </div>
                     <Badge tone="brand">
-                      {diagnostic ? "Diagnostika" : "Engine"}
+                      {diagnostic ? "Diagnostika" : "Pack"}
                     </Badge>
                   </div>
                 </CardHeader>
               </Card>
             );
-          })
-        )}
-      </section>
+          })}
+        </section>
+      ) : null}
     </div>
   );
 }

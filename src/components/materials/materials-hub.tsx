@@ -421,6 +421,44 @@ export function MaterialsHub({
         </Card>
       </section>
 
+      <section aria-label="Vysvětli mi to">
+        <Card>
+          <CardHeader>
+            <CardTitle>Vysvětli mi to</CardTitle>
+            <CardDescription>
+              Asistent ke studiu materiálů — shrnutí, příklady, porovnání,
+              kontrolní otázky. Jen ze zdrojů, bez vymyšlených faktů.
+            </CardDescription>
+          </CardHeader>
+          <div className="px-6 pb-6">
+            <Link href="/app/materials/vysvetli">
+              <Button type="button" variant="outline">
+                Otevřít Vysvětli mi to
+              </Button>
+            </Link>
+          </div>
+        </Card>
+      </section>
+
+      <section aria-label="Ústní trénink z materiálů">
+        <Card>
+          <CardHeader>
+            <CardTitle>Ústní trénink z materiálů</CardTitle>
+            <CardDescription>
+              Otázka nanečisto, celé téma, slabiny — hodnocení jen podle
+              nahraných podkladů, bez celostátních ústních pravidel.
+            </CardDescription>
+          </CardHeader>
+          <div className="px-6 pb-6">
+            <Link href="/app/materials/oral">
+              <Button type="button" variant="secondary">
+                Spustit ústní trénink
+              </Button>
+            </Link>
+          </div>
+        </Card>
+      </section>
+
       <section aria-label="Seznam materiálů" className="space-y-3">
         <h2 className="text-title-sm font-semibold text-fg">
           Tvoje soubory ({materials.length})

@@ -32,7 +32,7 @@ export const PROGRESS_MILESTONES: ProgressMilestoneDef[] = [
   {
     id: "first_topic_mastered",
     titleCs: "První oblast zvládnuta",
-    descriptionCs: "Jedna oblast má solidní mastery coverage (≥ 80 %).",
+    descriptionCs: "Jedna oblast má solidní zvládnutí (≥ 80 %).",
     studyWhyCs: "Dokazuješ, že umíš dotáhnout téma do použitelné úrovně.",
   },
   {
@@ -56,7 +56,7 @@ export const PROGRESS_MILESTONES: ProgressMilestoneDef[] = [
   {
     id: "eighty_pct_curriculum",
     titleCs: "80 % učiva zvládnuto",
-    descriptionCs: "Celková připravenost (mastery coverage) ≥ 80 %.",
+    descriptionCs: "Celková připravenost (pokrytí zvládnutí) ≥ 80 %.",
     studyWhyCs: "Široké pokrytí učiva — hlavní signál postupu k cíli.",
   },
 ];
@@ -433,7 +433,7 @@ export type ProgressMotivationView = {
 };
 
 export const progressPhilosophyCs =
-  "Oslavujeme reálný postup: mise, streak, zvládnutá témata, zlepšení readiness a maturitu nanečisto. XP je jen stopka — nepřidává body do připravenosti.";
+  "Oslavujeme reálný postup: mise, série dní, zvládnutá témata, zlepšení připravenosti a maturitu nanečisto. Body XP jsou jen stopka — nepřidávají do připravenosti.";
 
 /**
  * Diff readiness baselines → celebrate meaningful improvements only.

@@ -18,6 +18,14 @@ import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
+import {
+  noteGuestMistake,
+  noteGuestQuestionCompleted,
+} from "@/lib/guest-progress-cache";
+
+function looksLikeGuestId(id: string): boolean {
+  return /^g[a-f0-9]{32}$/.test(id);
+}
 
 export function QuestionEnginePlayer({
   pack,
@@ -65,7 +73,7 @@ export function QuestionEnginePlayer({
   function submit(answer: StudentAnswer) {
     if (!question) return;
     if (!learnerId) {
-      setError("Pro uložení výsledků dokonči onboarding.");
+      setError("Chvíli počkej — připravujeme studijní session…");
       return;
     }
     setError(null);
@@ -84,6 +92,19 @@ export function QuestionEnginePlayer({
       setProgress(res.progress);
       setGrade(res.grade);
       if (res.diagnosticCompleted) setDiagnosticDone(true);
+      if (looksLikeGuestId(learnerId)) {
+        noteGuestQuestionCompleted({
+          guestId: learnerId,
+          questionId: question.id,
+          packSlug: pack.slug,
+        });
+        if (
+          res.grade.result === "incorrect" ||
+          res.grade.result === "partial"
+        ) {
+          noteGuestMistake(learnerId);
+        }
+      }
     });
   }
 

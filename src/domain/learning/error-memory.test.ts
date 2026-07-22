@@ -81,6 +81,10 @@ describe("error-memory / Moje chyby", () => {
     expect(memory.recoveryAttempts).toBe(1);
 
     memory = applyPracticeGrade(memory, "good", "2026-07-22T12:00:00.000Z");
+    expect(memory.status).toBe("improving");
+    expect(memory.successStreak).toBe(2);
+
+    memory = applyPracticeGrade(memory, "good", "2026-07-23T12:00:00.000Z");
     expect(memory.successStreak).toBe(errorMemoryConfig.masterSuccessStreak);
     expect(memory.status).toBe("mastered");
     expect(memory.masteredAt).toBeTruthy();
@@ -91,6 +95,15 @@ describe("error-memory / Moje chyby", () => {
     const withMastered = { ...book, memories };
     expect(listMasteredMemories(withMastered)).toHaveLength(1);
     expect(listActiveMemories(withMastered)).toHaveLength(0);
+  });
+
+  it("one correct recovery never deletes error history", () => {
+    const base = recordError(emptyErrorBook("learner", NOW), sampleInput())
+      .memory;
+    const once = applyPracticeGrade(base, "good", LATER);
+    expect(once.status).toBe("improving");
+    expect(once.question).toBe(base.question);
+    expect(once.studentAnswer).toBe(base.studentAnswer);
   });
 
   it("again resets streak to Weak", () => {
@@ -124,18 +137,23 @@ describe("error-memory / Moje chyby", () => {
     expect(session.status).toBe("completed");
     expect(listActiveMemories(book)[0]?.status).toBe("improving");
 
-    const session1 = startMistakePracticeSession({
-      sessionId: "55555555-5555-4555-8555-555555555555",
-      learnerId: "learner",
-      book,
-      nowIso: "2026-07-22T12:00:00.000Z",
-    });
-    ({ book } = applyMistakeSessionGrade({
-      session: session1!,
-      book,
-      grade: "good",
-      nowIso: "2026-07-22T12:00:00.000Z",
-    }));
+    for (const [i, iso] of [
+      ["55555555-5555-4555-8555-555555555555", "2026-07-22T12:00:00.000Z"],
+      ["66666666-6666-4666-8666-666666666666", "2026-07-23T12:00:00.000Z"],
+    ] as const) {
+      const next = startMistakePracticeSession({
+        sessionId: i,
+        learnerId: "learner",
+        book,
+        nowIso: iso,
+      });
+      ({ book } = applyMistakeSessionGrade({
+        session: next!,
+        book,
+        grade: "good",
+        nowIso: iso,
+      }));
+    }
     expect(listMasteredMemories(book)).toHaveLength(1);
     expect(listActiveMemories(book)).toHaveLength(0);
   });

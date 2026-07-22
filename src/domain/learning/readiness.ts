@@ -86,8 +86,8 @@ export const readinessDimensionLabelsCs: Record<ReadinessDimensionId, string> = 
   oral: "Ústní zkouška",
   writing: "Písemná práce",
   materials_mastery: "Moje materiály",
-  retention: "Retence",
-  consistency: "Konzistence",
+  retention: "Zapamatování",
+  consistency: "Pravidelnost",
 };
 
 /** Weights for overall blend (must sum to 1). */
@@ -118,10 +118,11 @@ export const dimensionEvidenceThresholds: Record<
 
 /** Overall needs at least this many dimension evidence points (sum) + 2 scored dims. */
 export const overallEvidenceConfig = {
-  minTotalEvidence: 12,
+  /** Raise gate so Maturita Score never shows on thin evidence. */
+  minTotalEvidence: 16,
   minScoredDimensions: 2,
-  moderateTotalEvidence: 28,
-  highTotalEvidence: 56,
+  moderateTotalEvidence: 32,
+  highTotalEvidence: 64,
 } as const;
 
 export const confidenceLevels = [
@@ -261,7 +262,7 @@ export type ReadinessSnapshot = {
 };
 
 export const readinessDisclaimerCs =
-  "Připravenost je evidence-based odhad z cvičení, opakování a materiálů. Není to predikce úspěchu u maturity ani „šance složit“.";
+  "Připravenost je odhad z cvičení, opakování a materiálů. Není to předpověď, jestli maturitu dáš.";
 
 /** Raw signals gathered server-side — never invent. */
 export type ReadinessEvidenceInput = {

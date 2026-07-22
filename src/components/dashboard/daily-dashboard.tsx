@@ -5,8 +5,15 @@ import Link from "next/link";
 import {
   completeDailyMissionAction,
   markDailyStepDoneAction,
+  setDailyPlannerModeAction,
 } from "@/server/actions/daily-dashboard";
 import type { DailyDashboardView } from "@/domain/learning/daily-dashboard";
+import {
+  adaptivePlannerModeHintsCs,
+  adaptivePlannerModeLabelsCs,
+  adaptivePlannerModes,
+  type AdaptivePlannerMode,
+} from "@/domain/learning/adaptive-exam-planner";
 import type {
   LearningCelebration,
   ProgressMotivationView,
@@ -70,6 +77,19 @@ export function DailyDashboard({
       setView(res.view);
       if (res.celebrations.length) setCelebrations(res.celebrations);
       if (res.motivation) setMotivation(res.motivation);
+    });
+  }
+
+  function setMode(mode: AdaptivePlannerMode) {
+    if (mode === view.plannerMode) return;
+    setError(null);
+    startTransition(async () => {
+      const res = await setDailyPlannerModeAction({ mode });
+      if (!res.ok) {
+        setError(res.error);
+        return;
+      }
+      setView(res.view);
     });
   }
 
@@ -142,6 +162,52 @@ export function DailyDashboard({
                 {doneCount}/{view.steps.length}
               </span>
             </div>
+
+            <div className="space-y-2">
+              <p className="text-caption text-fg-secondary">Kolik máš času?</p>
+              <div className="flex flex-wrap gap-2">
+                {adaptivePlannerModes.map((mode) => {
+                  const active = view.plannerMode === mode;
+                  return (
+                    <button
+                      key={mode}
+                      type="button"
+                      disabled={pending}
+                      onClick={() => setMode(mode)}
+                      title={adaptivePlannerModeHintsCs[mode]}
+                      className={cn(
+                        "min-h-10 rounded-lg border px-3 text-body-sm font-semibold transition duration-fast",
+                        active
+                          ? "border-action bg-action text-fg-on-brand"
+                          : "border-border bg-canvas text-fg hover:border-action/40",
+                      )}
+                    >
+                      {adaptivePlannerModeLabelsCs[mode]}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-caption text-fg-muted">
+                {adaptivePlannerModeHintsCs[view.plannerMode]}
+              </p>
+            </div>
+
+            {view.estimateCs ? (
+              <p className="text-body-sm font-semibold text-fg">
+                {view.estimateCs}
+              </p>
+            ) : null}
+            {view.compositionCs ? (
+              <p className="text-caption text-fg-secondary">
+                {view.compositionCs}
+              </p>
+            ) : null}
+            {view.replanNoteCs ? (
+              <p className="rounded-lg bg-subtle/80 px-3 py-2 text-caption text-fg-secondary">
+                {view.replanNoteCs}
+              </p>
+            ) : null}
+
             <Progress
               value={progressPct}
               label="Dnešní postup"
@@ -154,7 +220,8 @@ export function DailyDashboard({
                 id: step.id,
                 label: `Krok ${i + 1}`,
                 done: step.done,
-                current: !step.done && view.steps.slice(0, i).every((s) => s.done),
+                current:
+                  !step.done && view.steps.slice(0, i).every((s) => s.done),
               }))}
             />
           </div>

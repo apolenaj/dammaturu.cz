@@ -8,9 +8,18 @@ import {
 } from "@/domain/onboarding/schema";
 import { buildStudyPlan } from "@/domain/onboarding/study-plan";
 import { track } from "@/lib/analytics";
+import {
+  defaultGuestOnboardingInput,
+  ensureGuestLearner,
+  upsertViewerLearnerProfile,
+} from "@/server/guest/ensure-guest-learner";
 import { getAuthIdentity } from "@/server/learner-session";
 import { upsertLearner, getLearner } from "@/server/learner-store";
 import { recordProductEvent } from "@/server/product-analytics/store";
+import {
+  getViewerSession,
+  requireViewerSession,
+} from "@/server/viewer-session";
 
 export type OnboardingActionResult =
   | {
@@ -29,14 +38,7 @@ export type OnboardingActionResult =
 export async function saveOnboardingAction(
   raw: unknown,
 ): Promise<OnboardingActionResult> {
-  const identity = await getAuthIdentity();
-  if (!identity) {
-    return {
-      ok: false,
-      error: "Nejdřív se přihlas nebo zaregistruj.",
-      code: "unauthorized",
-    };
-  }
+  const viewer = await requireViewerSession();
 
   const parsed = onboardingInputSchema.safeParse(raw);
 
@@ -58,10 +60,10 @@ export async function saveOnboardingAction(
   const profile: OnboardingInput = parsed.data;
 
   try {
-    const existing = await getLearner(identity.learnerId);
+    const existing = await getLearner(viewer.learnerId);
     const studyPlan = buildStudyPlan(profile);
     const record = await upsertLearner({
-      id: identity.learnerId,
+      id: viewer.learnerId,
       profile,
       studyPlan,
     });
@@ -72,6 +74,7 @@ export async function saveOnboardingAction(
       subjects: profile.subjects.length,
       wantsDiagnostic: profile.wantsDiagnostic,
       dailyMinutes: profile.dailyMinutes,
+      viewerKind: viewer.kind,
     });
     if (!existing) {
       await recordProductEvent({
@@ -110,20 +113,74 @@ export async function saveOnboardingAction(
   }
 }
 
-export async function getCurrentLearnerAction() {
-  const identity = await getAuthIdentity();
-  if (!identity) return null;
-  return getLearner(identity.learnerId);
+/** Skip personalization — save defaults (merged with any draft fields) and study. */
+export async function skipOnboardingAction(
+  partial?: Partial<OnboardingInput>,
+): Promise<OnboardingActionResult> {
+  try {
+    const viewer = await requireViewerSession();
+    const profile = defaultGuestOnboardingInput({
+      ...partial,
+      displayName:
+        partial?.displayName?.trim() ||
+        defaultGuestOnboardingInput().displayName,
+    });
+    const record = await upsertViewerLearnerProfile(viewer.learnerId, profile);
+    track("onboarding_skipped", {
+      learnerId: record.id,
+      viewerKind: viewer.kind,
+    });
+    revalidatePath("/app/dashboard");
+    revalidatePath("/app/learn");
+    revalidatePath("/app/plan");
+    revalidatePath("/onboarding");
+    return {
+      ok: true,
+      learnerId: record.id,
+      wantsDiagnostic: false,
+      updated: true,
+    };
+  } catch (error) {
+    console.error("[onboarding] skip failed", error);
+    return {
+      ok: false,
+      error: "Přeskočení se nepovedlo. Zkus to znovu.",
+    };
+  }
 }
 
-/** Used by onboarding page when unauthenticated — redirect to registrace. */
+export async function getCurrentLearnerAction() {
+  const viewer = await getViewerSession({ createGuestIfMissing: false });
+  if (!viewer) return null;
+  if (viewer.kind === "guest") {
+    await ensureGuestLearner(viewer.learnerId);
+  }
+  return getLearner(viewer.learnerId);
+}
+
+/** Optional personalization — guests and authenticated users both allowed. */
 export async function requireOnboardingAccessAction(): Promise<{
   learnerId: string;
   email: string | null;
+  kind: "authenticated" | "guest";
 }> {
-  const identity = await getAuthIdentity();
-  if (!identity) {
-    redirect("/registrace?next=/onboarding");
+  const viewer = await getViewerSession({ createGuestIfMissing: false });
+  if (!viewer) {
+    redirect("/app/learn");
   }
-  return { learnerId: identity.learnerId, email: identity.email };
+  if (viewer.kind === "guest") {
+    await ensureGuestLearner(viewer.learnerId);
+  }
+  return {
+    learnerId: viewer.learnerId,
+    email: viewer.email,
+    kind: viewer.kind,
+  };
+}
+
+/** @deprecated Prefer requireOnboardingAccessAction — kept for call sites. */
+export async function requireAuthForOnboarding() {
+  const auth = await getAuthIdentity();
+  if (!auth) redirect("/onboarding");
+  return auth;
 }

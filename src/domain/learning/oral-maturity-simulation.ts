@@ -454,11 +454,16 @@ export function briefToMockTopic(brief: OralExaminerBrief): MockExamTopic {
       : "00000000-0000-4000-8000-000000000001";
 
   // Ensure minimum checklist shape for zod when insufficient — empty topic uses stubs marked insufficient
-  const checklist = brief.checklist.map((item) => {
-    const { evidence: _ignored, ...rest } = item;
-    void _ignored;
-    return rest;
-  });
+  const checklist: MockExamChecklistItem[] = brief.checklist.map((item) => ({
+    id: item.id,
+    label: item.label,
+    synonyms: item.synonyms,
+    required: item.required,
+    isKeyFact: item.isKeyFact,
+    isStructure: item.isStructure,
+    isTerminology: item.isTerminology,
+    reviewHintCs: item.reviewHintCs,
+  }));
   let followUps = brief.followUps;
   if (checklist.length < 5) {
     const pad = 5 - checklist.length;

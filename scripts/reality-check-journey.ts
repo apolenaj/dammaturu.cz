@@ -8,10 +8,7 @@ import { applyMasteryEvidence } from "../src/domain/learning/mastery-engine";
 import { buildReadinessSnapshot } from "../src/domain/learning/readiness";
 import { applyPerformance, createSpacedSchedule } from "../src/domain/learning/spaced-repetition";
 import { recordReadinessPractice } from "../src/server/readiness/record-practice";
-import {
-  getReadinessBook,
-  saveReadinessBook,
-} from "../src/server/readiness/store";
+import { getReadinessBook } from "../src/server/readiness/store";
 import { getErrorBook } from "../src/server/error-memory/store";
 import { recordLearnerError } from "../src/server/error-memory/store";
 import { listQuestionPacks, submitQuestionAttempt } from "../src/server/question-engine/store";
@@ -19,8 +16,6 @@ import { listSpacedPacks } from "../src/server/spaced-repetition/store";
 import { getOrCreateTodayMission } from "../src/server/daily-dashboard/store";
 import { computeMissedDays } from "../src/domain/learning/deadline-planner";
 import { dateKeyFromDate } from "../src/domain/learning/daily-dashboard";
-import { promises as fs } from "node:fs";
-import path from "node:path";
 
 type Row = { name: string; status: string; detail: string };
 

@@ -10,6 +10,7 @@ export type AnalyticsEventName =
   | "onboarding_step_validation_failed"
   | "onboarding_completed"
   | "onboarding_updated"
+  | "onboarding_skipped"
   | "onboarding_diagnostic_requested"
   | "onboarding_save_failed"
   | "study_plan_generated"

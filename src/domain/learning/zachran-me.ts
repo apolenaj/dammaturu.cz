@@ -1,99 +1,75 @@
 import { z } from "zod";
-import type { CurriculumPackLike } from "@/domain/learning/beta-learning-path";
-import { flattenPackTopics } from "@/domain/learning/beta-learning-path";
 import {
   cermatCategories,
   cermatCategoryLabelsCs,
   type CermatCategory,
   type CermatCategoryStats,
 } from "@/domain/learning/cermat-prep";
-import type { LiteratureBook } from "@/domain/learning/literature-maturity";
 import { BETA_TARGET_DATE } from "@/domain/onboarding/schema";
 
 /**
- * Zachraň mě — emergency study planner (D-041 / D-056).
- * Triage by readiness × weakness × importance × time remaining.
- * Only surfaces exam components the product actually supports.
+ * Zachraň mě — deadline triage (rebuild).
+ * Scope: Moje materiály / CERMAT / both. Never invent unimplemented subjects.
+ * Three buckets → concrete Dnes / Zítra / Tento týden plan.
+ * No false precision when learning evidence is thin.
  */
 
-/** Components with a real practice path in the app. */
-export const zachranMeComponents = [
-  "cermat_didactic",
-  "oral_literature",
-  "language_topics",
-] as const;
+export const zachranMeScopes = ["materials", "cermat", "both"] as const;
+export type ZachranMeScope = (typeof zachranMeScopes)[number];
 
-export type ZachranMeComponent = (typeof zachranMeComponents)[number];
-
-export const zachranMeComponentLabelsCs: Record<ZachranMeComponent, string> = {
-  cermat_didactic: "Didaktický test CERMAT",
-  oral_literature: "Ústní — literatura",
-  language_topics: "Jazyk a literární znalosti",
+export const zachranMeScopeLabelsCs: Record<ZachranMeScope, string> = {
+  materials: "Moje materiály",
+  cermat: "CERMAT",
+  both: "Moje materiály + CERMAT",
 };
 
-export const zachranMeComponentHintsCs: Record<ZachranMeComponent, string> = {
-  cermat_didactic:
-    "Cvičný modul CERMAT ČJL — kategorie didaktického testu (/app/cermat).",
-  oral_literature:
-    "Seznam knih, karty a ústní simulace (/app/literature, /app/simulation).",
-  language_topics:
-    "Kurikulum ČJL — témata s exam relevance (/app/topics, rozbory).",
+export const zachranMeScopeHintsCs: Record<ZachranMeScope, string> = {
+  materials:
+    "Jen tvoje nahrané podklady (PDF/DOCX/TXT). Matematika, AJ a jiné předměty tu nejsou.",
+  cermat:
+    "Didaktický test ČJL podle katalogu CERMAT — jen to, co app opravdu trénuje.",
+  both: "Obě podporované linie: materiály i CERMAT ČJL. Nic dalšího nepřidáváme.",
 };
 
-export const zachranMeComponentHrefs: Record<ZachranMeComponent, string> = {
-  cermat_didactic: "/app/cermat",
-  oral_literature: "/app/literature",
-  language_topics: "/app/topics",
+export const zachranMeScopeHrefs: Record<
+  Exclude<ZachranMeScope, "both">,
+  string
+> = {
+  materials: "/app/materials",
+  cermat: "/app/cermat",
 };
 
-/** Default importance when component is selected (0–1). */
-export const zachranMeComponentImportance: Record<ZachranMeComponent, number> =
-  {
-    cermat_didactic: 0.95,
-    oral_literature: 0.9,
-    language_topics: 0.7,
-  };
+/** Product lanes on a triage item — never mix with unimplemented subjects. */
+export const zachranMeLanes = ["materials", "cermat"] as const;
+export type ZachranMeLane = (typeof zachranMeLanes)[number];
+
+export const zachranMeLaneLabelsCs: Record<ZachranMeLane, string> = {
+  materials: "Moje materiály",
+  cermat: "CERMAT",
+};
 
 export const zachranMeBuckets = [
   "must_know",
-  "high_impact",
-  "should_know",
+  "important",
   "if_time",
-  "already_knows",
 ] as const;
-
 export type ZachranMeBucket = (typeof zachranMeBuckets)[number];
 
 export const zachranMeBucketLabelsCs: Record<ZachranMeBucket, string> = {
-  must_know: "MUSÍŠ UMĚT",
-  high_impact: "HIGH IMPACT",
-  should_know: "MĚL/A BYS UMĚT",
+  must_know: "MUSÍM UMĚT",
+  important: "DŮLEŽITÉ",
   if_time: "POKUD ZBUDE ČAS",
-  already_knows: "UŽ UMÍŠ — NEPLÝTVEJ ČASEM",
 };
 
 export const zachranMeBucketHintsCs: Record<ZachranMeBucket, string> = {
   must_know:
-    "Kritické mezery před termínem — bez toho maturitu neudržíš. Priorita číslo 1.",
-  high_impact:
-    "Nejvyšší poměr slabina × důležitost. Po must-know jdi sem — největší zisk za čas.",
-  should_know:
-    "Mělo by sedět, ale není to akutní propad. Zařaď po high impact.",
+    "Kritické mezery před termínem — chyby, splatné opakování, vysoká důležitost.",
+  important:
+    "Silný zisk za čas: slabší místa s dobrou exam vahou. Až po MUSÍM UMĚT.",
   if_time:
-    "Až zbude kapacita. Nesmí vytlačit must-know ani high impact.",
-  already_knows:
-    "Držíš to. Neplýtvej časem na opakování „pro jistotu“.",
+    "Až zbude kapacita. Nesmí vytlačit první dvě kategorie.",
 };
 
-export const examRelevanceWeights: Record<string, number> = {
-  none: 0.05,
-  low: 0.25,
-  medium: 0.5,
-  high: 0.8,
-  critical: 1,
-};
-
-/** Relative importance inside CERMAT category drills. */
 export const cermatCategoryImportance: Record<CermatCategory, number> = {
   orthography: 0.95,
   morphology: 0.9,
@@ -107,18 +83,20 @@ export const cermatCategoryImportance: Record<CermatCategory, number> = {
 
 export const zachranMeConfig = {
   betaTargetDate: BETA_TARGET_DATE,
-  knowsThreshold: 75,
-  knowsForgetMax: 0.4,
-  mustImportanceMin: 0.72,
-  mustWeaknessMin: 0.35,
-  highImpactScoreMin: 0.28,
-  shouldImportanceMin: 0.4,
-  shouldWeaknessMin: 0.18,
-  /** Minutes assumed per packed session step when candidate has none. */
+  minDailyMinutes: 10,
+  maxDailyMinutes: 240,
+  defaultDailyMinutes: 30,
   defaultStepMinutes: 15,
-  maxSessionSteps: 6,
-  minAvailableHours: 0.5,
-  maxAvailableHours: 12,
+  maxTodaySteps: 5,
+  maxTomorrowSteps: 5,
+  maxWeekThemes: 8,
+  /** Soft mastery gate — only when real evidence exists. */
+  solidMasteryPct: 72,
+  mustImportanceMin: 0.7,
+  mustWeaknessMin: 0.4,
+  importantScoreMin: 0.22,
+  minEvidenceAttempts: 3,
+  evidenceSolidAttempts: 12,
 } as const;
 
 export const zachranMeInputSchema = z.object({
@@ -129,101 +107,123 @@ export const zachranMeInputSchema = z.object({
       const d = new Date(`${value}T12:00:00`);
       return !Number.isNaN(d.getTime());
     }, "Neplatný termín maturity"),
-  availableHours: z
+  dailyMinutes: z
     .number()
-    .min(zachranMeConfig.minAvailableHours)
-    .max(zachranMeConfig.maxAvailableHours),
-  components: z
-    .array(z.enum(zachranMeComponents))
-    .min(1, "Vyber alespoň jednu složku maturity")
-    .max(zachranMeComponents.length),
+    .int()
+    .min(zachranMeConfig.minDailyMinutes)
+    .max(zachranMeConfig.maxDailyMinutes),
+  scope: z.enum(zachranMeScopes),
 });
 
 export type ZachranMeInput = z.infer<typeof zachranMeInputSchema>;
 
-export type EmergencyCandidate = {
+export type EvidenceLevel = "insufficient" | "partial" | "solid";
+
+export type TriageCandidate = {
   id: string;
-  component: ZachranMeComponent;
+  lane: ZachranMeLane;
   titleCs: string;
   detailCs: string;
   href: string;
-  /** 0–100 observed or provisional readiness. */
-  readinessPct: number;
-  /** 0–1 exam-component importance for this item. */
+  /** null = no reliable mastery yet — never invent a %. */
+  masteryPct: number | null;
+  hasLearningEvidence: boolean;
+  /** 0–1 exam / topic weight. */
   importance: number;
-  /** 0–1 forgetting / due pressure. */
-  forgettingRisk: number;
+  remainingUnits: number;
+  repeatedErrors: number;
+  overdueReviews: number;
   estimatedMinutes: number;
 };
 
 export type AnalysisFactors = {
-  readinessPct: number;
+  masteryPct: number | null;
   weakness: number;
   importance: number;
-  forgettingRisk: number;
+  errorPressure: number;
+  overduePressure: number;
+  coveragePressure: number;
   timePressure: number;
-  impactScore: number;
+  /** Internal ranking only — not shown as false precision. */
+  priorityScore: number;
 };
 
 export type PriorityItem = {
   id: string;
-  component: ZachranMeComponent;
-  componentLabelCs: string;
+  lane: ZachranMeLane;
+  laneLabelCs: string;
   titleCs: string;
   detailCs: string;
   href: string;
-  readinessPct: number;
+  masteryPct: number | null;
+  hasLearningEvidence: boolean;
   importance: number;
-  impactScore: number;
+  priorityScore: number;
   factors: AnalysisFactors;
   bucket: ZachranMeBucket;
   reasonCs: string;
   estimatedMinutes: number;
+  remainingUnits: number;
+  repeatedErrors: number;
+  overdueReviews: number;
 };
 
-export type NextStudySessionStep = {
+export type HorizonStep = {
   order: number;
   titleCs: string;
   reasonCs: string;
   href: string;
   estimatedMinutes: number;
-  component: ZachranMeComponent;
-  componentLabelCs: string;
+  lane: ZachranMeLane;
+  laneLabelCs: string;
   itemId: string;
+  bucket: ZachranMeBucket;
 };
 
-export type NextStudySession = {
+export type HorizonBlock = {
+  key: "today" | "tomorrow" | "this_week";
   titleCs: string;
-  directiveCs: string;
+  minutesBudget: number;
   totalMinutes: number;
-  availableMinutes: number;
-  steps: NextStudySessionStep[];
-  startHref: string;
+  steps: HorizonStep[];
+  noteCs: string;
+};
+
+export type ZachranMeHorizon = {
+  today: HorizonBlock;
+  tomorrow: HorizonBlock;
+  thisWeek: HorizonBlock;
 };
 
 export type ZachranMeAnalysisSummary = {
   daysRemaining: number;
+  studyDaysEstimate: number;
   timePressure: number;
   timePressureLabelCs: string;
-  totalAvailableMinutes: number;
-  overallReadinessPct: number | null;
-  weakComponentLabelsCs: string[];
+  dailyMinutes: number;
+  totalStudyMinutesLeft: number;
+  evidenceLevel: EvidenceLevel;
+  evidenceDisclaimerCs: string | null;
+  remainingUnitsTotal: number;
+  repeatedErrorsTotal: number;
+  overdueReviewsTotal: number;
+  weakLaneLabelsCs: string[];
 };
 
 export type ZachranMePlan = {
   examDate: string;
   examDateLabelCs: string;
-  availableHours: number;
-  components: ZachranMeComponent[];
-  componentLabelsCs: string[];
+  dailyMinutes: number;
+  scope: ZachranMeScope;
+  scopeLabelCs: string;
   daysRemaining: number;
   analysis: ZachranMeAnalysisSummary;
   mustKnow: PriorityItem[];
-  highImpact: PriorityItem[];
-  shouldKnow: PriorityItem[];
+  important: PriorityItem[];
   ifTime: PriorityItem[];
-  alreadyKnows: PriorityItem[];
-  nextSession: NextStudySession;
+  horizon: ZachranMeHorizon;
+  startTodayHref: string;
+  ctaLabelCs: string;
   manifestoCs: string;
   generatedAt: string;
 };
@@ -244,7 +244,12 @@ export function daysRemainingTo(deadline: string, now: Date): number {
   );
 }
 
-/** 0–1 urgency from calendar pressure. */
+/** Approximate study days left (weekends soft-discounted). */
+export function estimateStudyDays(daysRemaining: number): number {
+  if (daysRemaining <= 0) return 0;
+  return Math.max(1, Math.round(daysRemaining * (5 / 7)));
+}
+
 export function timePressureFromDays(daysRemaining: number): number {
   if (daysRemaining <= 3) return 1;
   if (daysRemaining <= 7) return 0.92;
@@ -261,22 +266,26 @@ export function timePressureLabelCs(pressure: number): string {
   return "Zatím klidnější tempo";
 }
 
-export function weaknessFromMastery(masteryPct: number): number {
+export function weaknessFromMastery(masteryPct: number | null): number {
+  if (masteryPct == null) return 0.55; // unknown → moderate coverage pressure, not fake %
   const m = Math.max(0, Math.min(100, masteryPct));
   return Math.round((1 - m / 100) * 1000) / 1000;
 }
 
-export function computeImpactScore(input: {
+export function computePriorityScore(input: {
   importance: number;
   weakness: number;
-  forgettingRisk: number;
+  errorPressure: number;
+  overduePressure: number;
+  coveragePressure: number;
   timePressure: number;
 }): number {
-  const forget = Math.max(0.08, Math.min(1, input.forgettingRisk));
   const score =
     input.importance *
-    Math.max(0.05, input.weakness) *
-    (0.45 + 0.55 * forget) *
+    (0.35 * input.weakness +
+      0.25 * input.errorPressure +
+      0.2 * input.overduePressure +
+      0.2 * input.coveragePressure) *
     (0.55 + 0.45 * input.timePressure);
   return Math.round(score * 10_000) / 10_000;
 }
@@ -302,383 +311,585 @@ export function estimateForgettingRisk(input: {
   return Math.round(Math.min(1, risk) * 1000) / 1000;
 }
 
-function reasonFor(
-  bucket: ZachranMeBucket,
-  factors: AnalysisFactors,
-): string {
-  const base = `Připravenost ${factors.readinessPct} % · důležitost ${(factors.importance * 100).toFixed(0)} % · dopad ${factors.impactScore.toFixed(2)}`;
-  switch (bucket) {
-    case "must_know":
-      return `${base} — kritická mezera při ${timePressureLabelCs(factors.timePressure).toLowerCase()}.`;
-    case "high_impact":
-      return `${base} — největší zisk za studijní minutu.`;
-    case "should_know":
-      return `${base} — mělo by sedět před termínem, nejdřív must/high.`;
-    case "if_time":
-      return `${base} — až zbude kapacita.`;
-    case "already_knows":
-      return `${base} — držíš; neplýtvej časem.`;
+export function resolveEvidenceLevel(input: {
+  candidates: TriageCandidate[];
+  totalAttemptsHint?: number;
+}): EvidenceLevel {
+  const withEvidence = input.candidates.filter((c) => c.hasLearningEvidence);
+  const attempts = input.totalAttemptsHint ?? withEvidence.length * 2;
+  if (withEvidence.length === 0 || attempts < zachranMeConfig.minEvidenceAttempts) {
+    return "insufficient";
   }
+  if (attempts < zachranMeConfig.evidenceSolidAttempts) return "partial";
+  return "solid";
 }
 
-function classifyBucket(
-  factors: AnalysisFactors,
-): ZachranMeBucket {
-  const knows =
-    factors.readinessPct >= zachranMeConfig.knowsThreshold &&
-    factors.forgettingRisk < zachranMeConfig.knowsForgetMax;
-  if (knows) return "already_knows";
+export function evidenceDisclaimerCs(level: EvidenceLevel): string | null {
+  if (level === "insufficient") {
+    return "Zatím máš málo ověřených výsledků. Priorita je zatím podle pokrytí obsahu a důležitosti témat — po testování se zpersonalizuje.";
+  }
+  if (level === "partial") {
+    return "Evidence je zatím částečná. Pořadí bere v úvahu i chyby a splatné opakování, ale ještě to není plně personalizované.";
+  }
+  return null;
+}
 
-  if (
-    factors.importance >= zachranMeConfig.mustImportanceMin &&
-    factors.weakness >= zachranMeConfig.mustWeaknessMin &&
-    (factors.timePressure >= 0.55 || factors.impactScore >= 0.32)
-  ) {
+function classifyBucket(factors: AnalysisFactors): ZachranMeBucket {
+  const mastered =
+    factors.masteryPct != null &&
+    factors.masteryPct >= zachranMeConfig.solidMasteryPct &&
+    factors.errorPressure < 0.25 &&
+    factors.overduePressure < 0.25;
+  if (mastered) return "if_time";
+
+  const must =
+    (factors.importance >= zachranMeConfig.mustImportanceMin &&
+      (factors.weakness >= zachranMeConfig.mustWeaknessMin ||
+        factors.errorPressure >= 0.45 ||
+        factors.overduePressure >= 0.5)) ||
+    factors.errorPressure >= 0.7 ||
+    (factors.overduePressure >= 0.65 && factors.importance >= 0.55);
+
+  if (must && (factors.timePressure >= 0.42 || factors.priorityScore >= 0.2)) {
     return "must_know";
   }
 
   if (
-    factors.impactScore >= zachranMeConfig.highImpactScoreMin ||
-    (factors.importance >= 0.65 && factors.weakness >= 0.28)
+    factors.priorityScore >= zachranMeConfig.importantScoreMin ||
+    (factors.importance >= 0.55 && factors.weakness >= 0.28)
   ) {
-    return "high_impact";
-  }
-
-  if (
-    factors.importance >= zachranMeConfig.shouldImportanceMin &&
-    factors.weakness >= zachranMeConfig.shouldWeaknessMin
-  ) {
-    return "should_know";
+    return "important";
   }
 
   return "if_time";
 }
 
-export function buildNextStudySession(input: {
-  mustKnow: PriorityItem[];
-  highImpact: PriorityItem[];
-  shouldKnow: PriorityItem[];
-  availableMinutes: number;
-  daysRemaining: number;
-}): NextStudySession {
-  const pool = [
-    ...input.mustKnow,
-    ...input.highImpact,
-    ...input.shouldKnow,
-  ];
-  const steps: NextStudySessionStep[] = [];
+function reasonFor(
+  bucket: ZachranMeBucket,
+  item: {
+    hasLearningEvidence: boolean;
+    repeatedErrors: number;
+    overdueReviews: number;
+    remainingUnits: number;
+    masteryPct: number | null;
+    importance: number;
+  },
+  timePressure: number,
+): string {
+  const bits: string[] = [];
+  if (!item.hasLearningEvidence) {
+    bits.push("zatím podle pokrytí obsahu");
+  } else if (item.masteryPct != null) {
+    bits.push(
+      item.masteryPct < 45
+        ? "slabší mastery evidence"
+        : item.masteryPct < 70
+          ? "neúplná mastery evidence"
+          : "lepší mastery evidence",
+    );
+  }
+  if (item.repeatedErrors > 0) {
+    bits.push(
+      item.repeatedErrors === 1
+        ? "1 opakovaná chyba"
+        : `${item.repeatedErrors} opakovaných chyb`,
+    );
+  }
+  if (item.overdueReviews > 0) {
+    bits.push(
+      item.overdueReviews === 1
+        ? "1 splatné opakování"
+        : `${item.overdueReviews} splatných opakování`,
+    );
+  }
+  if (item.remainingUnits > 0) {
+    bits.push(
+      item.remainingUnits === 1
+        ? "zbývá 1 jednotka"
+        : `zbývá cca ${item.remainingUnits} jednotek`,
+    );
+  }
+  if (item.importance >= 0.85) bits.push("vysoká exam váha");
+  else if (item.importance >= 0.65) bits.push("střední exam váha");
+
+  const pressure = timePressureLabelCs(timePressure).toLowerCase();
+  const joined = bits.length > 0 ? bits.join(" · ") : "základní pokrytí";
+
+  switch (bucket) {
+    case "must_know":
+      return `Musíš umět: ${joined} (${pressure}).`;
+    case "important":
+      return `Důležité: ${joined}.`;
+    case "if_time":
+      return `Pokud zbude čas: ${joined}.`;
+  }
+}
+
+function clamp(n: number, lo: number, hi: number): number {
+  return Math.min(hi, Math.max(lo, n));
+}
+
+function packSteps(
+  pool: PriorityItem[],
+  budgetMinutes: number,
+  maxSteps: number,
+): { steps: HorizonStep[]; used: number } {
+  const steps: HorizonStep[] = [];
   let used = 0;
   for (const item of pool) {
-    if (steps.length >= zachranMeConfig.maxSessionSteps) break;
+    if (steps.length >= maxSteps) break;
     const mins = Math.max(
       8,
-      Math.min(45, item.estimatedMinutes || zachranMeConfig.defaultStepMinutes),
+      Math.min(40, item.estimatedMinutes || zachranMeConfig.defaultStepMinutes),
     );
-    if (used + mins > input.availableMinutes && steps.length > 0) break;
-    if (mins > input.availableMinutes && steps.length === 0) {
-      steps.push({
-        order: 1,
-        titleCs: item.titleCs,
-        reasonCs: item.reasonCs,
-        href: item.href,
-        estimatedMinutes: Math.min(mins, input.availableMinutes),
-        component: item.component,
-        componentLabelCs: item.componentLabelCs,
-        itemId: item.id,
-      });
-      used = Math.min(mins, input.availableMinutes);
-      break;
-    }
+    if (used + mins > budgetMinutes && steps.length > 0) break;
+    const take =
+      mins > budgetMinutes && steps.length === 0
+        ? Math.min(mins, budgetMinutes)
+        : mins;
+    if (take > budgetMinutes && steps.length > 0) break;
     steps.push({
       order: steps.length + 1,
       titleCs: item.titleCs,
       reasonCs: item.reasonCs,
       href: item.href,
-      estimatedMinutes: mins,
-      component: item.component,
-      componentLabelCs: item.componentLabelCs,
+      estimatedMinutes: take,
+      lane: item.lane,
+      laneLabelCs: item.laneLabelCs,
       itemId: item.id,
+      bucket: item.bucket,
     });
-    used += mins;
+    used += take;
   }
+  return { steps, used };
+}
 
-  const titles = steps.map((s) => s.titleCs).slice(0, 3);
-  const directiveCs =
-    steps.length === 0
-      ? "Teď není kritická mezera v vybraných složkách — udrž lehký review, ať se forgetting nevrátí."
-      : `Příští session (${used} min): ${titles.join(" → ")}${steps.length > 3 ? "…" : ""}. Nic dalšího nepřidávej.`;
+export function buildHorizonPlan(input: {
+  mustKnow: PriorityItem[];
+  important: PriorityItem[];
+  ifTime: PriorityItem[];
+  dailyMinutes: number;
+  daysRemaining: number;
+}): ZachranMeHorizon {
+  const daily = clamp(input.dailyMinutes, 10, 240);
+  const studyDays = estimateStudyDays(input.daysRemaining);
+  const ordered = [
+    ...input.mustKnow,
+    ...input.important,
+    ...input.ifTime,
+  ];
+
+  const todayPack = packSteps(
+    ordered,
+    daily,
+    zachranMeConfig.maxTodaySteps,
+  );
+  const usedIds = new Set(todayPack.steps.map((s) => s.itemId));
+  const rest = ordered.filter((i) => !usedIds.has(i.id));
+
+  const tomorrowPack = packSteps(
+    rest,
+    daily,
+    zachranMeConfig.maxTomorrowSteps,
+  );
+  const used2 = new Set([
+    ...usedIds,
+    ...tomorrowPack.steps.map((s) => s.itemId),
+  ]);
+  const weekPool = ordered.filter((i) => !used2.has(i.id));
+  const weekBudget = Math.min(
+    daily * Math.max(1, Math.min(studyDays, 5)),
+    daily * 5,
+  );
+  const weekPack = packSteps(
+    weekPool,
+    weekBudget,
+    zachranMeConfig.maxWeekThemes,
+  );
 
   return {
-    titleCs:
-      input.daysRemaining <= 7
-        ? "Nouzová session do maturity"
-        : "Přesná příští studijní session",
-    directiveCs,
-    totalMinutes: used,
-    availableMinutes: input.availableMinutes,
-    steps,
-    startHref: steps[0]?.href ?? "/app/dashboard",
+    today: {
+      key: "today",
+      titleCs: "Dnes",
+      minutesBudget: daily,
+      totalMinutes: todayPack.used,
+      steps: todayPack.steps,
+      noteCs:
+        todayPack.steps.length === 0
+          ? "Dnes není kritická mezera ve zvoleném rozsahu — drž lehký review."
+          : `Dnešní plán cca ${todayPack.used} min z ${daily} min.`,
+    },
+    tomorrow: {
+      key: "tomorrow",
+      titleCs: "Zítra",
+      minutesBudget: daily,
+      totalMinutes: tomorrowPack.used,
+      steps: tomorrowPack.steps,
+      noteCs:
+        tomorrowPack.steps.length === 0
+          ? "Zítra naváže na dnešek — přepočítá se podle nových výsledků."
+          : `Zítřejší návrh cca ${tomorrowPack.used} min (orientační).`,
+    },
+    thisWeek: {
+      key: "this_week",
+      titleCs: "Tento týden",
+      minutesBudget: weekBudget,
+      totalMinutes: weekPack.used,
+      steps: weekPack.steps,
+      noteCs:
+        weekPack.steps.length === 0
+          ? "Týdenní rezerva je prázdná — fokus na Dnes a Zítra."
+          : `Orientační týdenní témata (cca ${weekPack.used} min napříč dny). Bez falešné přesnosti na minutu.`,
+    },
   };
 }
 
 /**
- * Build emergency plan from candidate signals + inputs.
+ * Build deadline triage plan from real candidates + inputs.
  */
 export function buildZachranMePlan(input: {
   request: ZachranMeInput;
-  candidates: EmergencyCandidate[];
-  overallReadinessPct?: number | null;
+  candidates: TriageCandidate[];
+  totalAttemptsHint?: number;
   now?: Date;
 }): ZachranMePlan {
   const request = zachranMeInputSchema.parse(input.request);
   const now = input.now ?? new Date();
   const daysRemaining = daysRemainingTo(request.examDate, now);
   const timePressure = timePressureFromDays(daysRemaining);
-  const availableMinutes = Math.round(request.availableHours * 60);
+  const studyDays = estimateStudyDays(daysRemaining);
+  const dailyMinutes = request.dailyMinutes;
 
-  // Never invent unsupported components — filter strictly
-  const allowed = new Set(request.components);
-  const candidates = input.candidates.filter((c) => allowed.has(c.component));
+  const allowedLanes = new Set<ZachranMeLane>(
+    request.scope === "both"
+      ? ["materials", "cermat"]
+      : request.scope === "materials"
+        ? ["materials"]
+        : ["cermat"],
+  );
+  const candidates = input.candidates.filter((c) => allowedLanes.has(c.lane));
+
+  const evidenceLevel = resolveEvidenceLevel({
+    candidates,
+    totalAttemptsHint: input.totalAttemptsHint,
+  });
 
   const scored: PriorityItem[] = candidates.map((c) => {
-    const weakness = weaknessFromMastery(c.readinessPct);
+    const weakness = weaknessFromMastery(c.masteryPct);
+    const errorPressure = clamp(c.repeatedErrors / 4, 0, 1);
+    const overduePressure = clamp(c.overdueReviews / 6, 0, 1);
+    const coveragePressure = clamp(c.remainingUnits / 8, 0.15, 1);
     const factors: AnalysisFactors = {
-      readinessPct: Math.round(c.readinessPct),
+      masteryPct: c.masteryPct == null ? null : Math.round(c.masteryPct),
       weakness,
-      importance: Math.max(0.05, Math.min(1, c.importance)),
-      forgettingRisk: Math.max(0.08, Math.min(1, c.forgettingRisk)),
+      importance: clamp(c.importance, 0.05, 1),
+      errorPressure,
+      overduePressure,
+      coveragePressure,
       timePressure,
-      impactScore: 0,
+      priorityScore: 0,
     };
-    factors.impactScore = computeImpactScore(factors);
+    factors.priorityScore = computePriorityScore(factors);
     const bucket = classifyBucket(factors);
     return {
       id: c.id,
-      component: c.component,
-      componentLabelCs: zachranMeComponentLabelsCs[c.component],
+      lane: c.lane,
+      laneLabelCs: zachranMeLaneLabelsCs[c.lane],
       titleCs: c.titleCs,
       detailCs: c.detailCs,
       href: c.href,
-      readinessPct: factors.readinessPct,
+      masteryPct: factors.masteryPct,
+      hasLearningEvidence: c.hasLearningEvidence,
       importance: factors.importance,
-      impactScore: factors.impactScore,
+      priorityScore: factors.priorityScore,
       factors,
       bucket,
-      reasonCs: reasonFor(bucket, factors),
+      reasonCs: reasonFor(bucket, c, timePressure),
       estimatedMinutes: c.estimatedMinutes,
+      remainingUnits: c.remainingUnits,
+      repeatedErrors: c.repeatedErrors,
+      overdueReviews: c.overdueReviews,
     };
   });
 
-  scored.sort((a, b) => b.impactScore - a.impactScore);
+  scored.sort((a, b) => b.priorityScore - a.priorityScore);
 
-  const mustKnow = scored.filter((i) => i.bucket === "must_know");
-  const highImpact = scored.filter((i) => i.bucket === "high_impact");
-  const shouldKnow = scored.filter((i) => i.bucket === "should_know");
-  const ifTime = scored.filter((i) => i.bucket === "if_time");
-  const alreadyKnows = scored.filter((i) => i.bucket === "already_knows");
+  const mustKnow = scored.filter((i) => i.bucket === "must_know").slice(0, 10);
+  const important = scored
+    .filter((i) => i.bucket === "important")
+    .slice(0, 12);
+  const ifTime = scored.filter((i) => i.bucket === "if_time").slice(0, 10);
 
-  // Cap must_know display to avoid dumping everything when pressure is high
-  const mustKnowCapped = mustKnow.slice(0, 8);
-  const highImpactCapped = highImpact.slice(0, 10);
-  const shouldKnowCapped = shouldKnow.slice(0, 10);
-  const ifTimeCapped = ifTime.slice(0, 8);
-  const alreadyKnowsCapped = alreadyKnows.slice(0, 8);
-
-  const nextSession = buildNextStudySession({
-    mustKnow: mustKnowCapped,
-    highImpact: highImpactCapped,
-    shouldKnow: shouldKnowCapped,
-    availableMinutes,
+  const horizon = buildHorizonPlan({
+    mustKnow,
+    important,
+    ifTime,
+    dailyMinutes,
     daysRemaining,
   });
 
-  const componentReadiness = new Map<ZachranMeComponent, number[]>();
+  const laneWeakness = new Map<ZachranMeLane, number[]>();
   for (const c of candidates) {
-    const list = componentReadiness.get(c.component) ?? [];
-    list.push(c.readinessPct);
-    componentReadiness.set(c.component, list);
+    const list = laneWeakness.get(c.lane) ?? [];
+    list.push(weaknessFromMastery(c.masteryPct));
+    laneWeakness.set(c.lane, list);
   }
-  const weakComponentLabelsCs = request.components
-    .filter((comp) => {
-      const vals = componentReadiness.get(comp);
+  const weakLaneLabelsCs = [...allowedLanes]
+    .filter((lane) => {
+      const vals = laneWeakness.get(lane);
       if (!vals?.length) return true;
       const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
-      return avg < 55;
+      return avg >= 0.45;
     })
-    .map((c) => zachranMeComponentLabelsCs[c]);
+    .map((l) => zachranMeLaneLabelsCs[l]);
 
-  const analysis: ZachranMeAnalysisSummary = {
-    daysRemaining,
-    timePressure,
-    timePressureLabelCs: timePressureLabelCs(timePressure),
-    totalAvailableMinutes: availableMinutes,
-    overallReadinessPct:
-      input.overallReadinessPct == null
-        ? null
-        : Math.round(input.overallReadinessPct),
-    weakComponentLabelsCs,
-  };
+  const remainingUnitsTotal = candidates.reduce(
+    (s, c) => s + Math.max(0, c.remainingUnits),
+    0,
+  );
+  const repeatedErrorsTotal = candidates.reduce(
+    (s, c) => s + Math.max(0, c.repeatedErrors),
+    0,
+  );
+  const overdueReviewsTotal = candidates.reduce(
+    (s, c) => s + Math.max(0, c.overdueReviews),
+    0,
+  );
 
   return {
     examDate: request.examDate,
     examDateLabelCs: formatDeadlineCs(request.examDate),
-    availableHours: request.availableHours,
-    components: request.components,
-    componentLabelsCs: request.components.map(
-      (c) => zachranMeComponentLabelsCs[c],
-    ),
+    dailyMinutes,
+    scope: request.scope,
+    scopeLabelCs: zachranMeScopeLabelsCs[request.scope],
     daysRemaining,
-    analysis,
-    mustKnow: mustKnowCapped,
-    highImpact: highImpactCapped,
-    shouldKnow: shouldKnowCapped,
-    ifTime: ifTimeCapped,
-    alreadyKnows: alreadyKnowsCapped,
-    nextSession,
+    analysis: {
+      daysRemaining,
+      studyDaysEstimate: studyDays,
+      timePressure,
+      timePressureLabelCs: timePressureLabelCs(timePressure),
+      dailyMinutes,
+      totalStudyMinutesLeft: studyDays * dailyMinutes,
+      evidenceLevel,
+      evidenceDisclaimerCs: evidenceDisclaimerCs(evidenceLevel),
+      remainingUnitsTotal,
+      repeatedErrorsTotal,
+      overdueReviewsTotal,
+      weakLaneLabelsCs,
+    },
+    mustKnow,
+    important,
+    ifTime,
+    horizon,
+    startTodayHref: horizon.today.steps[0]?.href ?? (
+      request.scope === "cermat" ? "/app/cermat" : "/app/materials"
+    ),
+    ctaLabelCs: "Začít dnešní plán",
     manifestoCs:
-      "Zachraň mě je nouzový plánovač: termín × hodiny × složky maturity → triáž. Ne „nauč se náhodně všechno rychleji“. Příští session je přesný balíček — nic dalšího nepřidávej.",
+      "Zachraň mě je triáž podle termínu a rozsahu — ne náhodný cram. Pořadí bere chyby, splatné opakování, důležitost a zbývající dny. Bez falešné přesnosti.",
     generatedAt: now.toISOString(),
   };
 }
 
-/** Candidates from CERMAT category performance. */
-export function buildCermatCandidates(input: {
+/** CERMAT category candidates — only implemented drill categories. */
+export function buildCermatTriageCandidates(input: {
   byCategory: CermatCategoryStats[];
-  forgettingBase?: number;
-}): EmergencyCandidate[] {
-  const forget = input.forgettingBase ?? 0.25;
+  overdueByCategory?: Partial<Record<CermatCategory, number>>;
+  errorsByCategory?: Partial<Record<CermatCategory, number>>;
+}): TriageCandidate[] {
   return cermatCategories.map((category) => {
     const row = input.byCategory.find((r) => r.category === category);
     const attempts = row?.attempts ?? 0;
-    const readinessPct =
-      row?.accuracyPct != null
-        ? row.accuracyPct
-        : attempts === 0
-          ? 32
-          : 40;
-    const importance =
-      zachranMeComponentImportance.cermat_didactic *
-      cermatCategoryImportance[category];
+    const hasLearningEvidence = attempts > 0;
+    const masteryPct = hasLearningEvidence
+      ? (row?.accuracyPct ?? null)
+      : null;
+    const remainingUnits = hasLearningEvidence
+      ? Math.max(0, Math.round((100 - (masteryPct ?? 40)) / 20))
+      : 3;
+    const repeatedErrors = input.errorsByCategory?.[category] ?? 0;
+    const overdueReviews = input.overdueByCategory?.[category] ?? 0;
     return {
       id: `cermat-${category}`,
-      component: "cermat_didactic" as const,
+      lane: "cermat" as const,
       titleCs: cermatCategoryLabelsCs[category],
-      detailCs:
-        attempts === 0
-          ? "Zatím bez pokusů v CERMAT tréninku — ber jako mezeru."
-          : `${attempts} pokusů · úspěšnost ${readinessPct} %.`,
+      detailCs: hasLearningEvidence
+        ? `${attempts} pokusů · úspěšnost okolo ${Math.round(masteryPct ?? 0)} % (orientačně).`
+        : "Zatím bez pokusů — priorita podle pokrytí katalogu, ne podle falešného %.",
       href: "/app/cermat",
-      readinessPct,
-      importance: Math.min(1, importance),
-      forgettingRisk: attempts === 0 ? Math.max(forget, 0.45) : forget,
+      masteryPct,
+      hasLearningEvidence,
+      importance: cermatCategoryImportance[category],
+      remainingUnits,
+      repeatedErrors,
+      overdueReviews,
       estimatedMinutes: 18,
     };
   });
 }
 
-/** Candidates from literature book mastery. */
-export function buildOralLiteratureCandidates(input: {
-  books: LiteratureBook[];
+/** @deprecated alias — prefer buildCermatTriageCandidates */
+export function buildCermatCandidates(input: {
+  byCategory: CermatCategoryStats[];
   forgettingBase?: number;
-}): EmergencyCandidate[] {
-  const forget = input.forgettingBase ?? 0.3;
-  if (input.books.length === 0) {
+}): TriageCandidate[] {
+  void input.forgettingBase;
+  return buildCermatTriageCandidates({ byCategory: input.byCategory });
+}
+
+export type MaterialsTriageInput = {
+  materials: Array<{
+    id: string;
+    title: string;
+    status: string;
+    knowledgePointCount: number;
+    topicCount: number;
+  }>;
+  /** Optional mastery 0–100 per material id when known. */
+  masteryByMaterialId?: Record<string, number>;
+  errorsByMaterialId?: Record<string, number>;
+  overdueByMaterialId?: Record<string, number>;
+};
+
+/** Moje materiály candidates — only ready materials with extractable content. */
+export function buildMaterialsTriageCandidates(
+  input: MaterialsTriageInput,
+): TriageCandidate[] {
+  const ready = input.materials.filter((m) => m.status === "ready");
+  if (ready.length === 0) {
     return [
       {
-        id: "oral-no-books",
-        component: "oral_literature",
-        titleCs: "Doplň seznam knih k ústní",
+        id: "materials-empty",
+        lane: "materials",
+        titleCs: "Nahraj materiály k učení",
         detailCs:
-          "Bez vybraných knih nelze plánovat ústní. Přidej je v Literatuře nebo Profilu maturity.",
-        href: "/app/literature",
-        readinessPct: 10,
-        importance: zachranMeComponentImportance.oral_literature,
-        forgettingRisk: 0.5,
-        estimatedMinutes: 20,
+          "Bez připravených materiálů nelze triážovat Moje materiály. Matematika/AJ tu nejsou — jen ČJL podklady, které nahraješ.",
+        href: "/app/materials",
+        masteryPct: null,
+        hasLearningEvidence: false,
+        importance: 0.9,
+        remainingUnits: 1,
+        repeatedErrors: 0,
+        overdueReviews: 0,
+        estimatedMinutes: 15,
       },
     ];
   }
 
-  return [...input.books]
-    .sort((a, b) => a.mastery.scorePct - b.mastery.scorePct)
-    .slice(0, 12)
-    .map((book) => ({
-      id: `oral-${book.id}`,
-      component: "oral_literature" as const,
-      titleCs: book.titleCs,
-      detailCs: `Mastery ${book.mastery.scorePct} % · ${book.mastery.fieldsFilled}/12 polí · ${book.fields.author.valueCs?.trim() || "autor?"}`,
-      href: `/app/literature?book=${encodeURIComponent(book.id)}`,
-      readinessPct: book.mastery.scorePct,
-      importance:
-        book.mastery.scorePct < 45
-          ? 0.95
-          : book.mastery.scorePct < 70
-            ? 0.85
-            : 0.7,
-      forgettingRisk:
-        book.mastery.practiceCount === 0
-          ? Math.max(forget, 0.55)
-          : forget,
-      estimatedMinutes: 22,
-    }));
-}
-
-export function countDependents(
-  pack: CurriculumPackLike,
-): Map<string, number> {
-  const counts = new Map<string, number>();
-  for (const mod of pack.modules) {
-    for (const t of mod.topics) {
-      for (const pre of t.prerequisiteSlugs ?? []) {
-        counts.set(pre, (counts.get(pre) ?? 0) + 1);
-      }
-    }
-  }
-  return counts;
-}
-
-/** Curriculum topic candidates (language_topics component). */
-export function buildLanguageTopicCandidates(input: {
-  pack: CurriculumPackLike;
-  masteryBySlug?: Record<string, number>;
-  masteryByModule?: Record<string, number>;
-  forgettingBySlug?: Record<string, number>;
-}): EmergencyCandidate[] {
-  const dependents = countDependents(input.pack);
-  const maxDep = Math.max(1, ...[...dependents.values()], 1);
-  const topics = flattenPackTopics(input.pack);
-
-  return topics.map((t) => {
-    const readinessPct =
-      input.masteryBySlug?.[t.slug] ??
-      input.masteryByModule?.[t.moduleSlug] ??
-      40;
-    const examW = examRelevanceWeights[t.examRelevance] ?? 0.5;
-    const prereqBoost = 0.25 + 0.75 * ((dependents.get(t.slug) ?? 0) / maxDep);
-    const importance = Math.min(
-      1,
-      zachranMeComponentImportance.language_topics * examW * (0.7 + 0.3 * prereqBoost),
+  return ready
+    .slice(0, 16)
+    .map((m) => {
+      const mastery = input.masteryByMaterialId?.[m.id];
+      const hasLearningEvidence = mastery != null;
+      const kp = Math.max(0, m.knowledgePointCount);
+      const remainingUnits =
+        mastery != null
+          ? Math.max(1, Math.round(kp * (1 - mastery / 100)))
+          : Math.max(1, kp || m.topicCount || 2);
+      return {
+        id: `mat-${m.id}`,
+        lane: "materials" as const,
+        titleCs: m.title,
+        detailCs: hasLearningEvidence
+          ? `Cca ${kp} znalostních jednotek · mastery evidence okolo ${Math.round(mastery)} %.`
+          : `Cca ${kp || m.topicCount} jednotek k pokrytí — zatím bez mastery evidence.`,
+        href: `/app/materials?focus=${encodeURIComponent(m.id)}`,
+        masteryPct: hasLearningEvidence ? mastery : null,
+        hasLearningEvidence,
+        importance: clamp(0.55 + Math.min(0.35, kp / 40), 0.5, 0.95),
+        remainingUnits,
+        repeatedErrors: input.errorsByMaterialId?.[m.id] ?? 0,
+        overdueReviews: input.overdueByMaterialId?.[m.id] ?? 0,
+        estimatedMinutes: clamp(12 + Math.min(20, Math.round(kp * 1.2)), 12, 35),
+      };
+    })
+    .sort(
+      (a, b) =>
+        b.remainingUnits + b.repeatedErrors * 2 - (a.remainingUnits + a.repeatedErrors * 2),
     );
-    return {
-      id: `topic-${t.slug}`,
-      component: "language_topics" as const,
-      titleCs: t.title,
-      detailCs: `${t.moduleTitle} · exam ${t.examRelevance}`,
-      href: `/app/topics?focus=${encodeURIComponent(t.slug)}`,
-      readinessPct,
-      importance,
-      forgettingRisk: input.forgettingBySlug?.[t.slug] ?? 0.2,
-      estimatedMinutes: 14,
-    };
-  });
 }
 
-/** @deprecated Use buildLanguageTopicCandidates — kept for pack signal helpers in tests. */
-export function buildSignalsFromPack(input: {
-  pack: CurriculumPackLike;
-  masteryBySlug?: Record<string, number>;
-  masteryByModule?: Record<string, number>;
-  forgettingBySlug?: Record<string, number>;
-}): EmergencyCandidate[] {
-  return buildLanguageTopicCandidates(input);
+/** Repeated mistakes as first-class triage pressure (links to Moje chyby). */
+export function buildMistakeTriageCandidates(input: {
+  scope: ZachranMeScope;
+  activeMistakes: Array<{
+    id: string;
+    titleCs: string;
+    occurrenceCount: number;
+    examValue?: number;
+    source?: string | null;
+  }>;
+}): TriageCandidate[] {
+  if (input.activeMistakes.length === 0) return [];
+  const lane: ZachranMeLane =
+    input.scope === "cermat" ? "cermat" : "materials";
+  // One aggregated card + top individual mistakes (cap)
+  const top = [...input.activeMistakes]
+    .sort((a, b) => b.occurrenceCount - a.occurrenceCount)
+    .slice(0, 5);
+
+  const aggregate: TriageCandidate = {
+    id: "mistakes-queue",
+    lane,
+    titleCs: "Opakované chyby",
+    detailCs: `${input.activeMistakes.length} aktivních chyb ve frontě Moje chyby.`,
+    href: "/app/mistakes",
+    masteryPct: null,
+    hasLearningEvidence: true,
+    importance: 0.95,
+    remainingUnits: Math.min(8, input.activeMistakes.length),
+    repeatedErrors: input.activeMistakes.reduce(
+      (s, m) => s + Math.max(1, m.occurrenceCount),
+      0,
+    ),
+    overdueReviews: 0,
+    estimatedMinutes: clamp(10 + top.length * 4, 12, 28),
+  };
+
+  const individuals = top.map((m) => ({
+    id: `mistake-${m.id}`,
+    lane,
+    titleCs: m.titleCs,
+    detailCs: `Opakování: ${m.occurrenceCount}×`,
+    href: "/app/mistakes",
+    masteryPct: null as number | null,
+    hasLearningEvidence: true,
+    importance: clamp((m.examValue ?? 3) / 5, 0.5, 1),
+    remainingUnits: 1,
+    repeatedErrors: m.occurrenceCount,
+    overdueReviews: 0,
+    estimatedMinutes: 12,
+  }));
+
+  return [aggregate, ...individuals];
+}
+
+/** Overdue reviews pressure card when due queue is non-empty. */
+export function buildOverdueTriageCandidate(input: {
+  scope: ZachranMeScope;
+  dueCount: number;
+}): TriageCandidate | null {
+  if (input.dueCount <= 0) return null;
+  const lane: ZachranMeLane =
+    input.scope === "cermat" ? "cermat" : "materials";
+  return {
+    id: "overdue-reviews",
+    lane,
+    titleCs: "Splatná opakování",
+    detailCs: `${input.dueCount} položek po splatnosti — nejdřív to, na čem začínáš zapomínat.`,
+    href: "/app/review/mixed",
+    masteryPct: null,
+    hasLearningEvidence: true,
+    importance: 0.88,
+    remainingUnits: Math.min(24, input.dueCount),
+    repeatedErrors: 0,
+    overdueReviews: input.dueCount,
+    estimatedMinutes: clamp(Math.round(input.dueCount * 1.2), 10, 25),
+  };
+}
+
+/** Lanes included by scope — for UI / filtering. */
+export function lanesForScope(scope: ZachranMeScope): ZachranMeLane[] {
+  if (scope === "both") return ["materials", "cermat"];
+  return [scope];
 }

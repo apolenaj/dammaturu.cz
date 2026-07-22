@@ -44,7 +44,7 @@ export const publicNav: NavItem[] = [
 
 /**
  * Primary student JTBD — exactly 5 for mobile bottom bar.
- * Dnes → Učit se → Moje materiály → Testy → Pokrok
+ * Dnes → ČJL → Moje materiály → Testy → Pokrok
  */
 export const appPrimaryNav: NavItem[] = [
   {
@@ -55,8 +55,8 @@ export const appPrimaryNav: NavItem[] = [
   },
   {
     href: "/app/learn",
-    label: "Učit se",
-    shortLabel: "Učit",
+    label: "ČJL",
+    shortLabel: "ČJL",
     icon: "learn",
   },
   {
@@ -85,6 +85,12 @@ export const appPrimaryNav: NavItem[] = [
  * live under Učit se / Testy / Plán / Profil — not in chrome.
  */
 export const appSecondaryNav: NavItem[] = [
+  {
+    href: "/app/cermat",
+    label: "CERMAT příprava",
+    shortLabel: "CERMAT",
+    icon: "tests",
+  },
   {
     href: "/app/review",
     label: "Opakování",
@@ -200,6 +206,22 @@ export const routeCatalog: RouteMeta[] = [
     nextStep: "Nahraj PDF, DOCX nebo TXT — po zpracování můžeš studovat z vlastních textů.",
   },
   {
+    href: "/app/materials/oral",
+    title: "Ústní trénink z materiálů",
+    description:
+      "Otázka nanečisto / téma / slabiny — rubric jen ze zdroje, bez vymyšlených faktů.",
+    availability: "ready",
+    nextStep: "Vyber materiál a spusť ústní trénink.",
+  },
+  {
+    href: "/app/materials/vysvetli",
+    title: "Vysvětli mi to",
+    description:
+      "Grounded asistent: shrň, porovnej, zkontroluj odpověď — jen z materiálů a katalogu.",
+    availability: "ready",
+    nextStep: "Zeptej se svých materiálů bez chatbotové paměti.",
+  },
+  {
     href: "/app/dashboard",
     title: "Dnes",
     description: "Jedna otázka: Co mám dnes udělat? — jedna CTA.",
@@ -240,10 +262,11 @@ export const routeCatalog: RouteMeta[] = [
   },
   {
     href: "/app/learn",
-    title: "Učit se",
-    description: "Kdo jsem?, mapa, recall, timeline, Story…",
+    title: "Český jazyk a literatura",
+    description:
+      "Co teď studovat: materiály ČJL, slabiny a pokrok bez falešných procent.",
     availability: "ready",
-    nextStep: "Vyber aktivitu a začni se učit.",
+    nextStep: "Pokračuj v učení nebo začni doporučeným materiálem.",
   },
   {
     href: "/app/learn/dilo",
@@ -328,11 +351,12 @@ export const routeCatalog: RouteMeta[] = [
   },
   {
     href: "/app/cermat",
-    title: "CERMAT ČJL",
+    title: "CERMAT příprava",
     description:
-      "Didaktický test: kategorie, časovaná simulace, trénink, slabiny — cvičné exam-style položky.",
+      "Maturita CERMAT – Český jazyk a literatura: cvičný didaktický test podle katalogu 2025/2026 (oddělené od Moje materiály).",
     availability: "ready",
-    nextStep: "Spusť cvičný didaktický test (ne oficiální CERMAT).",
+    nextStep:
+      "Spusť CERMAT přípravu — ne oficiální minulá zadání, pokud není uvedeno.",
   },
   {
     href: "/app/profile",

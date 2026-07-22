@@ -3,11 +3,15 @@ import { openAnswerEvaluationSchema } from "@/domain/learning/open-answer-eval";
 
 /**
  * Strict source-grounded study from learner materials.
- * No LLM — explanations/questions/grading use only retrieved source text.
+ * No LLM required — explanations/questions/grading use only retrieved source text.
+ * Optional AI enhance must degrade gracefully; core learning never depends on it.
  */
 
 export const INSUFFICIENT_EVIDENCE_CS =
-  "V nahraných materiálech pro tuto odpověď nemám dost podkladů.";
+  "V dostupných materiálech to nemám dostatečně podložené.";
+
+/** @deprecated alias — same refusal copy for grounded assistant. */
+export const GROUNDED_ASSISTANT_INSUFFICIENT_CS = INSUFFICIENT_EVIDENCE_CS;
 
 export const evidenceConfidenceStates = [
   "verified_from_source",

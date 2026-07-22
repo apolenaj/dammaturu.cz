@@ -42,6 +42,9 @@ export async function ingestMeaningfulMistake(input: {
   whyWrong?: string;
   errorType?: MistakeClass;
   nowIso?: string;
+  sourceLabel?: string | null;
+  sourceExcerpt?: string | null;
+  examValue?: number;
 }): Promise<{ created: boolean } | null> {
   const question = input.question.trim().slice(0, 500);
   const studentAnswer = input.studentAnswer.trim().slice(0, 500);
@@ -86,6 +89,9 @@ export async function ingestMeaningfulMistake(input: {
     errorType,
     source: input.source,
     nowIso: input.nowIso,
+    sourceLabel: input.sourceLabel ?? null,
+    sourceExcerpt: input.sourceExcerpt ?? null,
+    examValue: input.examValue,
   });
   return { created };
 }

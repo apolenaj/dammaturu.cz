@@ -6,6 +6,7 @@ import {
   computeMasteryAggregate,
   emptyMasteryState,
   masteryConfig,
+  toTransparentMasteryState,
 } from "@/domain/learning/mastery-engine";
 
 const KU = "ku-realismus-znaky";
@@ -220,30 +221,109 @@ describe("mastery-engine", () => {
     expect(
       bandFromScore(10, {
         evidenceCount: 1,
+        retrievalEvidenceCount: 1,
         correctStreak: 0,
         transferSuccesses: 0,
         introducedAt: "2026-07-20T12:00:00.000Z",
         successfulRecalls: 0,
+        delayedSuccessfulRecalls: 0,
       }),
     ).toBe("introduced");
 
     expect(
       bandFromScore(85, {
         evidenceCount: 2,
+        retrievalEvidenceCount: 2,
         correctStreak: 1,
         transferSuccesses: 0,
         introducedAt: "2026-07-20T12:00:00.000Z",
         successfulRecalls: 2,
+        delayedSuccessfulRecalls: 0,
       }),
-    ).toBe("strong"); // not enough evidence/streak for mastered
+    ).toBe("strong");
 
     expect(
       bandFromScore(85, {
         evidenceCount: 6,
+        retrievalEvidenceCount: 5,
         correctStreak: 3,
         transferSuccesses: 0,
         introducedAt: "2026-07-20T12:00:00.000Z",
         successfulRecalls: 4,
+        delayedSuccessfulRecalls: 1,
+      }),
+    ).toBe("mastered");
+  });
+
+  it("does not raise mastery from self_grade alone toward retrieval streak", () => {
+    const r = applyMasteryEvidence(
+      null,
+      {
+        kind: "self_grade",
+        correctness: "correct",
+        difficulty: 3,
+        hintsUsed: 0,
+        at: "2026-07-20T12:00:00.000Z",
+        speedRelevant: false,
+        isTransfer: false,
+      },
+      KU,
+    );
+    expect(r.state.score).toBeLessThanOrEqual(
+      masteryConfig.selfGradeCorrectCap + 0.5,
+    );
+    expect(r.state.successfulRecalls).toBe(0);
+    expect(r.state.retrievalEvidenceCount).toBe(0);
+    expect(toTransparentMasteryState(r.state)).toBe("new");
+  });
+
+  it("maps transparent states NEW LEARNING FRAGILE STABLE MASTERED", () => {
+    expect(
+      toTransparentMasteryState({
+        band: "not_seen",
+        score: 0,
+        retrievalEvidenceCount: 0,
+        successfulRecalls: 0,
+      }),
+    ).toBe("new");
+    expect(
+      toTransparentMasteryState({
+        band: "learning",
+        score: 20,
+        retrievalEvidenceCount: 2,
+        successfulRecalls: 1,
+      }),
+    ).toBe("learning");
+    expect(
+      toTransparentMasteryState({
+        band: "familiar",
+        score: 45,
+        retrievalEvidenceCount: 3,
+        successfulRecalls: 2,
+      }),
+    ).toBe("fragile");
+    expect(
+      toTransparentMasteryState({
+        band: "at_risk",
+        score: 50,
+        retrievalEvidenceCount: 4,
+        successfulRecalls: 2,
+      }),
+    ).toBe("fragile");
+    expect(
+      toTransparentMasteryState({
+        band: "strong",
+        score: 70,
+        retrievalEvidenceCount: 5,
+        successfulRecalls: 4,
+      }),
+    ).toBe("stable");
+    expect(
+      toTransparentMasteryState({
+        band: "mastered",
+        score: 90,
+        retrievalEvidenceCount: 8,
+        successfulRecalls: 6,
       }),
     ).toBe("mastered");
   });

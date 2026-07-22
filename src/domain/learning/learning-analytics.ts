@@ -509,7 +509,7 @@ export function buildLearningAnalyticsDashboard(
     accuracyTrend.some((d) => d.accuracyPct >= 55)
       ? `Ano — ${learners.size} aktivních learnerů, ${lessonsCompleted} lekcí dokončeno, ${reviewsCompleted} review.`
       : events.length === 0
-        ? "Zatím bez learning eventů — spusť seed nebo učení."
+        ? "Zatím bez learning eventů — začni učením nebo testem."
         : "Aktivita je, ale málo dokončení / slabá accuracy — riziko povrchního klikání.";
 
   return {

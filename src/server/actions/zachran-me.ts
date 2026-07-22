@@ -1,42 +1,43 @@
 "use server";
 
 import {
-  buildCermatCandidates,
-  buildLanguageTopicCandidates,
-  buildOralLiteratureCandidates,
+  buildCermatTriageCandidates,
+  buildMaterialsTriageCandidates,
+  buildMistakeTriageCandidates,
+  buildOverdueTriageCandidate,
   buildZachranMePlan,
-  estimateForgettingRisk,
-  zachranMeComponents,
   zachranMeConfig,
   zachranMeInputSchema,
-  type EmergencyCandidate,
+  zachranMeScopes,
+  type TriageCandidate,
   type ZachranMeInput,
   type ZachranMePlan,
+  type ZachranMeScope,
 } from "@/domain/learning/zachran-me";
+import { listActiveMemories } from "@/domain/learning/error-memory";
 import { track } from "@/lib/analytics";
 import { getLearnerIdFromCookies } from "@/server/learner-session";
 import { getLearner } from "@/server/learner-store";
-import { getDefaultCurriculumPack } from "@/server/curriculum/store";
-import { getReadinessSnapshotForLearner } from "@/server/readiness/store";
 import { getDueSummaryForLearner } from "@/server/spaced-repetition/store";
 import { getCermatProgress } from "@/server/cermat-prep/store";
-import { getOrCreateLiteratureList } from "@/server/literature-maturity/store";
+import { listLearnerMaterials } from "@/server/learner-materials/store";
+import { getErrorBook } from "@/server/error-memory/store";
+import { countDueLearningAtoms } from "@/server/learning-session/schedule-store";
 
 type Fail = { ok: false; error: string; fieldErrors?: Record<string, string[]> };
 
 export async function getZachranMeDefaultsAction(): Promise<{
   examDate: string;
-  availableHours: number;
-  components: ZachranMeInput["components"];
+  dailyMinutes: number;
+  scope: ZachranMeScope;
   learnerId: string | null;
 }> {
   const learnerId = (await getLearnerIdFromCookies()) ?? null;
-  const allComponents = [...zachranMeComponents];
   if (!learnerId) {
     return {
       examDate: zachranMeConfig.betaTargetDate,
-      availableHours: 1,
-      components: allComponents,
+      dailyMinutes: zachranMeConfig.defaultDailyMinutes,
+      scope: "both",
       learnerId: null,
     };
   }
@@ -44,21 +45,21 @@ export async function getZachranMeDefaultsAction(): Promise<{
   if (!learner) {
     return {
       examDate: zachranMeConfig.betaTargetDate,
-      availableHours: 1,
-      components: allComponents,
+      dailyMinutes: zachranMeConfig.defaultDailyMinutes,
+      scope: "both",
       learnerId,
     };
   }
   return {
     examDate: learner.profile.targetDate || zachranMeConfig.betaTargetDate,
-    availableHours: Math.min(
-      zachranMeConfig.maxAvailableHours,
+    dailyMinutes: Math.min(
+      zachranMeConfig.maxDailyMinutes,
       Math.max(
-        zachranMeConfig.minAvailableHours,
-        Math.round((learner.profile.dailyMinutes / 60) * 10) / 10 || 1,
+        zachranMeConfig.minDailyMinutes,
+        learner.profile.dailyMinutes || zachranMeConfig.defaultDailyMinutes,
       ),
     ),
-    components: allComponents,
+    scope: "both",
     learnerId,
   };
 }
@@ -76,116 +77,101 @@ export async function buildZachranMePlanAction(
     }
     return {
       ok: false,
-      error: "Zkontroluj termín, dostupné hodiny a složky maturity.",
+      error: "Zkontroluj termín, minuty denně a rozsah studia.",
       fieldErrors,
     };
   }
 
   try {
     const learnerId = await getLearnerIdFromCookies();
-    const selected = new Set(parsed.data.components);
-    const candidates: EmergencyCandidate[] = [];
+    const scope = parsed.data.scope;
+    const candidates: TriageCandidate[] = [];
+    let totalAttemptsHint = 0;
 
-    const [readiness, due] = learnerId
+    const [due, errorBook, learningDue] = learnerId
       ? await Promise.all([
-          getReadinessSnapshotForLearner({ learnerId }),
           getDueSummaryForLearner({ learnerId }),
+          getErrorBook(learnerId),
+          countDueLearningAtoms(learnerId),
         ])
-      : [null, null];
+      : [null, null, 0];
 
-    const forgettingBase = due?.summary
-      ? estimateForgettingRisk({
-          isDue: (due.summary.dueCount ?? 0) > 0,
-          daysOverdue: Math.min(7, Math.floor((due.summary.dueCount ?? 0) / 5)),
-          lapseCount: 0,
-          stabilityDays: null,
-          bandAtRisk: (due.summary.dueCount ?? 0) > 20,
-        })
-      : 0.22;
+    const dueCount = Math.max(
+      due?.summary.dueCount ?? 0,
+      learningDue ?? 0,
+    );
 
-    if (selected.has("cermat_didactic")) {
+    const activeMistakes = errorBook
+      ? listActiveMemories(errorBook).map((m) => ({
+          id: m.id,
+          titleCs: m.knowledgeUnit.title || m.question || "Chyba",
+          occurrenceCount: m.occurrenceCount,
+          examValue: m.examValue,
+          source: m.source,
+        }))
+      : [];
+
+    if (scope === "materials" || scope === "both") {
+      const materials = learnerId
+        ? await listLearnerMaterials(learnerId)
+        : [];
+      candidates.push(
+        ...buildMaterialsTriageCandidates({
+          materials: materials.map((m) => ({
+            id: m.id,
+            title: m.title,
+            status: m.status,
+            knowledgePointCount: m.knowledgePointCount ?? 0,
+            topicCount: m.topicCount ?? 0,
+          })),
+        }),
+      );
+    }
+
+    if (scope === "cermat" || scope === "both") {
       const progress = learnerId
         ? await getCermatProgress(learnerId)
         : null;
+      const byCategory = progress?.byCategory ?? [];
+      totalAttemptsHint += byCategory.reduce(
+        (s, r) => s + (r.attempts ?? 0),
+        0,
+      );
       candidates.push(
-        ...buildCermatCandidates({
-          byCategory: progress?.byCategory ?? [],
-          forgettingBase,
-        }),
+        ...buildCermatTriageCandidates({ byCategory }),
       );
     }
 
-    if (selected.has("oral_literature")) {
-      const list = learnerId
-        ? await getOrCreateLiteratureList(learnerId)
-        : null;
-      candidates.push(
-        ...buildOralLiteratureCandidates({
-          books: list?.books ?? [],
-          forgettingBase,
-        }),
-      );
-    }
+    candidates.push(
+      ...buildMistakeTriageCandidates({
+        scope,
+        activeMistakes,
+      }),
+    );
 
-    if (selected.has("language_topics")) {
-      const pack = await getDefaultCurriculumPack();
-      if (pack) {
-        const masteryByModule: Record<string, number> = {};
-        if (readiness?.snapshot.areas) {
-          for (const area of readiness.snapshot.areas) {
-            masteryByModule[area.id] = area.pct;
-            if (area.id === "rozbory") masteryByModule["rozbory-del"] = area.pct;
-            if (area.id === "autori-dila") {
-              masteryByModule["ceska-literatura-a-drama"] = area.pct;
-              masteryByModule["svetovy-realismus"] = area.pct;
-            }
-            if (area.id === "literarni-smery") {
-              masteryByModule["literarni-smery"] = area.pct;
-              masteryByModule["narodni-obrozeni"] = Math.min(100, area.pct + 5);
-            }
-          }
-        }
-        const forgettingBySlug: Record<string, number> = {};
-        const weakModuleIds = new Set(
-          (readiness?.snapshot.weakAreas ?? []).map((a) => String(a.id)),
-        );
-        for (const mod of pack.modules) {
-          if (
-            weakModuleIds.has(mod.slug) ||
-            (mod.slug === "rozbory-del" && weakModuleIds.has("rozbory"))
-          ) {
-            for (const t of mod.topics) {
-              forgettingBySlug[t.slug] = Math.max(forgettingBase, 0.6);
-            }
-          }
-        }
-        candidates.push(
-          ...buildLanguageTopicCandidates({
-            pack,
-            masteryByModule,
-            forgettingBySlug,
-          }),
-        );
-      }
-    }
+    const overdue = buildOverdueTriageCandidate({ scope, dueCount });
+    if (overdue) candidates.push(overdue);
 
-    const overall =
-      readiness?.snapshot.overall.scorePct ??
-      readiness?.snapshot.overall.provisionalPct ??
-      null;
+    totalAttemptsHint += activeMistakes.reduce(
+      (s, m) => s + m.occurrenceCount,
+      0,
+    );
 
     const plan = buildZachranMePlan({
       request: parsed.data,
       candidates,
-      overallReadinessPct: overall,
+      totalAttemptsHint,
     });
 
     track("zachran_me_plan_generated", {
       daysRemaining: plan.daysRemaining,
-      availableHours: plan.availableHours,
+      dailyMinutes: plan.dailyMinutes,
       mustKnow: plan.mustKnow.length,
-      sessionSteps: plan.nextSession.steps.length,
+      important: plan.important.length,
+      todaySteps: plan.horizon.today.steps.length,
       examDate: plan.examDate,
+      scope: plan.scope,
+      evidenceLevel: plan.analysis.evidenceLevel,
     });
 
     return { ok: true, plan };
@@ -196,3 +182,10 @@ export async function buildZachranMePlanAction(
     };
   }
 }
+
+/** Validate scope enum for callers. */
+export function isZachranMeScope(value: string): value is ZachranMeScope {
+  return (zachranMeScopes as readonly string[]).includes(value);
+}
+
+export type { ZachranMeInput };

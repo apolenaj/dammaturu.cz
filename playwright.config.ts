@@ -15,7 +15,18 @@ export default defineConfig({
     baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:3000",
     trace: "on-first-retry",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    {
+      name: "chromium",
+      use: {
+        ...devices["Desktop Chrome"],
+        // Prefer full Chromium if headless_shell is not installed yet.
+        launchOptions: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
+          ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH }
+          : undefined,
+      },
+    },
+  ],
   webServer: {
     command: "npm run dev",
     url: process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:3000",

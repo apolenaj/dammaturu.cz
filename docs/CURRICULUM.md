@@ -27,6 +27,19 @@ npm run seed:curriculum
 Artefakt: `data/curriculum/cjl-beta.json` (DB-shaped).  
 Postgres (až `DATABASE_URL` + migrace `0001` + `0002`): upsert Subject/Curriculum/Module/Topic/edges.
 
+## Maturita CERMAT – Český jazyk a literatura (odděleně)
+
+Společný **didaktický test** (katalog CERMAT 2025/2026) je **jiný produktový režim** než `cjl-beta` / Moje materiály:
+
+| Režim | Účel |
+|-------|------|
+| **Moje materiály** | Katalog ČJL + nahrané / školní podklady |
+| **CERMAT příprava** (`/app/cermat`) | Národní didaktický test §1.1–1.9 |
+
+Model + mapování KU → oficiální ID: `src/domain/cermat-curriculum/`.  
+Admin report: `CERMAT_COVERAGE.md` (`npm run report:cermat-coverage`).  
+**Nikdy** netvrdit „kompletní příprava na CERMAT“, dokud report ukazuje partial/missing.
+
 ## Schéma
 
 - Drizzle: `src/db/schema/content.ts` (`modules`, `topic_prerequisites`, `topics.module_id`)

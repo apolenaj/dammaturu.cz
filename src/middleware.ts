@@ -10,6 +10,13 @@ import {
   isLocalDevAuthEnabled,
   readLocalAuthFromCookieHeader,
 } from "@/server/auth/local-auth-cookie";
+import {
+  GUEST_COOKIE_NAME,
+  guestCookieOptions,
+  mintGuestIdAndCookieValue,
+  readGuestIdFromCookieHeader,
+  verifyGuestCookieValue,
+} from "@/server/guest/guest-cookie";
 
 async function hasLearnerAuth(
   request: NextRequest,
@@ -24,6 +31,42 @@ async function hasLearnerAuth(
 
 function authSystemAvailable(): boolean {
   return isSupabaseConfigured() || isLocalDevAuthEnabled();
+}
+
+async function ensureGuestCookieOnResponse(
+  request: NextRequest,
+  response: NextResponse,
+): Promise<NextResponse> {
+  const existing =
+    (await readGuestIdFromCookieHeader(request.headers.get("cookie"))) ??
+    (await verifyCookieFromRequest(request));
+  if (existing) return response;
+
+  const { guestId, cookieValue } = await mintGuestIdAndCookieValue();
+  const secure =
+    process.env.NODE_ENV === "production" ||
+    request.nextUrl.protocol === "https:";
+  const options = guestCookieOptions(secure);
+
+  // Make the new cookie visible to RSC on this same request (same pattern as Supabase SSR).
+  request.cookies.set(GUEST_COOKIE_NAME, cookieValue);
+  const next = NextResponse.next({
+    request: { headers: request.headers },
+  });
+  // Preserve cookies already set on the Supabase refresh response.
+  for (const cookie of response.cookies.getAll()) {
+    next.cookies.set(cookie);
+  }
+  next.cookies.set(GUEST_COOKIE_NAME, cookieValue, options);
+  // Pass guest id via request header for layout when cookie jar timing is flaky.
+  next.headers.set("x-dm-guest-id", guestId);
+  return next;
+}
+
+async function verifyCookieFromRequest(
+  request: NextRequest,
+): Promise<string | null> {
+  return verifyGuestCookieValue(request.cookies.get(GUEST_COOKIE_NAME)?.value);
 }
 
 export async function middleware(request: NextRequest) {
@@ -72,17 +115,10 @@ export async function middleware(request: NextRequest) {
   const isPasswordUpdate =
     pathname === "/auth/nove-heslo" || pathname.startsWith("/auth/nove-heslo/");
 
-  if ((isApp || isOnboarding) && !configured) {
-    const login = new URL("/prihlaseni", request.url);
-    login.searchParams.set("reason", "unavailable");
-    return NextResponse.redirect(login);
-  }
-
-  if ((isApp || isOnboarding) && configured && !authenticated) {
-    const login = new URL("/prihlaseni", request.url);
-    login.searchParams.set("next", safeInternalPath(pathname));
-    login.searchParams.set("reason", "session");
-    return NextResponse.redirect(login);
+  // Guest study mode: /app and /onboarding are open without auth.
+  // Mint a stable guest cookie so learning stores can key progress.
+  if ((isApp || isOnboarding) && !authenticated) {
+    return ensureGuestCookieOnResponse(request, response);
   }
 
   if (isPasswordUpdate && configured && !authenticated) {

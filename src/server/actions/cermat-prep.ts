@@ -12,6 +12,7 @@ import {
   type CermatSessionMode,
 } from "@/domain/learning/cermat-prep";
 import { getLearnerIdFromCookies } from "@/server/learner-session";
+import { resolveLearnerIdForAction } from "@/server/viewer-session";
 import {
   getCermatPack,
   getCermatProgress,
@@ -25,7 +26,10 @@ export async function getCermatHubAction(): Promise<{
   view: CermatHubView | null;
   learnerId: string | null;
 }> {
-  const learnerId = (await getLearnerIdFromCookies()) ?? null;
+  const learnerId =
+    (await resolveLearnerIdForAction()) ??
+    (await getLearnerIdFromCookies()) ??
+    null;
   if (!learnerId) return { view: null, learnerId: null };
   const [pack, progress] = await Promise.all([
     getCermatPack(),
@@ -47,8 +51,10 @@ export async function startCermatSessionAction(input: {
   | Fail
 > {
   try {
-    const learnerId = await getLearnerIdFromCookies();
-    if (!learnerId) return { ok: false, error: "Nejdřív dokonči onboarding." };
+    const learnerId = await resolveLearnerIdForAction();
+    if (!learnerId) {
+      return { ok: false, error: "Chybí studijní session — obnov stránku." };
+    }
     const session = await startCermatSession({
       learnerId,
       mode: input.mode,
@@ -92,8 +98,10 @@ export async function submitCermatAnswerAction(input: {
   | Fail
 > {
   try {
-    const learnerId = await getLearnerIdFromCookies();
-    if (!learnerId) return { ok: false, error: "Nejdřív dokonči onboarding." };
+    const learnerId = await resolveLearnerIdForAction();
+    if (!learnerId) {
+      return { ok: false, error: "Chybí studijní session — obnov stránku." };
+    }
     const res = await recordCermatAttempt({
       learnerId,
       itemId: input.itemId,

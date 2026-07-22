@@ -59,12 +59,18 @@ export const resolvedStatuses = ["open", "practicing", "resolved"] as const;
 export type ResolvedStatus = (typeof resolvedStatuses)[number];
 
 export const errorMemoryConfig = {
-  /** Consecutive successful recoveries → Mastered. */
-  masterSuccessStreak: 2,
+  /** Consecutive successful recoveries → Mastered (history is kept). */
+  masterSuccessStreak: 3,
   /** @deprecated alias */
-  resolveSuccessStreak: 2,
+  resolveSuccessStreak: 3,
   practiceQueueMax: 12,
   dedupeWindowMs: 7 * 24 * 60 * 60 * 1000,
+  /** Default next review after a new mistake (hours). */
+  initialReviewHours: 12,
+  /** After repeated mistake — sooner review (hours). */
+  repeatedReviewHours: 4,
+  /** After one good recovery — still keep in queue, next review (hours). */
+  improvingReviewHours: 36,
 } as const;
 
 export const errorKnowledgeUnitSchema = z.object({
@@ -112,6 +118,14 @@ export const errorMemorySchema = z.object({
       "manual",
     ])
     .default("manual"),
+  /** Human-readable source title (material / pack). */
+  sourceLabel: z.string().max(240).nullable().optional(),
+  /** Verbatim excerpt when available. */
+  sourceExcerpt: z.string().max(900).nullable().optional(),
+  /** When this mistake is due for review again. */
+  nextReviewAt: z.string().datetime().nullable().optional(),
+  /** Exam priority 1–5 (higher = more important for matura). */
+  examValue: z.number().int().min(1).max(5).default(3),
   // --- legacy fields kept optional for migrate / soft read ---
   date: z.string().datetime().optional(),
   resolvedStatus: z.enum(resolvedStatuses).optional(),
@@ -189,7 +203,20 @@ function mapLegacyStatus(raw: unknown, practiceCount: number): MistakeStatus {
   return "new";
 }
 
-/** Normalize one memory from legacy or current shape. */
+function hoursFromNow(nowIso: string, hours: number): string {
+  return new Date(new Date(nowIso).getTime() + hours * 3600_000).toISOString();
+}
+
+function scheduleAfterMistake(
+  nowIso: string,
+  occurrenceCount: number,
+): string {
+  const hours =
+    occurrenceCount >= 2
+      ? errorMemoryConfig.repeatedReviewHours
+      : errorMemoryConfig.initialReviewHours;
+  return hoursFromNow(nowIso, hours);
+}
 export function normalizeErrorMemory(raw: unknown): ErrorMemory | null {
   if (!raw || typeof raw !== "object") return null;
   const m = raw as Record<string, unknown>;
@@ -247,6 +274,16 @@ export function normalizeErrorMemory(raw: unknown): ErrorMemory | null {
             m.source === "manual"
           ? m.source
           : "manual",
+    sourceLabel:
+      typeof m.sourceLabel === "string" ? m.sourceLabel.slice(0, 240) : null,
+    sourceExcerpt:
+      typeof m.sourceExcerpt === "string" ? m.sourceExcerpt.slice(0, 900) : null,
+    nextReviewAt:
+      typeof m.nextReviewAt === "string" ? m.nextReviewAt : null,
+    examValue:
+      typeof m.examValue === "number" && m.examValue >= 1 && m.examValue <= 5
+        ? m.examValue
+        : 3,
   };
 
   const parsed = errorMemorySchema.safeParse(candidate);
@@ -283,6 +320,9 @@ export type RecordErrorInput = {
   errorType: MistakeClass;
   nowIso: string;
   source?: ErrorMemory["source"];
+  sourceLabel?: string | null;
+  sourceExcerpt?: string | null;
+  examValue?: number;
 };
 
 /**
@@ -324,6 +364,10 @@ export function recordError(
       masteredAt: null,
       updatedAt: input.nowIso,
       source: input.source ?? prev.source,
+      sourceLabel: input.sourceLabel ?? prev.sourceLabel ?? null,
+      sourceExcerpt: input.sourceExcerpt ?? prev.sourceExcerpt ?? null,
+      nextReviewAt: scheduleAfterMistake(input.nowIso, occurrenceCount),
+      examValue: input.examValue ?? prev.examValue ?? 3,
     };
     const memories = [...book.memories];
     memories[existingIdx] = memory;
@@ -352,6 +396,10 @@ export function recordError(
     masteredAt: null,
     updatedAt: input.nowIso,
     source: input.source ?? "manual",
+    sourceLabel: input.sourceLabel ?? null,
+    sourceExcerpt: input.sourceExcerpt ?? null,
+    nextReviewAt: scheduleAfterMistake(input.nowIso, 1),
+    examValue: input.examValue ?? 3,
   };
 
   return {
@@ -382,6 +430,7 @@ export function applyPracticeGrade(
       successStreak: 0,
       status: "weak",
       masteredAt: null,
+      nextReviewAt: hoursFromNow(nowIso, errorMemoryConfig.repeatedReviewHours),
       updatedAt: nowIso,
     };
   }
@@ -390,12 +439,16 @@ export function applyPracticeGrade(
   const mastered =
     successStreak >= errorMemoryConfig.masterSuccessStreak;
 
+  // One (or even two) correct recoveries never delete history — only mark mastered after streak.
   return {
     ...memory,
     recoveryAttempts,
     successStreak,
     status: mastered ? "mastered" : "improving",
     masteredAt: mastered ? nowIso : null,
+    nextReviewAt: mastered
+      ? null
+      : hoursFromNow(nowIso, errorMemoryConfig.improvingReviewHours),
     updatedAt: nowIso,
   };
 }
@@ -486,19 +539,52 @@ export function buildMistakesHubSummary(
   };
 }
 
+/**
+ * Priority queue:
+ * 1. repeated mistakes
+ * 2. overdue reviews
+ * 3. high-value exam topics
+ * 4. fragile (weak) knowledge
+ * 5. new content
+ */
+export function prioritizeMistakeQueue(
+  memories: ErrorMemory[],
+  nowIso = new Date().toISOString(),
+): ErrorMemory[] {
+  const now = new Date(nowIso).getTime();
+  return [...memories].sort((a, b) => {
+    const rep = b.occurrenceCount - a.occurrenceCount;
+    if (rep !== 0) return rep;
+
+    const aOver =
+      a.nextReviewAt && new Date(a.nextReviewAt).getTime() <= now ? 1 : 0;
+    const bOver =
+      b.nextReviewAt && new Date(b.nextReviewAt).getTime() <= now ? 1 : 0;
+    if (bOver !== aOver) return bOver - aOver;
+
+    const exam = (b.examValue ?? 3) - (a.examValue ?? 3);
+    if (exam !== 0) return exam;
+
+    const fragileRank = (s: MistakeStatus) =>
+      s === "weak" ? 0 : s === "new" ? 1 : s === "improving" ? 2 : 3;
+    const fr = fragileRank(a.status) - fragileRank(b.status);
+    if (fr !== 0) return fr;
+
+    return (
+      new Date(b.lastOccurredAt).getTime() -
+      new Date(a.lastOccurredAt).getTime()
+    );
+  });
+}
+
 export function buildMistakePracticeQueue(
   book: ErrorMemoryBook,
+  nowIso = new Date().toISOString(),
 ): ErrorMemory[] {
-  // Prefer weak / repeated, then new, then improving
-  const rank = (s: MistakeStatus) =>
-    s === "weak" ? 0 : s === "new" ? 1 : s === "improving" ? 2 : 3;
-  return listActiveMemories(book)
-    .sort((a, b) => {
-      const rd = rank(a.status) - rank(b.status);
-      if (rd !== 0) return rd;
-      return b.occurrenceCount - a.occurrenceCount;
-    })
-    .slice(0, errorMemoryConfig.practiceQueueMax);
+  return prioritizeMistakeQueue(listActiveMemories(book), nowIso).slice(
+    0,
+    errorMemoryConfig.practiceQueueMax,
+  );
 }
 
 export function startMistakePracticeSession(input: {

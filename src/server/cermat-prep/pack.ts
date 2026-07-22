@@ -332,9 +332,9 @@ export function buildCermatCjlPrepPack(
   return {
     id: "cermat-cjl-prep",
     slug: "cermat-cjl-prep",
-    titleCs: "CERMAT ČJL — didaktický trénink",
+    titleCs: "Maturita CERMAT – Český jazyk a literatura",
     summaryCs:
-      "Příprava na společný didaktický test: jazyk, pravopis, morfologie, syntax, význam, porozumění, literatura v testu, práce s textem.",
+      "CERMAT příprava (společná část): didaktický test podle katalogu 2025/2026 — pravopis, morfologie, syntax, význam, porozumění, styl, výstavba textu, literární historie a teorie. Oddělené od Moje materiály a školní ústní.",
     disclaimerCs: CERMAT_PREP_DISCLAIMER_CS,
     timedSecondsDefault: 20 * 60,
     items,

@@ -43,7 +43,17 @@ export const dailyMissionDaySchema = z.object({
   learnerId: z.string().min(1).max(64),
   dateKey: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   steps: z.array(dailyPlanStepSchema).min(1).max(6),
-  budgetMinutes: z.number().int().min(10).max(120).default(30),
+  budgetMinutes: z.number().int().min(10).max(180).default(30),
+  /** Adaptive planner time mode (15 / 30 / 60 / required). */
+  plannerMode: z
+    .enum(["min_15", "min_30", "min_60", "required"])
+    .optional()
+    .default("min_30"),
+  estimatedItems: z.number().int().min(0).max(200).optional(),
+  estimateCs: z.string().max(160).optional(),
+  compositionCs: z.string().max(240).optional(),
+  /** Gentle replan copy — never guilt for a missed day. */
+  replanNoteCs: z.string().max(280).nullable().optional(),
   completedAt: z.string().datetime().nullable(),
   knowledgeStrengthened: z.number().int().min(0).max(500),
   updatedAt: z.string().datetime(),
@@ -128,6 +138,12 @@ export type MissionSignals = {
   overdueCount: number;
   /** Active (non-mastered) mistakes. */
   openMistakesCount: number;
+  /** Fragile / not yet successively relearned high-priority units. */
+  fragileCount?: number;
+  /** Short mixed retrieval cap for today’s mission. */
+  mixedCount?: number;
+  /** Planned new units available. */
+  plannedNewCount?: number;
   /** Weak high-exam-weight area. */
   weakAreaLabelCs: string | null;
   weakAreaHref: string | null;
@@ -141,6 +157,14 @@ export type MissionSignals = {
   mistakesHref?: string;
   examHref?: string;
   testHref?: string;
+  /** Capacity estimate from adaptive planner. */
+  estimatedItems?: number;
+  estimateCs?: string;
+  compositionCs?: string;
+  replanNoteCs?: string | null;
+  plannerMode?: "min_15" | "min_30" | "min_60" | "required";
+  /** Exact budget minutes when adaptive mode overrides discrete buckets. */
+  budgetMinutesOverride?: number;
 };
 
 export type MissionCandidate = {
@@ -159,11 +183,15 @@ function clamp(n: number, lo: number, hi: number): number {
 
 /**
  * Build prioritized candidates from real signals (never invent counts).
+ * Order: overdue → mistakes → fragile high-priority → planned new → mixed retrieval.
  */
 export function buildMissionCandidates(
   signals: MissionSignals,
 ): MissionCandidate[] {
   const candidates: MissionCandidate[] = [];
+  const fragile = signals.fragileCount ?? 0;
+  const mixed = signals.mixedCount ?? 0;
+  const plannedNew = signals.plannedNewCount;
 
   if (signals.overdueCount > 0) {
     const n = Math.min(24, signals.overdueCount);
@@ -191,7 +219,19 @@ export function buildMissionCandidates(
     });
   }
 
-  if (signals.weakAreaLabelCs && signals.weakAreaHref) {
+  if (fragile > 0) {
+    const n = Math.min(10, fragile);
+    candidates.push({
+      id: "fragile-priority",
+      kind: "review",
+      priority: 3,
+      titleCs: `${n} křehkých znalostí`,
+      minutes: clamp(Math.round(n * 2), 6, 16),
+      href: signals.reviewHref ?? "/app/review/mixed",
+      reasonCs:
+        "Ještě nestabilní — potřebují úspěšné vybavování napříč sessiony.",
+    });
+  } else if (signals.weakAreaLabelCs && signals.weakAreaHref) {
     candidates.push({
       id: "weak-priority",
       kind: "learn",
@@ -203,6 +243,20 @@ export function buildMissionCandidates(
         signals.weakAreaPct != null && signals.weakAreaPct < 55
           ? "Slabé místo s vysokou vahou u maturity."
           : "Relativně nejslabší oblast — cílená session.",
+    });
+  }
+
+  const includeNew =
+    plannedNew == null ? true : plannedNew > 0 || signals.overdueCount === 0;
+  if (includeNew) {
+    candidates.push({
+      id: "new-knowledge",
+      kind: "learn",
+      priority: 4,
+      titleCs: signals.newTopicLabelCs ?? "Nová látka",
+      minutes: plannedNew != null && plannedNew > 0 ? 12 : 10,
+      href: signals.newTopicHref ?? "/app/learn",
+      reasonCs: "Plánované nové učení — posuň pokrytí, až to čas dovolí.",
     });
   }
 
@@ -221,26 +275,22 @@ export function buildMissionCandidates(
     });
   }
 
-  candidates.push({
-    id: "new-knowledge",
-    kind: "learn",
-    priority: 5,
-    titleCs: signals.newTopicLabelCs ?? "Nová látka",
-    minutes: 10,
-    href: signals.newTopicHref ?? "/app/learn",
-    reasonCs: "Až je fronta v klidu — posuň pokrytí dál.",
-  });
-
-  // Always allow a short verify when budget allows and we have other work
-  if (signals.overdueCount > 0 || signals.openMistakesCount > 0) {
+  // Short mixed retrieval — interleaving overdue + fragile
+  if (
+    mixed > 0 ||
+    signals.overdueCount > 0 ||
+    signals.openMistakesCount > 0 ||
+    fragile > 0
+  ) {
+    const n = Math.min(8, mixed > 0 ? mixed : 4);
     candidates.push({
-      id: "mini-check",
+      id: "mixed-retrieval",
       kind: "test",
       priority: 5,
-      titleCs: "Krátké ověření",
-      minutes: 7,
+      titleCs: `Krátký mix (${n})`,
+      minutes: clamp(Math.round(n * 1.5), 5, 10),
       href: signals.testHref ?? "/app/tests/otazky/cjl-otazky",
-      reasonCs: "Rychlá kontrola, že to sedí.",
+      reasonCs: "Smíšené vybavování — drží paměť odolnější.",
     });
   }
 
@@ -255,7 +305,7 @@ export function packMissionIntoBudget(
   candidates: MissionCandidate[],
   budgetMinutes: number,
 ): Omit<DailyPlanStep, "done">[] {
-  const budget = clamp(budgetMinutes, 10, 90);
+  const budget = clamp(budgetMinutes, 10, 180);
   const steps: Omit<DailyPlanStep, "done">[] = [];
   let remaining = budget;
 
@@ -351,10 +401,13 @@ export function buildDailyMissionPlan(input: {
   dailyMinutes: number;
 }): {
   steps: Omit<DailyPlanStep, "done">[];
-  budgetMinutes: TimeBudget;
+  budgetMinutes: number;
   totalMinutes: number;
 } {
-  const budgetMinutes = resolveTimeBudget(input.dailyMinutes);
+  const budgetMinutes =
+    input.signals.budgetMinutesOverride != null
+      ? clamp(Math.round(input.signals.budgetMinutesOverride), 10, 180)
+      : resolveTimeBudget(input.dailyMinutes);
   const steps = packMissionIntoBudget(
     buildMissionCandidates(input.signals),
     budgetMinutes,
@@ -459,6 +512,10 @@ export type DailyDashboardView = {
   remainingMinutes: number;
   totalMinutesCs: string;
   budgetMinutes: number;
+  plannerMode: "min_15" | "min_30" | "min_60" | "required";
+  estimateCs: string | null;
+  compositionCs: string | null;
+  replanNoteCs: string | null;
   ctaLabelCs: string;
   ctaHref: string;
   completed: boolean;
@@ -492,6 +549,10 @@ export function buildDailyDashboardView(input: {
     remainingMinutes: remaining,
     totalMinutesCs: `Sezení na cca ${total} min (rozpočet ${budget} min).`,
     budgetMinutes: budget,
+    plannerMode: input.day.plannerMode ?? "min_30",
+    estimateCs: input.day.estimateCs ?? null,
+    compositionCs: input.day.compositionCs ?? null,
+    replanNoteCs: input.day.replanNoteCs ?? null,
     ctaLabelCs: completed
       ? "Dnes hotovo"
       : `Začít dnešní misi — ${remaining} min`,

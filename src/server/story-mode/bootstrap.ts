@@ -22,7 +22,7 @@ export async function ensureVerifiedFromSource(
   const item = await getQaItemByKnowledgeUnitId(knowledgeUnitId);
   if (!item) {
     throw new Error(
-      `QA item for KU ${knowledgeUnitId} nenalezen — nejdřív npm run ingest && npm run content-qa`,
+      `Kontrolní položka pro jednotku zatím není připravená.`,
     );
   }
 
@@ -147,7 +147,9 @@ export async function findNoDocumentMeta(): Promise<{
     /obrozen/i.test(i.filename),
   );
   if (!hit) {
-    throw new Error("Nenalezen QA obsah z Národní obrození — spusť ingest + content-qa.");
+    throw new Error(
+      "Obsah k Národnímu obrození zatím není připravený.",
+    );
   }
   return { documentId: hit.documentId, filename: hit.filename };
 }

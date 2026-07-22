@@ -82,7 +82,12 @@ export async function startMixedReviewAction(input?: {
     const pack = input?.packSlug
       ? await getSpacedPackBySlug(input.packSlug)
       : (await listSpacedPacks())[0] ?? null;
-    if (!pack) return { ok: false, error: "Balíček nenalezen — spusť seed." };
+    if (!pack)
+      return {
+        ok: false,
+        error:
+          "Balíček opakování zatím není nasazený. Zkus Testy nebo flashcards z učení.",
+      };
     const { session, summary } = await createMixedReviewSession({
       learnerId,
       pack,

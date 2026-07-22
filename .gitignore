@@ -73,11 +73,13 @@ next-env.d.ts
 /data/cermat-prep/
 /data/content-studio/
 /data/learner-materials/
+/data/study-content-progress/
 /data/product-analytics/
 /data/feature-flags.json
 /data/billing/
 /data/launch-gate/
 /data/literature-maturity/
 /data/materials-study/
+/data/learning-session-schedule/
 /data/open-answer-evals/
 /data/school-exam-profiles/

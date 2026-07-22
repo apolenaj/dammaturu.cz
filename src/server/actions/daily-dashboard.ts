@@ -3,6 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { track } from "@/lib/analytics";
 import {
+  buildAdaptiveDayPlanMeta,
+  countAdaptiveQueues,
+  missedDaysFromStreak,
+  type AdaptivePlannerMode,
+  adaptivePlannerModes,
+} from "@/domain/learning/adaptive-exam-planner";
+import {
   buildDailyDashboardView,
   dateKeyFromDate,
   emptyStreak,
@@ -22,6 +29,12 @@ import {
   getOrCreateTodayMission,
   markDailyStepDone,
 } from "@/server/daily-dashboard/store";
+import {
+  getAdaptivePlannerBook,
+  listAdaptiveUnits,
+  setAdaptivePlannerMode,
+} from "@/server/adaptive-planner/store";
+import { countDueLearningAtoms } from "@/server/learning-session/schedule-store";
 import { appendBetaTelemetryEvent } from "@/server/beta-telemetry/store";
 import { resolveBetaEnrollment } from "@/server/beta-profile/helpers";
 import { syncProgressMotivation } from "@/server/progress-gamification/sync";
@@ -44,32 +57,90 @@ function daysRemainingToTarget(targetDate: string, now: Date): number {
 async function gatherMissionSignals(input: {
   learnerId: string;
   targetDate: string;
+  dailyMinutes: number;
   now: Date;
+  mode?: AdaptivePlannerMode;
+  forceReplanNote?: boolean;
 }): Promise<MissionSignals> {
-  const [due, readiness, errorBook] = await Promise.all([
-    getDueSummaryForLearner({ learnerId: input.learnerId }),
-    getReadinessSnapshotForLearner({ learnerId: input.learnerId }),
-    getErrorBook(input.learnerId),
-  ]);
+  const nowIso = input.now.toISOString();
+  const dateKey = dateKeyFromDate(input.now);
+
+  const [due, readiness, errorBook, adaptiveUnits, streak, book, learningDue] =
+    await Promise.all([
+      getDueSummaryForLearner({ learnerId: input.learnerId }),
+      getReadinessSnapshotForLearner({ learnerId: input.learnerId }),
+      getErrorBook(input.learnerId),
+      listAdaptiveUnits(input.learnerId),
+      getDailyStreak(input.learnerId),
+      getAdaptivePlannerBook(input.learnerId),
+      countDueLearningAtoms(input.learnerId, nowIso),
+    ]);
 
   const weak = readiness?.snapshot.weakAreas[0] ?? null;
   const openMistakes = errorBook
     ? listActiveMemories(errorBook).length
     : 0;
 
+  const dueFromSr = due?.summary.dueCount ?? 0;
+  const queuesFromLedger = countAdaptiveQueues(adaptiveUnits, nowIso);
+
+  // Merge real overdue sources without inventing — take max of known due queues
+  const overdueCount = Math.max(
+    dueFromSr,
+    learningDue,
+    queuesFromLedger.overdue,
+  );
+  const mistakesCount = Math.max(openMistakes, queuesFromLedger.mistakes);
+  const fragileCount = Math.max(
+    queuesFromLedger.fragile,
+    weak && (weak.pct ?? 100) < 60 ? 1 : 0,
+  );
+  const newUnits = Math.max(queuesFromLedger.newUnits, 1);
+
+  const mode = input.mode ?? book.preferredMode ?? "min_30";
+  const missed = missedDaysFromStreak(
+    streak?.lastCompletedDateKey ?? null,
+    dateKey,
+  );
+  const daysRemaining = daysRemainingToTarget(input.targetDate, input.now);
+
+  const meta = buildAdaptiveDayPlanMeta({
+    mode,
+    dailyMinutes: input.dailyMinutes,
+    daysRemaining,
+    queues: {
+      overdue: overdueCount,
+      mistakes: mistakesCount,
+      fragile: fragileCount,
+      newUnits,
+      mixed: Math.min(8, overdueCount + fragileCount),
+    },
+    missedDays: missed,
+    replannedAfterMiss: Boolean(input.forceReplanNote) || missed > 0,
+  });
+
   return {
-    overdueCount: due?.summary.dueCount ?? 0,
-    openMistakesCount: openMistakes,
+    overdueCount: meta.allocation.overdue,
+    openMistakesCount: meta.allocation.mistakes,
+    fragileCount: meta.allocation.fragile,
+    mixedCount: meta.allocation.mixed,
+    plannedNewCount: meta.allocation.new,
     weakAreaLabelCs: weak?.labelCs ?? null,
     weakAreaHref: weak?.sessionHref ?? null,
     weakAreaPct: weak?.pct ?? null,
-    daysRemaining: daysRemainingToTarget(input.targetDate, input.now),
+    daysRemaining,
     newTopicLabelCs: "Nová látka",
     newTopicHref: "/app/learn",
     reviewHref: "/app/review/mixed",
     mistakesHref: "/app/mistakes",
     examHref: "/app/tests",
     testHref: "/app/tests/otazky/cjl-otazky",
+    estimatedItems: meta.estimatedItems,
+    estimateCs: meta.estimateCs,
+    compositionCs: meta.compositionCs,
+    replanNoteCs: meta.replanNoteCs,
+    plannerMode: mode,
+    budgetMinutesOverride: meta.budgetMinutes,
   };
 }
 
@@ -88,16 +159,18 @@ export async function getDailyDashboardAction(): Promise<{
     learner.profile.targetDate,
     now,
   );
+  const dailyMinutes = learner.profile.dailyMinutes ?? 30;
   const signals = await gatherMissionSignals({
     learnerId,
     targetDate: learner.profile.targetDate,
+    dailyMinutes,
     now,
   });
 
   const day = await getOrCreateTodayMission({
     learnerId,
     signals,
-    dailyMinutes: learner.profile.dailyMinutes ?? 30,
+    dailyMinutes,
     now,
   });
 
@@ -122,6 +195,56 @@ export async function getDailyDashboardAction(): Promise<{
   });
 
   return { view, learnerId, motivation };
+}
+
+export async function setDailyPlannerModeAction(input: {
+  mode: AdaptivePlannerMode;
+}): Promise<
+  | { ok: true; view: DailyDashboardView }
+  | Fail
+> {
+  try {
+    const learnerId = await getLearnerIdFromCookies();
+    if (!learnerId) return { ok: false, error: "Nejdřív dokonči onboarding." };
+    if (!adaptivePlannerModes.includes(input.mode)) {
+      return { ok: false, error: "Neplatný režim plánovače." };
+    }
+
+    await setAdaptivePlannerMode({ learnerId, mode: input.mode });
+    track("study_plan_generated", { mode: input.mode, source: "adaptive_planner" });
+
+    const learner = await getLearner(learnerId);
+    if (!learner) return { ok: false, error: "Profil nenalezen." };
+
+    const now = new Date();
+    const dailyMinutes = learner.profile.dailyMinutes ?? 30;
+    const signals = await gatherMissionSignals({
+      learnerId,
+      targetDate: learner.profile.targetDate,
+      dailyMinutes,
+      now,
+      mode: input.mode,
+      forceReplanNote: false,
+    });
+
+    await getOrCreateTodayMission({
+      learnerId,
+      signals,
+      dailyMinutes,
+      now,
+      forceRebuild: true,
+    });
+
+    revalidatePath("/app/dashboard");
+    const { view } = await getDailyDashboardAction();
+    if (!view) return { ok: false, error: "Dashboard se nepodařilo načíst." };
+    return { ok: true, view };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
 }
 
 export async function markDailyStepDoneAction(input: {

@@ -1,8 +1,10 @@
 import { z } from "zod";
 
 /**
- * Mastery Engine (D-031) — per KnowledgeUnit score 0–100 + band.
- * Page views never raise score. Passive evidence only.
+ * Mastery Engine (D-031) — per KnowledgeUnit score 0–100 + transparent states.
+ * Page views, scrolling, and self-declared „Umím“ alone never prove mastery.
+ * Evidence: retrieval accuracy, repeated/delayed retrieval, difficulty,
+ * recency (decay), exam-like performance, repeated mistakes (via lapses).
  * Not a calibrated P(pass matura) model — see LEARNING_ENGINE.md.
  */
 
@@ -21,16 +23,56 @@ export type MasteryBand = (typeof masteryBands)[number];
 export const masteryBandSchema = z.enum(masteryBands);
 
 export const masteryBandLabelsCs: Record<MasteryBand, string> = {
-  not_seen: "Not seen",
-  introduced: "Introduced",
-  learning: "Learning",
-  familiar: "Familiar",
-  strong: "Strong",
-  mastered: "Mastered",
-  at_risk: "At risk",
+  not_seen: "Neviděno",
+  introduced: "Představeno",
+  learning: "Učím se",
+  familiar: "Známé",
+  strong: "Silné",
+  mastered: "Zvládnuté",
+  at_risk: "Ohrožené",
 };
 
-/** Evidence that can move mastery. Passive-only kinds may raise score. */
+/**
+ * Student-facing transparent states (not a scientific probability).
+ * Internal bands map onto these five labels.
+ */
+export const transparentMasteryStates = [
+  "new",
+  "learning",
+  "fragile",
+  "stable",
+  "mastered",
+] as const;
+
+export type TransparentMasteryState =
+  (typeof transparentMasteryStates)[number];
+
+export const transparentMasteryStateLabelsCs: Record<
+  TransparentMasteryState,
+  string
+> = {
+  new: "Nové",
+  learning: "Učím se",
+  fragile: "Křehké",
+  stable: "Stabilní",
+  mastered: "Zvládnuté",
+};
+
+export const transparentMasteryStateDescriptionsCs: Record<
+  TransparentMasteryState,
+  string
+> = {
+  new: "Ještě bez reálného vybavení ze zdroje.",
+  learning: "Začínáš si vybavovat — potřebuješ opakování.",
+  fragile: "Umíš to někdy, ale snadno to vypadne nebo je to pochybný.",
+  stable: "Opakovaně správně i s odstupem — stále udržuj.",
+  mastered: "Dostatek úspěšných vybavení včetně opakování a obtížnosti.",
+};
+
+export const MASTERY_TRANSPARENCY_DISCLAIMER_CS =
+  "Stavy od „Nové“ po „Zvládnuté“ vycházejí z cvičení — neříkají přesně, jestli maturitu dáš.";
+
+/** Evidence that can move mastery. Passive-only kinds never raise score. */
 export const masteryEvidenceKinds = [
   "page_view",
   "diagnostic",
@@ -43,6 +85,15 @@ export const masteryEvidenceKinds = [
 ] as const;
 
 export type MasteryEvidenceKind = (typeof masteryEvidenceKinds)[number];
+
+/** Kinds that count as real retrieval / exam evidence (not self-declared). */
+export const retrievalEvidenceKinds: readonly MasteryEvidenceKind[] = [
+  "practice",
+  "review",
+  "diagnostic",
+  "transfer",
+  "speed",
+] as const;
 
 export const masteryCorrectness = ["incorrect", "partial", "correct"] as const;
 export type MasteryCorrectness = (typeof masteryCorrectness)[number];
@@ -81,17 +132,23 @@ export type MasteryEvidence = z.infer<typeof masteryEvidenceSchema>;
 
 export const masteryStateSchema = z.object({
   knowledgeUnitId: z.string().min(1).max(120),
-  /** Continuous mastery 0–100. */
+  /** Continuous mastery 0–100 — internal signal, not a % chance of passing. */
   score: z.number().min(0).max(100),
   band: masteryBandSchema,
   /** Count of graded evidence events (not page views). */
   evidenceCount: z.number().int().min(0),
+  /** Graded retrieval events only (excludes self_grade / passive). */
+  retrievalEvidenceCount: z.number().int().min(0).default(0),
   correctStreak: z.number().int().min(0),
   lapses: z.number().int().min(0),
-  /** Successful graded recalls (correct or partial). */
+  /** Successful graded recalls (correct or partial) from retrieval kinds. */
   successfulRecalls: z.number().int().min(0),
+  /** Successful recalls after ≥1 day gap. */
+  delayedSuccessfulRecalls: z.number().int().min(0).default(0),
   transferSuccesses: z.number().int().min(0),
   diagnosticAttempts: z.number().int().min(0),
+  examLikeAttempts: z.number().int().min(0).default(0),
+  examLikeSuccesses: z.number().int().min(0).default(0),
   introducedAt: z.string().datetime().nullable(),
   lastEvidenceAt: z.string().datetime().nullable(),
   lastSuccessfulRecallAt: z.string().datetime().nullable(),
@@ -116,6 +173,10 @@ export const masteryConfig = {
   baseGainCorrect: 8,
   baseGainPartial: 3,
   baseLossIncorrect: -12,
+  /** Self-declared „Umím“ alone — tiny or no gain; mistakes still hurt. */
+  selfGradeCorrectCap: 1.5,
+  delayedRetrievalBonus: 2.5,
+  delayedRetrievalMinDays: 1,
   diagnosticCorrectFloor: 32,
   diagnosticIncorrectCeiling: 22,
   hintPenaltyPerHint: 1.5,
@@ -132,6 +193,8 @@ export const masteryConfig = {
   atRiskMinPeakScore: 40,
   masteredMinScore: 80,
   masteredMinEvidence: 5,
+  masteredMinRetrievalEvidence: 4,
+  masteredMinDelayedRecalls: 1,
   masteredMinStreakOrTransfer: true,
   /** Score thresholds for non-risk bands. */
   thresholds: {
@@ -152,17 +215,56 @@ export function emptyMasteryState(
     score: 0,
     band: "not_seen",
     evidenceCount: 0,
+    retrievalEvidenceCount: 0,
     correctStreak: 0,
     lapses: 0,
     successfulRecalls: 0,
+    delayedSuccessfulRecalls: 0,
     transferSuccesses: 0,
     diagnosticAttempts: 0,
+    examLikeAttempts: 0,
+    examLikeSuccesses: 0,
     introducedAt: null,
     lastEvidenceAt: null,
     lastSuccessfulRecallAt: null,
     peakBand: "not_seen",
     updatedAt: nowIso,
   };
+}
+
+/** Coerce legacy rows missing new counters. */
+export function normalizeMasteryState(raw: MasteryState): MasteryState {
+  return {
+    ...raw,
+    retrievalEvidenceCount: raw.retrievalEvidenceCount ?? 0,
+    delayedSuccessfulRecalls: raw.delayedSuccessfulRecalls ?? 0,
+    examLikeAttempts: raw.examLikeAttempts ?? 0,
+    examLikeSuccesses: raw.examLikeSuccesses ?? 0,
+  };
+}
+
+/**
+ * Map internal band → transparent student-facing state.
+ * at_risk always surfaces as FRAGILE.
+ */
+export function toTransparentMasteryState(
+  state: Pick<
+    MasteryState,
+    | "band"
+    | "score"
+    | "retrievalEvidenceCount"
+    | "successfulRecalls"
+  >,
+): TransparentMasteryState {
+  if (state.band === "at_risk") return "fragile";
+  if (state.band === "mastered") return "mastered";
+  if (state.band === "strong") return "stable";
+  if (state.band === "familiar") return "fragile";
+  if (state.band === "learning") return "learning";
+  if ((state.retrievalEvidenceCount ?? 0) > 0 || state.successfulRecalls > 0) {
+    return "learning";
+  }
+  return "new";
 }
 
 function clampScore(n: number): number {
@@ -177,6 +279,10 @@ function daysBetween(fromIso: string, toIso: string): number {
 
 function isPassive(kind: MasteryEvidenceKind): boolean {
   return (masteryConfig.passiveKinds as readonly string[]).includes(kind);
+}
+
+function isRetrievalKind(kind: MasteryEvidenceKind): boolean {
+  return (retrievalEvidenceKinds as readonly string[]).includes(kind);
 }
 
 const orderedPeak = [
@@ -200,16 +306,19 @@ function maxPeak(a: PeakBand, b: PeakBand): PeakBand {
 
 /**
  * Band from score + mastery gates (before at_risk overlay).
+ * MASTERED requires retrieval evidence + delayed success — not self_grade alone.
  */
 export function bandFromScore(
   score: number,
   state: Pick<
     MasteryState,
     | "evidenceCount"
+    | "retrievalEvidenceCount"
     | "correctStreak"
     | "transferSuccesses"
     | "introducedAt"
     | "successfulRecalls"
+    | "delayedSuccessfulRecalls"
   >,
 ): PeakBand {
   if (state.introducedAt === null && state.evidenceCount === 0) {
@@ -221,10 +330,18 @@ export function bandFromScore(
     const transferOk = state.transferSuccesses >= 1;
     const evidenceOk =
       state.evidenceCount >= masteryConfig.masteredMinEvidence;
+    const retrievalOk =
+      (state.retrievalEvidenceCount ?? 0) >=
+      masteryConfig.masteredMinRetrievalEvidence;
     const recallsOk = state.successfulRecalls >= 3;
+    const delayedOk =
+      (state.delayedSuccessfulRecalls ?? 0) >=
+      masteryConfig.masteredMinDelayedRecalls;
     if (
       evidenceOk &&
+      retrievalOk &&
       recallsOk &&
+      delayedOk &&
       (!masteryConfig.masteredMinStreakOrTransfer || streakOk || transferOk)
     ) {
       return "mastered";
@@ -262,11 +379,12 @@ export function shouldMarkAtRisk(input: {
   return overdue >= masteryConfig.atRiskOverdueDays;
 }
 
-/** Apply time-based decay before new evidence (forgetting signal). */
+/** Apply time-based decay before new evidence (forgetting / recency signal). */
 export function applyDecay(
   state: MasteryState,
   nowIso: string,
 ): MasteryState {
+  state = normalizeMasteryState(state);
   if (state.band === "not_seen") return state;
   const anchor = state.lastSuccessfulRecallAt ?? state.lastEvidenceAt;
   if (!anchor) return state;
@@ -284,7 +402,6 @@ export function applyDecay(
   const peakBand = state.peakBand;
   let band: MasteryBand = bandFromScore(score, {
     ...state,
-    // keep introducedAt
   });
   if (
     shouldMarkAtRisk({
@@ -309,7 +426,6 @@ export function applyDecay(
 }
 
 function difficultyMultiplier(difficulty: number, correctUnit: number): number {
-  // Harder items: bigger gain if correct, bigger loss if wrong.
   const t = (difficulty - 3) * 0.12;
   if (correctUnit >= 0.99) return 1 + Math.max(0, t);
   if (correctUnit <= 0.01) return 1 + Math.max(0, -t) + Math.max(0, t);
@@ -321,9 +437,7 @@ function confidenceAdjustment(
   correctUnit: number,
 ): number {
   if (selfConfidence == null) return 0;
-  // Overconfident miss
   if (correctUnit < 0.25 && selfConfidence >= 4) return -3;
-  // Underconfident hit — small calibration reward
   if (correctUnit >= 0.99 && selfConfidence <= 2) return 1;
   return 0;
 }
@@ -364,7 +478,7 @@ export function applyMasteryEvidence(
   if (!kuId) {
     throw new Error("knowledgeUnitId is required when prev is null");
   }
-  let state = prev ?? emptyMasteryState(kuId, now);
+  let state = normalizeMasteryState(prev ?? emptyMasteryState(kuId, now));
 
   const scoreAfterDecayStart = state.score;
   state = applyDecay(state, now);
@@ -375,7 +489,6 @@ export function applyMasteryEvidence(
 
   const scoreBeforeEvidence = state.score;
 
-  // ——— Passive: never raise score ———
   if (isPassive(ev.kind)) {
     if (state.band === "not_seen" || state.introducedAt === null) {
       state = {
@@ -414,6 +527,7 @@ export function applyMasteryEvidence(
   }
 
   const unit = correctnessToUnit[ev.correctness];
+  const retrieval = isRetrievalKind(ev.kind);
   let delta = 0;
 
   if (ev.correctness === "correct") {
@@ -426,6 +540,11 @@ export function applyMasteryEvidence(
 
   delta *= difficultyMultiplier(ev.difficulty, unit);
   reasons.push(`base×diff ${delta.toFixed(1)}`);
+
+  if (ev.kind === "self_grade" && unit >= 0.5) {
+    delta = Math.min(delta, masteryConfig.selfGradeCorrectCap);
+    reasons.push("self_grade capped — alone does not prove retrieval");
+  }
 
   if (unit >= 0.5 && ev.hintsUsed > 0) {
     const pen = ev.hintsUsed * masteryConfig.hintPenaltyPerHint;
@@ -464,22 +583,51 @@ export function applyMasteryEvidence(
   let correctStreak = state.correctStreak;
   let lapses = state.lapses;
   let successfulRecalls = state.successfulRecalls;
+  let delayedSuccessfulRecalls = state.delayedSuccessfulRecalls;
   let transferSuccesses = state.transferSuccesses;
+  let retrievalEvidenceCount = state.retrievalEvidenceCount;
+  let examLikeAttempts = state.examLikeAttempts;
+  let examLikeSuccesses = state.examLikeSuccesses;
   let justLapsed = false;
 
+  if (retrieval) {
+    retrievalEvidenceCount += 1;
+  }
+
+  const examLike = ev.kind === "diagnostic" || ev.difficulty >= 5;
+  if (examLike) {
+    examLikeAttempts += 1;
+  }
+
   if (unit >= 0.99) {
-    correctStreak += 1;
-    successfulRecalls += 1;
-    if (correctStreak > 1) {
-      delta += masteryConfig.streakBonusPer;
-      reasons.push(`streak +${masteryConfig.streakBonusPer}`);
+    if (retrieval) {
+      correctStreak += 1;
+      successfulRecalls += 1;
+      if (correctStreak > 1) {
+        delta += masteryConfig.streakBonusPer;
+        reasons.push(`streak +${masteryConfig.streakBonusPer}`);
+      }
+      const prevRecall = state.lastSuccessfulRecallAt;
+      if (
+        prevRecall &&
+        daysBetween(prevRecall, now) >= masteryConfig.delayedRetrievalMinDays
+      ) {
+        delayedSuccessfulRecalls += 1;
+        delta += masteryConfig.delayedRetrievalBonus;
+        reasons.push(
+          `delayed retrieval +${masteryConfig.delayedRetrievalBonus}`,
+        );
+      }
+      if (transfer) transferSuccesses += 1;
+      if (examLike) examLikeSuccesses += 1;
+    } else if (ev.kind === "self_grade") {
+      reasons.push("self_grade correct — no retrieval streak credit");
     }
-    if (transfer) transferSuccesses += 1;
   } else if (unit <= 0.01) {
     correctStreak = 0;
     lapses += 1;
     justLapsed = true;
-  } else {
+  } else if (retrieval) {
     successfulRecalls += 1;
   }
 
@@ -511,15 +659,19 @@ export function applyMasteryEvidence(
     ...state,
     score,
     evidenceCount: state.evidenceCount + 1,
+    retrievalEvidenceCount,
     correctStreak,
     lapses,
     successfulRecalls,
+    delayedSuccessfulRecalls,
     transferSuccesses,
     diagnosticAttempts,
+    examLikeAttempts,
+    examLikeSuccesses,
     introducedAt,
     lastEvidenceAt: now,
     lastSuccessfulRecallAt:
-      unit >= 0.5 ? now : state.lastSuccessfulRecallAt,
+      unit >= 0.5 && retrieval ? now : state.lastSuccessfulRecallAt,
     updatedAt: now,
     band: state.band,
     peakBand: state.peakBand,
@@ -590,8 +742,7 @@ export function computeMasteryAggregate(input: {
     aggregate,
     labeledAs: "mastery_aggregate",
     lowEvidence: low,
-    disclaimer:
-      "Agregát mastery není statistická pravděpodobnost složení maturity — nemáme validační data na takový model.",
+    disclaimer: MASTERY_TRANSPARENCY_DISCLAIMER_CS,
   };
 }
 

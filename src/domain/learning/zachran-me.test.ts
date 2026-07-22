@@ -1,61 +1,104 @@
 import { describe, expect, it } from "vitest";
 import {
-  buildCermatCandidates,
-  buildLanguageTopicCandidates,
-  buildNextStudySession,
-  buildOralLiteratureCandidates,
+  buildCermatTriageCandidates,
+  buildHorizonPlan,
+  buildMaterialsTriageCandidates,
+  buildMistakeTriageCandidates,
+  buildOverdueTriageCandidate,
   buildZachranMePlan,
-  computeImpactScore,
-  estimateForgettingRisk,
+  computePriorityScore,
+  evidenceDisclaimerCs,
+  resolveEvidenceLevel,
   timePressureFromDays,
   zachranMeBucketLabelsCs,
-  zachranMeComponents,
-  zachranMeConfig,
-  type EmergencyCandidate,
+  zachranMeScopes,
+  type PriorityItem,
+  type TriageCandidate,
 } from "@/domain/learning/zachran-me";
 import { emptyCategoryStats } from "@/domain/learning/cermat-prep";
-import { buildCurriculumPack } from "@/server/curriculum/build";
-import { cjlBetaDefinition } from "@/server/curriculum/definitions/cjl-beta";
-import { createLiteratureBook } from "@/domain/learning/literature-maturity";
 
-describe("zachran-me emergency planner (D-056)", () => {
-  const pack = buildCurriculumPack(
-    cjlBetaDefinition,
-    "2026-07-20T12:00:00.000Z",
-  );
+function baseItem(
+  overrides: Partial<PriorityItem> & Pick<PriorityItem, "id" | "titleCs">,
+): PriorityItem {
+  return {
+    lane: "cermat",
+    laneLabelCs: "CERMAT",
+    detailCs: "",
+    href: "/app/cermat",
+    masteryPct: 30,
+    hasLearningEvidence: true,
+    importance: 0.9,
+    priorityScore: 0.5,
+    factors: {
+      masteryPct: 30,
+      weakness: 0.7,
+      importance: 0.9,
+      errorPressure: 0.4,
+      overduePressure: 0.3,
+      coveragePressure: 0.5,
+      timePressure: 0.8,
+      priorityScore: 0.5,
+    },
+    bucket: "must_know",
+    reasonCs: "test",
+    estimatedMinutes: 15,
+    remainingUnits: 2,
+    repeatedErrors: 1,
+    overdueReviews: 1,
+    ...overrides,
+  };
+}
 
-  it("exposes only supported components and five triage buckets", () => {
-    expect([...zachranMeComponents]).toEqual([
-      "cermat_didactic",
-      "oral_literature",
-      "language_topics",
-    ]);
-    expect(zachranMeBucketLabelsCs.must_know).toBe("MUSÍŠ UMĚT");
-    expect(zachranMeBucketLabelsCs.high_impact).toBe("HIGH IMPACT");
-    expect(zachranMeBucketLabelsCs.should_know).toBe("MĚL/A BYS UMĚT");
+describe("zachran-me deadline triage", () => {
+  it("exposes only A/B/C scopes and three Czech buckets", () => {
+    expect([...zachranMeScopes]).toEqual(["materials", "cermat", "both"]);
+    expect(zachranMeBucketLabelsCs.must_know).toBe("MUSÍM UMĚT");
+    expect(zachranMeBucketLabelsCs.important).toBe("DŮLEŽITÉ");
     expect(zachranMeBucketLabelsCs.if_time).toBe("POKUD ZBUDE ČAS");
-    expect(zachranMeBucketLabelsCs.already_knows).toMatch(/UŽ UMÍŠ/);
   });
 
   it("raises time pressure as exam approaches", () => {
     expect(timePressureFromDays(2)).toBeGreaterThan(timePressureFromDays(40));
-    expect(computeImpactScore({
-      importance: 1,
-      weakness: 0.8,
-      forgettingRisk: 0.5,
-      timePressure: 1,
-    })).toBeGreaterThan(
-      computeImpactScore({
+    expect(
+      computePriorityScore({
         importance: 1,
         weakness: 0.8,
-        forgettingRisk: 0.5,
+        errorPressure: 0.5,
+        overduePressure: 0.5,
+        coveragePressure: 0.5,
+        timePressure: 1,
+      }),
+    ).toBeGreaterThan(
+      computePriorityScore({
+        importance: 1,
+        weakness: 0.8,
+        errorPressure: 0.5,
+        overduePressure: 0.5,
+        coveragePressure: 0.5,
         timePressure: 0.3,
       }),
     );
   });
 
-  it("builds plan with buckets and exact next session from real candidates", () => {
-    const cermat = buildCermatCandidates({
+  it("never invents mastery % when CERMAT has zero attempts", () => {
+    const candidates = buildCermatTriageCandidates({
+      byCategory: emptyCategoryStats(),
+    });
+    expect(candidates.every((c) => c.masteryPct == null)).toBe(true);
+    expect(candidates.every((c) => !c.hasLearningEvidence)).toBe(true);
+    expect(resolveEvidenceLevel({ candidates })).toBe("insufficient");
+    expect(evidenceDisclaimerCs("insufficient")).toMatch(/pokrytí obsahu/);
+  });
+
+  it("builds materials empty-state without unimplemented subjects", () => {
+    const empty = buildMaterialsTriageCandidates({ materials: [] });
+    expect(empty).toHaveLength(1);
+    expect(empty[0]!.href).toBe("/app/materials");
+    expect(empty[0]!.detailCs.toLowerCase()).toMatch(/matematika|aj/);
+  });
+
+  it("builds plan with Dnes/Zítra/Týden and exact CTA", () => {
+    const cermat = buildCermatTriageCandidates({
       byCategory: emptyCategoryStats().map((row) =>
         row.category === "orthography"
           ? { ...row, attempts: 4, correct: 1, accuracyPct: 25 }
@@ -63,137 +106,124 @@ describe("zachran-me emergency planner (D-056)", () => {
             ? { ...row, attempts: 3, correct: 3, accuracyPct: 100 }
             : row,
       ),
-      forgettingBase: 0.2,
+      errorsByCategory: { orthography: 3 },
+      overdueByCategory: { orthography: 5 },
     });
-    const oral = buildOralLiteratureCandidates({
-      books: [
-        createLiteratureBook({
-          id: "book-maj",
-          titleCs: "Máj",
-          authorCs: "Mácha",
-          nowIso: "2026-07-20T12:00:00.000Z",
-        }),
+    const materials = buildMaterialsTriageCandidates({
+      materials: [
+        {
+          id: "m1",
+          title: "Školní zápisky Máj",
+          status: "ready",
+          knowledgePointCount: 12,
+          topicCount: 3,
+        },
       ],
-      forgettingBase: 0.5,
+      masteryByMaterialId: { m1: 28 },
+      errorsByMaterialId: { m1: 2 },
     });
-    // Force weak oral book
-    oral[0]!.readinessPct = 20;
-    oral[0]!.importance = 0.95;
-
-    const topics = buildLanguageTopicCandidates({
-      pack,
-      masteryBySlug: {
-        romantismus: 90,
-        realismus: 25,
-        "rozbor-maj": 20,
-      },
-      forgettingBySlug: {
-        realismus: 0.8,
-        "rozbor-maj": 0.7,
-        romantismus: 0.15,
-      },
+    const mistakes = buildMistakeTriageCandidates({
+      scope: "both",
+      activeMistakes: [
+        {
+          id: "e1",
+          titleCs: "Špatný autor Máje",
+          occurrenceCount: 4,
+          examValue: 5,
+        },
+      ],
+    });
+    const overdue = buildOverdueTriageCandidate({
+      scope: "both",
+      dueCount: 9,
     });
 
-    const candidates: EmergencyCandidate[] = [...cermat, ...oral, ...topics];
+    const candidates: TriageCandidate[] = [
+      ...cermat,
+      ...materials,
+      ...mistakes,
+      ...(overdue ? [overdue] : []),
+    ];
 
     const plan = buildZachranMePlan({
       request: {
         examDate: "2026-07-28",
-        availableHours: 1,
-        components: ["cermat_didactic", "oral_literature", "language_topics"],
+        dailyMinutes: 30,
+        scope: "both",
       },
       candidates,
-      overallReadinessPct: 42,
+      totalAttemptsHint: 20,
       now: new Date(2026, 6, 21, 12, 0, 0),
     });
 
     expect(plan.daysRemaining).toBe(7);
-    expect(plan.analysis.timePressure).toBeGreaterThan(0.7);
-    expect(plan.mustKnow.length + plan.highImpact.length).toBeGreaterThan(0);
-    expect(
-      plan.alreadyKnows.some(
-        (i) => i.id === "cermat-syntax" || i.id === "topic-romantismus",
-      ),
-    ).toBe(true);
-    expect(plan.nextSession.steps.length).toBeGreaterThan(0);
-    expect(plan.nextSession.totalMinutes).toBeLessThanOrEqual(60);
-    expect(plan.nextSession.startHref).toBeTruthy();
-    expect(plan.manifestoCs.toLowerCase()).toMatch(/nouzový|triáž/);
+    expect(plan.ctaLabelCs).toBe("Začít dnešní plán");
+    expect(plan.horizon.today.titleCs).toBe("Dnes");
+    expect(plan.horizon.tomorrow.titleCs).toBe("Zítra");
+    expect(plan.horizon.thisWeek.titleCs).toBe("Tento týden");
+    expect(plan.mustKnow.length + plan.important.length).toBeGreaterThan(0);
+    expect(plan.horizon.today.totalMinutes).toBeLessThanOrEqual(30);
+    expect(plan.startTodayHref).toBeTruthy();
+    expect(plan.analysis.evidenceLevel).not.toBe("insufficient");
 
-    // Never invent components outside selection
-    const onlyCermat = buildZachranMePlan({
+    // Scope filter — materials-only must not include CERMAT lane items
+    const onlyMat = buildZachranMePlan({
       request: {
-        examDate: zachranMeConfig.betaTargetDate,
-        availableHours: 2,
-        components: ["cermat_didactic"],
+        examDate: "2026-08-31",
+        dailyMinutes: 20,
+        scope: "materials",
       },
       candidates,
+      totalAttemptsHint: 5,
       now: new Date(2026, 6, 21),
     });
     expect(
-      [
-        ...onlyCermat.mustKnow,
-        ...onlyCermat.highImpact,
-        ...onlyCermat.shouldKnow,
-        ...onlyCermat.ifTime,
-        ...onlyCermat.alreadyKnows,
-      ].every((i) => i.component === "cermat_didactic"),
+      [...onlyMat.mustKnow, ...onlyMat.important, ...onlyMat.ifTime].every(
+        (i) => i.lane === "materials",
+      ),
     ).toBe(true);
   });
 
-  it("packs next session within available minutes", () => {
-    const items = Array.from({ length: 8 }, (_, i) => ({
-      id: `x-${i}`,
-      component: "cermat_didactic" as const,
-      componentLabelCs: "Didaktický test CERMAT",
-      titleCs: `Položka ${i}`,
-      detailCs: "",
-      href: "/app/cermat",
-      readinessPct: 20,
-      importance: 0.9,
-      impactScore: 1 - i * 0.05,
-      factors: {
-        readinessPct: 20,
-        weakness: 0.8,
-        importance: 0.9,
-        forgettingRisk: 0.5,
-        timePressure: 0.9,
-        impactScore: 1 - i * 0.05,
-      },
-      bucket: "must_know" as const,
-      reasonCs: "test",
-      estimatedMinutes: 20,
-    }));
-    const session = buildNextStudySession({
+  it("packs horizon within daily minutes", () => {
+    const items = Array.from({ length: 8 }, (_, i) =>
+      baseItem({
+        id: `x-${i}`,
+        titleCs: `Položka ${i}`,
+        estimatedMinutes: 20,
+        priorityScore: 1 - i * 0.05,
+      }),
+    );
+    const horizon = buildHorizonPlan({
       mustKnow: items,
-      highImpact: [],
-      shouldKnow: [],
-      availableMinutes: 45,
-      daysRemaining: 5,
+      important: [],
+      ifTime: [],
+      dailyMinutes: 45,
+      daysRemaining: 10,
     });
-    expect(session.totalMinutes).toBeLessThanOrEqual(45);
-    expect(session.steps.length).toBeGreaterThan(0);
-    expect(session.steps.length).toBeLessThanOrEqual(3);
+    expect(horizon.today.totalMinutes).toBeLessThanOrEqual(45);
+    expect(horizon.today.steps.length).toBeGreaterThan(0);
+    expect(horizon.today.steps.length).toBeLessThanOrEqual(3);
   });
 
-  it("estimateForgettingRisk rises with overdue and lapses", () => {
-    expect(
-      estimateForgettingRisk({
-        isDue: false,
-        daysOverdue: 0,
-        lapseCount: 0,
-        stabilityDays: 10,
-        bandAtRisk: false,
+  it("shows insufficient-evidence disclaimer when no attempts", () => {
+    const plan = buildZachranMePlan({
+      request: {
+        examDate: "2026-09-01",
+        dailyMinutes: 25,
+        scope: "cermat",
+      },
+      candidates: buildCermatTriageCandidates({
+        byCategory: emptyCategoryStats(),
       }),
-    ).toBeLessThan(0.3);
+      totalAttemptsHint: 0,
+      now: new Date(2026, 6, 21),
+    });
+    expect(plan.analysis.evidenceLevel).toBe("insufficient");
+    expect(plan.analysis.evidenceDisclaimerCs).toMatch(/pokrytí obsahu/);
     expect(
-      estimateForgettingRisk({
-        isDue: true,
-        daysOverdue: 5,
-        lapseCount: 3,
-        stabilityDays: 0.5,
-        bandAtRisk: true,
-      }),
-    ).toBeGreaterThan(0.85);
+      plan.mustKnow.concat(plan.important, plan.ifTime).every(
+        (i) => i.masteryPct == null || i.hasLearningEvidence,
+      ),
+    ).toBe(true);
   });
 });

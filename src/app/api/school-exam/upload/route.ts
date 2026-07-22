@@ -6,7 +6,8 @@ import {
   schoolExamProfileConfig,
   type SchoolExamDocKind,
 } from "@/domain/learning/school-exam-profile";
-import { getAuthIdentity } from "@/server/learner-session";
+import { ensureGuestLearner } from "@/server/guest/ensure-guest-learner";
+import { getViewerSession } from "@/server/viewer-session";
 import { getLearner } from "@/server/learner-store";
 import { addSchoolExamDocument } from "@/server/school-exam-profile/store";
 import { track } from "@/lib/analytics";
@@ -38,17 +39,20 @@ export async function POST(request: Request) {
     );
   }
 
-  const identity = await getAuthIdentity();
-  if (!identity) {
+  const viewer = await getViewerSession({ createGuestIfMissing: true });
+  if (!viewer) {
     return NextResponse.json(
-      { ok: false, error: "Nejdřív se přihlas." },
+      { ok: false, error: "Nepodařilo se připravit studijní session." },
       { status: 401 },
     );
+  }
+  if (viewer.kind === "guest") {
+    await ensureGuestLearner(viewer.learnerId);
   }
 
   const ip = clientIpFromHeaders(request.headers);
   const limited = rateLimit({
-    key: `upload:school-exam:${identity.learnerId}:${ip}`,
+    key: `upload:school-exam:${viewer.learnerId}:${ip}`,
     limit: 20,
     windowMs: 60_000,
   });
@@ -62,12 +66,9 @@ export async function POST(request: Request) {
     );
   }
 
-  const learner = await getLearner(identity.learnerId);
+  let learner = await getLearner(viewer.learnerId);
   if (!learner) {
-    return NextResponse.json(
-      { ok: false, error: "Nejdřív dokonči onboarding." },
-      { status: 400 },
-    );
+    learner = await ensureGuestLearner(viewer.learnerId);
   }
 
   let form: FormData;
@@ -139,7 +140,7 @@ export async function POST(request: Request) {
 
   try {
     const { document, profile } = await addSchoolExamDocument({
-      learnerId: identity.learnerId,
+      learnerId: viewer.learnerId,
       schoolType: learner.profile.schoolType,
       kind,
       title,

@@ -43,10 +43,19 @@ export async function createLearnerId(): Promise<string> {
 
 export async function saveLearner(record: LearnerRecord): Promise<void> {
   await ensureDir();
-  const tmp = `${filePath(record.id)}.tmp`;
+  const dest = filePath(record.id);
+  // Unique tmp avoids parallel upsert races (same .tmp path → ENOENT on rename).
+  const tmp = `${dest}.${process.pid}.${Date.now()}.${Math.random()
+    .toString(16)
+    .slice(2)}.tmp`;
   const payload = `${JSON.stringify(record, null, 2)}\n`;
   await fs.writeFile(tmp, payload, "utf8");
-  await fs.rename(tmp, filePath(record.id));
+  try {
+    await fs.rename(tmp, dest);
+  } catch (error) {
+    await fs.unlink(tmp).catch(() => undefined);
+    throw error;
+  }
 }
 
 export async function getLearner(

@@ -90,7 +90,8 @@ export function HomeHero() {
           </p>
           <CtaPair
             className="mt-8"
-            primaryLabel="Začít zdarma"
+            primaryLabel="Začít se učit bez registrace"
+            primaryHref="/app/learn"
             secondaryLabel="Jak to funguje"
             secondaryHref="#jak-to-funguje"
           />
@@ -302,10 +303,10 @@ export function HomePricingPreview() {
         />
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
-            href="/registrace"
+            href="/app/learn"
             className="inline-flex min-h-12 items-center justify-center rounded-lg bg-action px-6 text-body-sm font-semibold text-fg-on-brand shadow-xs transition hover:bg-action-hover"
           >
-            Začít na FREE
+            Začít se učit bez registrace
           </Link>
           <Link
             href="/cenik"
@@ -356,15 +357,15 @@ export function HomeFinalCta() {
           Nahraj materiály. Začni dnešní misí.
         </h2>
         <p className="mx-auto mt-4 max-w-lg text-body-md text-fg-inverse/75">
-          Registrace → onboarding → Moje materiály. Příprava k maturitě bez
-          chaosu v poznámkách.
+          Začni česky studovat hned — bez účtu. Registrace je volitelná, až
+          budeš chtít pokrok na více zařízeních.
         </p>
         <CtaPair
           className="mt-8 justify-center"
-          primaryHref="/registrace"
-          primaryLabel="Začít zdarma"
-          secondaryHref="/prihlaseni"
-          secondaryLabel="Už mám účet"
+          primaryHref="/app/learn"
+          primaryLabel="Začít se učit bez registrace"
+          secondaryHref="/registrace"
+          secondaryLabel="Vytvořit účet"
         />
       </div>
     </section>

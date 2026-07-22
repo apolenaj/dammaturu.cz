@@ -4,7 +4,8 @@ import {
   isSupportedFormat,
   toListItem,
 } from "@/domain/learning/learner-materials";
-import { getAuthIdentity } from "@/server/learner-session";
+import { ensureGuestLearner } from "@/server/guest/ensure-guest-learner";
+import { getViewerSession } from "@/server/viewer-session";
 import { canUploadMaterial } from "@/domain/billing/entitlements";
 import { getLearnerEntitlements } from "@/server/billing/entitlements";
 import { formatReadyStatusMessage } from "@/server/learner-materials/pipeline/diagnostics";
@@ -44,17 +45,20 @@ export async function POST(request: Request) {
     );
   }
 
-  const identity = await getAuthIdentity();
-  if (!identity) {
+  const viewer = await getViewerSession({ createGuestIfMissing: true });
+  if (!viewer) {
     return NextResponse.json(
-      { ok: false, error: "Nejdřív se přihlas." },
+      { ok: false, error: "Nepodařilo se připravit studijní session." },
       { status: 401 },
     );
+  }
+  if (viewer.kind === "guest") {
+    await ensureGuestLearner(viewer.learnerId);
   }
 
   const ip = clientIpFromHeaders(request.headers);
   const limited = rateLimit({
-    key: `upload:materials:${identity.learnerId}:${ip}`,
+    key: `upload:materials:${viewer.learnerId}:${ip}`,
     limit: 20,
     windowMs: 60_000,
   });
@@ -68,8 +72,8 @@ export async function POST(request: Request) {
     );
   }
 
-  const entitlements = await getLearnerEntitlements(identity.learnerId);
-  const existing = await listLearnerMaterials(identity.learnerId);
+  const entitlements = await getLearnerEntitlements(viewer.learnerId);
+  const existing = await listLearnerMaterials(viewer.learnerId);
   const todayKey = dateKeyFromDate(new Date());
   const uploadsToday = existing.filter((m) =>
     m.createdAt.startsWith(todayKey),
@@ -138,7 +142,7 @@ export async function POST(request: Request) {
     const signals = detectPromptInjectionSignals(buffer.toString("utf8"));
     if (signals.length > 0) {
       console.warn("[materials/upload] injection signals", {
-        learner: identity.learnerId.slice(0, 8),
+        learner: viewer.learnerId.slice(0, 8),
         signals,
       });
     }
@@ -152,7 +156,7 @@ export async function POST(request: Request) {
 
   try {
     const created = await createUploadingMaterial({
-      learnerId: identity.learnerId,
+      learnerId: viewer.learnerId,
       title,
       originalFilename: file.name.slice(0, 240),
       format: sniffed.format,
@@ -188,7 +192,7 @@ export async function POST(request: Request) {
       });
     }
 
-    await updateMaterialStatus(identity.learnerId, created.material.id, {
+    await updateMaterialStatus(viewer.learnerId, created.material.id, {
       status: "processing",
       statusMessage: null,
     });
@@ -202,7 +206,7 @@ export async function POST(request: Request) {
     const processed = await processLearnerMaterial(processing);
 
     await recordProductEvent({
-      learnerKey: identity.learnerId,
+      learnerKey: viewer.learnerId,
       event: "document_uploaded",
       featureId: "personal_materials",
     });

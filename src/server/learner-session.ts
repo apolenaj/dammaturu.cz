@@ -6,6 +6,7 @@ import {
   getLocalAuthIdentity,
   isLocalDevAuthEnabled,
 } from "@/server/auth/local-dev-auth";
+import { readGuestIdFromCookies } from "@/server/guest/guest-session";
 
 export type AuthIdentity = {
   userId: string;
@@ -16,11 +17,14 @@ export type AuthIdentity = {
 };
 
 /**
- * Stable learner id from Auth session (Supabase or local-dev).
+ * Stable learner id for learning stores.
+ * Authenticated session wins; otherwise anonymous guest cookie.
  */
 export async function getLearnerIdFromCookies(): Promise<string | undefined> {
   const identity = await getAuthIdentity();
-  return identity?.learnerId;
+  if (identity) return identity.learnerId;
+  const guestId = await readGuestIdFromCookies();
+  return guestId ?? undefined;
 }
 
 export async function getAuthIdentity(): Promise<AuthIdentity | null> {

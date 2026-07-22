@@ -46,6 +46,7 @@ export async function getDailyMissionDay(
     const raw = JSON.parse(await fs.readFile(dayPath(learnerId, dateKey), "utf8"));
     if (raw && typeof raw === "object" && Array.isArray(raw.steps)) {
       raw.budgetMinutes = raw.budgetMinutes ?? 30;
+      raw.plannerMode = raw.plannerMode ?? "min_30";
       raw.steps = raw.steps.map((s: Record<string, unknown>) => ({
         ...s,
         priority: s.priority ?? 3,
@@ -99,31 +100,74 @@ export async function saveDailyStreak(streak: DailyStreak): Promise<void> {
   await fs.rename(tmp, file);
 }
 
-export async function getOrCreateTodayMission(input: {
+function buildMissionDayRecord(input: {
   learnerId: string;
+  dateKey: string;
   signals: MissionSignals;
   dailyMinutes: number;
-  now?: Date;
-}): Promise<DailyMissionDay> {
-  const now = input.now ?? new Date();
-  const dateKey = dateKeyFromDate(now);
-  const existing = await getDailyMissionDay(input.learnerId, dateKey);
-  if (existing) return existing;
-
+  nowIso: string;
+}): DailyMissionDay {
   const plan = buildDailyMissionPlan({
     signals: input.signals,
     dailyMinutes: input.dailyMinutes,
   });
 
-  const day: DailyMissionDay = {
+  return {
     learnerId: input.learnerId,
-    dateKey,
+    dateKey: input.dateKey,
     steps: plan.steps.map((s) => ({ ...s, done: false })),
     budgetMinutes: plan.budgetMinutes,
+    plannerMode: input.signals.plannerMode ?? "min_30",
+    estimatedItems: input.signals.estimatedItems,
+    estimateCs: input.signals.estimateCs,
+    compositionCs: input.signals.compositionCs,
+    replanNoteCs: input.signals.replanNoteCs ?? null,
     completedAt: null,
     knowledgeStrengthened: 0,
-    updatedAt: now.toISOString(),
+    updatedAt: input.nowIso,
   };
+}
+
+export async function getOrCreateTodayMission(input: {
+  learnerId: string;
+  signals: MissionSignals;
+  dailyMinutes: number;
+  now?: Date;
+  /** Force rebuild (mode change / gentle auto-replan). Never guilt. */
+  forceRebuild?: boolean;
+}): Promise<DailyMissionDay> {
+  const now = input.now ?? new Date();
+  const dateKey = dateKeyFromDate(now);
+  const existing = await getDailyMissionDay(input.learnerId, dateKey);
+  const mode = input.signals.plannerMode ?? "min_30";
+
+  if (existing?.completedAt) {
+    return existing;
+  }
+
+  if (existing && !input.forceRebuild) {
+    if ((existing.plannerMode ?? "min_30") === mode) {
+      return existing;
+    }
+  }
+
+  const day = buildMissionDayRecord({
+    learnerId: input.learnerId,
+    dateKey,
+    signals: input.signals,
+    dailyMinutes: input.dailyMinutes,
+    nowIso: now.toISOString(),
+  });
+
+  // If rebuilding unfinished day, keep done flags for matching step ids
+  if (existing) {
+    const doneIds = new Set(existing.steps.filter((s) => s.done).map((s) => s.id));
+    day.steps = day.steps.map((s) =>
+      doneIds.has(s.id) ? { ...s, done: true } : s,
+    );
+    day.knowledgeStrengthened = estimateKnowledgeStrengthened(day.steps);
+  }
+
   await saveDailyMissionDay(day);
   return day;
 }

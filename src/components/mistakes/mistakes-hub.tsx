@@ -10,6 +10,7 @@ import {
   listMasteredMemories,
   mistakeClassLabelsCs,
   mistakeStatusLabelsCs,
+  prioritizeMistakeQueue,
   type ErrorMemory,
   type ErrorMemoryBook,
   type MistakeClass,
@@ -45,7 +46,7 @@ export function MistakesHub({
     return book.memories.find((m) => m.id === id) ?? null;
   }, [session, book]);
 
-  const active = book ? listActiveMemories(book) : [];
+  const active = book ? prioritizeMistakeQueue(listActiveMemories(book)) : [];
   const mastered = book ? listMasteredMemories(book) : [];
 
   function startPractice() {
@@ -171,7 +172,21 @@ export function MistakesHub({
               <p className="text-caption text-fg-muted">
                 Výskytů: {current.occurrenceCount} · Pokusů o nápravu:{" "}
                 {current.recoveryAttempts}
+                {current.nextReviewAt
+                  ? ` · Další review: ${new Date(current.nextReviewAt).toLocaleString("cs-CZ")}`
+                  : ""}
               </p>
+              {current.sourceLabel || current.sourceExcerpt ? (
+                <div>
+                  <p className="text-caption text-fg-muted">Zdroj</p>
+                  <p className="text-body-sm text-fg-secondary">
+                    {current.sourceLabel ?? "Materiál"}
+                    {current.sourceExcerpt
+                      ? ` — ${current.sourceExcerpt.slice(0, 220)}`
+                      : ""}
+                  </p>
+                </div>
+              ) : null}
             </div>
           )}
         </div>
@@ -207,8 +222,8 @@ export function MistakesHub({
         <Badge tone="warning">Moje chyby</Badge>
         <h1 className="font-display text-display-md text-fg">Moje chyby</h1>
         <p className="text-body-md text-fg-secondary">
-          Ukládáme jen skutečné chyby z testů, mixed review a studia z materiálů.
-          Žádná ukázková data — jen to, co jsi opravdu odpověděl špatně.
+          Ukládáme jen skutečné chyby z testů a studia. Po jedné správné odpovědi
+          chybu nemazeme — historie zůstává, dokud ji několikrát neprokážeš.
         </p>
       </header>
 
@@ -348,18 +363,39 @@ function MemoryRow({ memory }: { memory: ErrorMemory }) {
         <StatusBadge status={memory.status} />
         <Badge tone="neutral">{mistakeClassLabelsCs[memory.errorType]}</Badge>
         <span className="text-caption text-fg-muted">
-          {memory.occurrenceCount}× · náprava {memory.recoveryAttempts}×
-        </span>
-        <span className="text-caption text-fg-muted">
-          naposledy{" "}
-          {new Date(memory.lastOccurredAt).toLocaleDateString("cs-CZ")}
+          {memory.occurrenceCount}× chyba · náprava {memory.recoveryAttempts}×
         </span>
       </div>
       <p className="mt-2 font-display text-body-md text-fg">{memory.question}</p>
       <p className="mt-1 text-body-sm text-fg-secondary">
+        <span className="text-fg-muted">Koncept:</span>{" "}
+        {memory.knowledgeUnit.title}
+      </p>
+      <p className="mt-1 text-body-sm text-fg-secondary">
         <span className="text-fg-muted">Ty:</span> {memory.studentAnswer}
-        {" · "}
-        <span className="text-fg-muted">Správně:</span> {memory.correctConcept}
+      </p>
+      <p className="mt-1 text-body-sm text-fg">
+        <span className="text-fg-muted">Správný princip:</span>{" "}
+        {memory.correctConcept}
+      </p>
+      <p className="mt-1 text-body-sm text-fg-secondary">
+        <span className="text-fg-muted">Proč špatně:</span> {memory.whyWrong}
+      </p>
+      {(memory.sourceLabel || memory.sourceExcerpt) && (
+        <p className="mt-2 text-caption text-fg-muted">
+          Zdroj: {memory.sourceLabel ?? "studijní materiál"}
+          {memory.sourceExcerpt
+            ? ` — „${memory.sourceExcerpt.slice(0, 160)}${memory.sourceExcerpt.length > 160 ? "…" : ""}“`
+            : ""}
+        </p>
+      )}
+      <p className="mt-1 text-caption text-fg-muted">
+        Další opakování:{" "}
+        {memory.nextReviewAt
+          ? new Date(memory.nextReviewAt).toLocaleString("cs-CZ")
+          : memory.status === "mastered"
+            ? "zvládnuto (historie zůstává)"
+            : "co nejdřív"}
       </p>
     </li>
   );

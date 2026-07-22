@@ -94,10 +94,11 @@ export function ReadinessHub({
       <header className="space-y-3 text-center sm:text-left">
         <Badge tone="brand">Připravenost</Badge>
         <h1 className="font-display text-display-md text-fg">
-          Maturita Score
+          Připravenost
         </h1>
         <p className="text-body-sm text-fg-secondary">
-          Šest dimenzí z reálné evidence. Bez dostatku pokusů číslo neukazujeme.
+          Odhad z cvičení a opakování — ne přesná šance, že maturitu dáš.
+          Číslo ukážeme až po dostatku hodnocených pokusů.
         </p>
       </header>
 
@@ -105,7 +106,7 @@ export function ReadinessHub({
         {confident && displayPct != null ? (
           <Score
             value={displayPct}
-            label="MATURITA SCORE"
+            label="PŘIPRAVENOST"
             mastery={readinessToScoreMastery(displayPct)}
             size="lg"
           />
@@ -113,7 +114,7 @@ export function ReadinessHub({
           <div
             className="flex h-32 w-32 flex-col items-center justify-center rounded-full border-2 border-dashed border-border bg-subtle/40"
             role="img"
-            aria-label="Nedostatek evidence pro spolehlivé skóre"
+            aria-label="Málo ověřených výsledků pro spolehlivý odhad"
           >
             <span className="font-display text-2xl text-fg-muted">—</span>
             <span className="mt-1 px-2 text-center text-caption text-fg-muted">

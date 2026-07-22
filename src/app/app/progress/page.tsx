@@ -3,10 +3,12 @@ import Link from "next/link";
 import { ReadinessHub } from "@/components/readiness/readiness-hub";
 import { ProgressMotivationPanel } from "@/components/progress/progress-motivation-panel";
 import { LearningCelebrationQueue } from "@/components/progress/learning-celebration-queue";
+import { ProgressEvidencePanel } from "@/components/progress/progress-evidence-panel";
 import { AppPageHeader } from "@/components/shell/app-screen";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getReadinessHubAction } from "@/server/actions/readiness";
 import { getProgressMotivationAction } from "@/server/actions/progress-gamification";
+import { getProgressEvidenceAction } from "@/server/actions/progress-evidence";
 
 export const metadata: Metadata = { title: "Pokrok" };
 export const dynamic = "force-dynamic";
@@ -15,9 +17,11 @@ export default async function ProgressPage() {
   const [
     { snapshot, learnerId, hasBook },
     { view: progressView, celebrations },
+    { view: evidenceView },
   ] = await Promise.all([
     getReadinessHubAction(),
     getProgressMotivationAction(),
+    getProgressEvidenceAction(),
   ]);
 
   return (
@@ -25,10 +29,10 @@ export default async function ProgressPage() {
       <div className="mx-auto w-full max-w-3xl space-y-6">
         <AppPageHeader
           title="Pokrok"
-          purpose="Kde stojíš podle mastery — ne predikce, že maturitu dáš. Oslavujeme reálný postup; XP nepřidává do připravenosti."
+          purpose="Jak dobře to umíš — podle toho, co opravdu vybavíš. Ne předpověď maturity. Body XP nepřidávají do připravenosti."
           primaryAction={{
-            label: "1 minuta",
-            href: "/app/minute",
+            label: "Procvičit chyby",
+            href: "/app/mistakes",
           }}
           secondaryAction={{
             label: "Zpět na Dnes",
@@ -46,6 +50,7 @@ export default async function ProgressPage() {
         {celebrations.length > 0 ? (
           <LearningCelebrationQueue initial={celebrations} />
         ) : null}
+        {evidenceView ? <ProgressEvidencePanel view={evidenceView} /> : null}
         {progressView ? (
           <div className="space-y-3">
             <ProgressMotivationPanel view={progressView} />

@@ -19,7 +19,10 @@ import {
   type OnboardingStepId,
 } from "@/domain/onboarding/schema";
 import { track } from "@/lib/analytics";
-import { saveOnboardingAction } from "@/server/actions/onboarding";
+import {
+  saveOnboardingAction,
+  skipOnboardingAction,
+} from "@/server/actions/onboarding";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +33,8 @@ import { cn } from "@/lib/cn";
 type WizardProps = {
   mode: "create" | "edit";
   initial?: Partial<OnboardingInput>;
+  /** Show “Přeskočit a začít se učit” on every step (guest / optional onboarding). */
+  allowSkip?: boolean;
 };
 
 const defaultDraft: OnboardingInput = {
@@ -82,7 +87,11 @@ function ChoiceButton({
   );
 }
 
-export function OnboardingWizard({ mode, initial }: WizardProps) {
+export function OnboardingWizard({
+  mode,
+  initial,
+  allowSkip = true,
+}: WizardProps) {
   const router = useRouter();
   const [stepIndex, setStepIndex] = useState(0);
   const [draft, setDraft] = useState<OnboardingInput>({
@@ -172,6 +181,23 @@ export function OnboardingWizard({ mode, initial }: WizardProps) {
       } else {
         router.push("/app/dashboard");
       }
+      router.refresh();
+    });
+  }
+
+  function skipAndLearn() {
+    setFormError(null);
+    startTransition(async () => {
+      const result = await skipOnboardingAction({
+        displayName: draft.displayName.trim() || undefined,
+        targetDate: draft.targetDate || undefined,
+        dailyMinutes: draft.dailyMinutes || undefined,
+      });
+      if (!result.ok) {
+        setFormError(result.error);
+        return;
+      }
+      router.push("/app/learn");
       router.refresh();
     });
   }
@@ -478,6 +504,17 @@ export function OnboardingWizard({ mode, initial }: WizardProps) {
                 : "Vytvořit plán"
               : "Pokračovat"}
         </Button>
+        {allowSkip && mode === "create" ? (
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={skipAndLearn}
+            disabled={pending}
+            className="min-w-[10rem]"
+          >
+            Přeskočit a začít se učit
+          </Button>
+        ) : null}
       </div>
 
       {pending ? (

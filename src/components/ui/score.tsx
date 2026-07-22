@@ -14,7 +14,7 @@ const masteryLabel: Record<MasteryLevel, string> = {
   fragile: "Křehké",
   stable: "Stabilní",
   proficient: "Jisté",
-  mastered: "Mastery",
+  mastered: "Zvládnuto",
 };
 
 const masteryColor: Record<MasteryLevel, string> = {

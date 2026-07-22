@@ -111,7 +111,7 @@ export async function getIngestedDocumentMeta(
   );
   if (!hit) {
     throw new Error(
-      `Ingested document „${filename}“ nenalezen — spusť npm run ingest`,
+      `Dokument „${filename}“ zatím není dostupný v připraveném obsahu.`,
     );
   }
   const documentId = hit[1]!;

@@ -160,39 +160,74 @@ export type CermatRequirementItem = {
  */
 export const CERMAT_CJL_REQUIREMENTS: CermatRequirementItem[] = [
   {
-    id: "cermat-didactic-test",
+    id: "cermat-cjl-dt-1.1",
     category: "didactic",
-    titleCs: "Didaktický test ČJL",
+    titleCs: "1.1 Pravopis (CERMAT katalog)",
     detailCs:
-      "Společná část maturity od CERMAT — porozumění textu, jazyk, literatura v testové podobě. Stejná napříč školami.",
+      "Ovládá pravidla českého pravopisu — společná část, didaktický test 2025/2026.",
   },
   {
-    id: "cermat-didactic-language",
+    id: "cermat-cjl-dt-1.2",
     category: "didactic",
-    titleCs: "Jazyková a stylistická rovina",
+    titleCs: "1.2 Slovotvorba a morfologie",
     detailCs:
-      "Pravopis, morfologie, syntax, stylistika a práce s textem v rámci didaktického testu CERMAT.",
+      "Slovotvorná a morfologická analýza slovního tvaru (katalog CERMAT §1.2).",
   },
   {
-    id: "cermat-didactic-literature",
+    id: "cermat-cjl-dt-1.3",
     category: "didactic",
-    titleCs: "Literární vědomosti v testu",
+    titleCs: "1.3 Význam pojmenování",
     detailCs:
-      "Orientace v literárních směrech, žánrech a textech — v rozsahu CERMAT katalogu, ne školního seznamu k ústní.",
+      "Význam v kontextu, synonyma/antonyma, obraznost (katalog CERMAT §1.3).",
   },
   {
-    id: "cermat-writing-assignment",
-    category: "writing",
-    titleCs: "Písemná práce — zadání CERMAT",
+    id: "cermat-cjl-dt-1.4",
+    category: "didactic",
+    titleCs: "1.4 Syntax věty a souvětí",
     detailCs:
-      "Slohové zadání vychází z CERMAT. Kritéria a organizace u vás mohou být školní — ty patří do vrstvy Škola.",
+      "Syntaktická analýza věty jednoduché a souvětí (katalog CERMAT §1.4).",
+  },
+  {
+    id: "cermat-cjl-dt-1.5",
+    category: "didactic",
+    titleCs: "1.5 Porozumění textu",
+    detailCs:
+      "Porozumění celému textu i jeho částem (katalog CERMAT §1.5).",
+  },
+  {
+    id: "cermat-cjl-dt-1.6",
+    category: "didactic",
+    titleCs: "1.6 Charakter / funkce / styl textu",
+    detailCs:
+      "Účel, funkce, funkční styl a komunikační situace (katalog CERMAT §1.6).",
+  },
+  {
+    id: "cermat-cjl-dt-1.7",
+    category: "didactic",
+    titleCs: "1.7 Výstavba textu / koheze",
+    detailCs:
+      "Analýza výstavby výpovědi a textu (katalog CERMAT §1.7).",
+  },
+  {
+    id: "cermat-cjl-dt-1.8",
+    category: "didactic",
+    titleCs: "1.8 Literární historie",
+    detailCs:
+      "Orientace ve vývoji české a světové literatury / směry (katalog CERMAT §1.8). Ne školní ústní seznam.",
+  },
+  {
+    id: "cermat-cjl-dt-1.9",
+    category: "didactic",
+    titleCs: "1.9 Literární teorie",
+    detailCs:
+      "Aplikace literární teorie na text (katalog CERMAT §1.9). Ne školní ústní seznam.",
   },
   {
     id: "cermat-not-oral-list",
     category: "oral",
     titleCs: "Ústní není CERMAT seznam",
     detailCs:
-      "Ústní zkouška a školní seznam literatury nejsou součástí společného CERMAT testu — doplň je ve vrstvě Škola / Moje materiály.",
+      "Ústní zkouška a školní seznam literatury nejsou součástí společného CERMAT didaktického testu — doplň je ve vrstvě Škola / Moje materiály.",
   },
 ];
 

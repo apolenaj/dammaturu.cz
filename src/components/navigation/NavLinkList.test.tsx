@@ -4,7 +4,7 @@ import { NavLinkList } from "@/components/navigation/NavLinkList";
 import { appPrimaryNav } from "@/lib/navigation";
 
 vi.mock("next/navigation", () => ({
-  usePathname: () => "/app/review",
+  usePathname: () => "/app/progress",
 }));
 
 vi.mock("next/link", () => ({
@@ -38,7 +38,7 @@ describe("NavLinkList active states", () => {
       <NavLinkList items={appPrimaryNav} variant="bottom" showShortLabel />,
     );
 
-    const active = screen.getByRole("link", { name: /Opak/i });
+    const active = screen.getByRole("link", { name: /Pokrok/i });
     expect(active).toHaveAttribute("aria-current", "page");
 
     const inactive = screen.getByRole("link", { name: /^Dnes$/i });

@@ -65,8 +65,13 @@ export async function submitQuestionAttemptAction(input: {
   | Fail
 > {
   try {
-    const learnerId = await getLearnerIdFromCookies();
-    if (!learnerId) return { ok: false, error: "Nejdřív dokonči onboarding." };
+    const { resolveLearnerIdForAction } = await import(
+      "@/server/viewer-session"
+    );
+    const learnerId = await resolveLearnerIdForAction();
+    if (!learnerId) {
+      return { ok: false, error: "Nepodařilo se připravit studijní session." };
+    }
     const pack = await getQuestionPackBySlug(input.packSlug);
     if (!pack) return { ok: false, error: "Balíček nenalezen." };
     const { progress, grade, question } = await submitQuestionAttempt({

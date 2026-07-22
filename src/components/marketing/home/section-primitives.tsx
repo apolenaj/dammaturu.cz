@@ -9,8 +9,8 @@ const linkSecondary =
 
 export function CtaPair({
   className,
-  primaryHref = "/registrace",
-  primaryLabel = "Začít zdarma",
+  primaryHref = "/app/learn",
+  primaryLabel = "Začít se učit bez registrace",
   secondaryHref = "/jak-to-funguje",
   secondaryLabel = "Jak to funguje",
 }: {

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getAuthIdentity } from "@/server/learner-session";
+import { ensureGuestLearner } from "@/server/guest/ensure-guest-learner";
+import { getViewerSession } from "@/server/viewer-session";
 import { getLearnerMaterial } from "@/server/learner-materials/store";
 import { collectMaterialTopics } from "@/server/learner-materials/materials-session-build";
 import { assertSameOriginRequest } from "@/server/security/upload-validation";
@@ -20,12 +21,15 @@ export async function POST(request: Request) {
     );
   }
 
-  const identity = await getAuthIdentity();
-  if (!identity) {
+  const viewer = await getViewerSession({ createGuestIfMissing: true });
+  if (!viewer) {
     return NextResponse.json(
-      { ok: false, error: "Nejdřív se přihlas." },
+      { ok: false, error: "Nepodařilo se připravit studijní session." },
       { status: 401 },
     );
+  }
+  if (viewer.kind === "guest") {
+    await ensureGuestLearner(viewer.learnerId);
   }
 
   let json: unknown;
@@ -48,7 +52,7 @@ export async function POST(request: Request) {
 
   const materials = [];
   for (const id of [...new Set(parsed.data.materialIds)].slice(0, 8)) {
-    const m = await getLearnerMaterial(identity.learnerId, id);
+    const m = await getLearnerMaterial(viewer.learnerId, id);
     if (m?.status === "ready") materials.push(m);
   }
   if (!materials.length) {

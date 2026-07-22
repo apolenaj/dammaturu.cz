@@ -52,15 +52,19 @@ export function ProgressMotivationPanel({
           value={`${view.weeklyGoal.completedDays}/${view.weeklyGoal.targetDays}`}
           hint={view.weeklyGoal.remainingCs}
         />
-        <Metric label="Streak" value={view.streak.labelCs} />
+        <Metric label="Série" value={view.streak.labelCs} />
         <Metric
-          label="Mastery"
+          label="Zvládnutí"
           value={
             view.mastery.overallPct != null
               ? `${view.mastery.overallPct} %`
               : "—"
           }
-          hint={`${view.mastery.masteredKuCount} KU mastered`}
+          hint={
+            view.mastery.masteredKuCount === 1
+              ? "1 zvládnutý bod"
+              : `${view.mastery.masteredKuCount} zvládnutých bodů`
+          }
           href="/app/progress"
         />
       </div>
@@ -69,7 +73,7 @@ export function ProgressMotivationPanel({
         <>
           <div>
             <p className="text-caption font-semibold uppercase tracking-wider text-fg-muted">
-              Milestones ({unlockedCount}/{view.milestones.length})
+              Milníky ({unlockedCount}/{view.milestones.length})
             </p>
             <ul className="mt-2 space-y-2">
               {view.milestones.map((m) => (

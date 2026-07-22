@@ -30,15 +30,15 @@ async function ensureDirs(): Promise<void> {
 }
 
 export async function getCermatPack(): Promise<CermatPack> {
+  // Code pack is source of truth (curriculum-aligned branding + items).
+  const pack = buildCermatCjlPrepPack();
   try {
-    const raw = JSON.parse(await fs.readFile(PACK_PATH, "utf8"));
-    return cermatPackSchema.parse(raw);
-  } catch {
-    const pack = buildCermatCjlPrepPack();
     await ensureDirs();
     await fs.writeFile(PACK_PATH, `${JSON.stringify(pack, null, 2)}\n`, "utf8");
-    return pack;
+  } catch {
+    // Non-fatal — practice can run from memory.
   }
+  return pack;
 }
 
 export async function getCermatProgress(

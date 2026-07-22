@@ -6,14 +6,15 @@ import { buildZachranMePlanAction } from "@/server/actions/zachran-me";
 import {
   zachranMeBucketHintsCs,
   zachranMeBucketLabelsCs,
-  zachranMeComponentHintsCs,
-  zachranMeComponentLabelsCs,
-  zachranMeComponents,
   zachranMeConfig,
+  zachranMeScopeHintsCs,
+  zachranMeScopeLabelsCs,
+  zachranMeScopes,
+  type HorizonBlock,
   type PriorityItem,
   type ZachranMeBucket,
-  type ZachranMeComponent,
   type ZachranMePlan,
+  type ZachranMeScope,
 } from "@/domain/learning/zachran-me";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -25,42 +26,30 @@ export function ZachranMeWizard({
 }: {
   defaults: {
     examDate: string;
-    availableHours: number;
-    components: ZachranMeComponent[];
+    dailyMinutes: number;
+    scope: ZachranMeScope;
   };
 }) {
   const [examDate, setExamDate] = useState(
     defaults.examDate || zachranMeConfig.betaTargetDate,
   );
-  const [availableHours, setAvailableHours] = useState(
-    defaults.availableHours || 1,
+  const [dailyMinutes, setDailyMinutes] = useState(
+    defaults.dailyMinutes || zachranMeConfig.defaultDailyMinutes,
   );
-  const [selected, setSelected] = useState<ZachranMeComponent[]>(
-    defaults.components.length
-      ? defaults.components
-      : [...zachranMeComponents],
+  const [scope, setScope] = useState<ZachranMeScope>(
+    defaults.scope || "both",
   );
   const [plan, setPlan] = useState<ZachranMePlan | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
-
-  function toggleComponent(c: ZachranMeComponent) {
-    setSelected((prev) => {
-      if (prev.includes(c)) {
-        if (prev.length === 1) return prev;
-        return prev.filter((x) => x !== c);
-      }
-      return [...prev, c];
-    });
-  }
 
   function submit() {
     setError(null);
     startTransition(async () => {
       const res = await buildZachranMePlanAction({
         examDate,
-        availableHours,
-        components: selected,
+        dailyMinutes,
+        scope,
       });
       if (!res.ok) {
         setError(res.error);
@@ -76,11 +65,12 @@ export function ZachranMeWizard({
       <header className="space-y-2">
         <Badge tone="danger">Zachraň mě</Badge>
         <h1 className="font-display text-display-md text-fg">
-          Nouzový plánovač
+          Triáž před termínem
         </h1>
         <p className="text-body-md text-fg-secondary">
-          Termín maturity × dostupné hodiny × složky, které app opravdu umí.
-          Výstup: triáž + přesná příští session — ne náhodný cram.
+          Termín × minuty denně × rozsah (materiály / CERMAT). Výstup: tři
+          priority a konkrétní plán Dnes / Zítra / Tento týden — bez falešné
+          přesnosti.
         </p>
       </header>
 
@@ -88,7 +78,7 @@ export function ZachranMeWizard({
         <section className="space-y-5 rounded-2xl border border-border bg-subtle/30 px-4 py-5">
           <div className="space-y-2">
             <label className="text-caption font-semibold uppercase tracking-wider text-fg-muted">
-              Skutečný termín maturity
+              Termín maturity
             </label>
             <input
               type="date"
@@ -100,38 +90,40 @@ export function ZachranMeWizard({
 
           <div className="space-y-2">
             <label className="text-caption font-semibold uppercase tracking-wider text-fg-muted">
-              Dostupné hodiny teď
+              Dostupné minuty denně
             </label>
             <input
               type="number"
-              min={0.5}
-              max={12}
-              step={0.5}
-              value={availableHours}
+              min={zachranMeConfig.minDailyMinutes}
+              max={zachranMeConfig.maxDailyMinutes}
+              step={5}
+              value={dailyMinutes}
               onChange={(e) =>
-                setAvailableHours(
-                  Number.parseFloat(e.target.value || "1"),
+                setDailyMinutes(
+                  Number.parseInt(e.target.value || "30", 10),
                 )
               }
               className="w-full rounded-md border border-border bg-canvas px-3 py-2.5 text-body-md text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
             />
             <p className="text-caption text-fg-secondary">
-              Kolik hodin máš teď na studium (0,5–12). Z toho složíme session.
+              Reálný denní rozpočet ({zachranMeConfig.minDailyMinutes}–
+              {zachranMeConfig.maxDailyMinutes} min). Podle něj skládáme Dnes a
+              Zítra.
             </p>
           </div>
 
           <fieldset className="space-y-2">
             <legend className="text-caption font-semibold uppercase tracking-wider text-fg-muted">
-              Složky maturity (jen podporované)
+              Rozsah studia
             </legend>
             <ul className="space-y-2">
-              {zachranMeComponents.map((c) => {
-                const on = selected.includes(c);
+              {zachranMeScopes.map((s) => {
+                const on = scope === s;
                 return (
-                  <li key={c}>
+                  <li key={s}>
                     <button
                       type="button"
-                      onClick={() => toggleComponent(c)}
+                      onClick={() => setScope(s)}
                       className={cn(
                         "w-full rounded-xl border px-3 py-3 text-left transition",
                         on
@@ -140,10 +132,10 @@ export function ZachranMeWizard({
                       )}
                     >
                       <p className="font-semibold text-fg">
-                        {zachranMeComponentLabelsCs[c]}
+                        {zachranMeScopeLabelsCs[s]}
                       </p>
                       <p className="text-caption text-fg-secondary">
-                        {zachranMeComponentHintsCs[c]}
+                        {zachranMeScopeHintsCs[s]}
                       </p>
                     </button>
                   </li>
@@ -151,8 +143,8 @@ export function ZachranMeWizard({
               })}
             </ul>
             <p className="text-caption text-fg-muted">
-              Matematika, AJ a další předměty tu nejsou — v appce pro ně zatím
-              není příprava.
+              Matematika, AJ a další předměty tu nejsou — appka je zatím
+              nepřipravuje.
             </p>
           </fieldset>
 
@@ -163,7 +155,7 @@ export function ZachranMeWizard({
           ) : null}
 
           <Button fullWidth disabled={pending} onClick={submit}>
-            {pending ? "Počítám…" : "Spočítat nouzový plán"}
+            {pending ? "Sestavuji triáž…" : "Sestavit triáž"}
           </Button>
         </section>
       ) : (
@@ -192,79 +184,109 @@ function ZachranMePlanView({
         {plan.manifestoCs}
       </Alert>
 
-      <div className="rounded-2xl border border-action/40 bg-action/5 px-4 py-4 space-y-2">
+      {plan.analysis.evidenceDisclaimerCs ? (
+        <Alert title="Upřímně k evidenci" tone="neutral">
+          {plan.analysis.evidenceDisclaimerCs}
+        </Alert>
+      ) : null}
+
+      <div className="space-y-2 rounded-2xl border border-action/40 bg-action/5 px-4 py-4">
         <p className="text-caption font-semibold uppercase tracking-wider text-fg-muted">
-          Analýza
+          Situace
         </p>
         <p className="font-display text-xl text-fg">
           {plan.analysis.timePressureLabelCs} · zbývá {plan.daysRemaining} dní
         </p>
         <p className="text-body-sm text-fg-secondary">
-          Termín {plan.examDateLabelCs} · {plan.availableHours} h k dispozici ·{" "}
-          {plan.componentLabelsCs.join(" · ")}
-          {plan.analysis.overallReadinessPct != null
-            ? ` · readiness ${plan.analysis.overallReadinessPct} %`
-            : ""}
+          Termín {plan.examDateLabelCs} · {plan.dailyMinutes} min/den ·{" "}
+          {plan.scopeLabelCs}
         </p>
-        {plan.analysis.weakComponentLabelsCs.length > 0 ? (
+        <p className="text-caption text-fg-muted">
+          Orientačně cca {plan.analysis.studyDaysEstimate} studijních dní ·
+          fronta: {plan.analysis.remainingUnitsTotal} jednotek ·{" "}
+          {plan.analysis.repeatedErrorsTotal} chybových signálů ·{" "}
+          {plan.analysis.overdueReviewsTotal} splatných
+        </p>
+        {plan.analysis.weakLaneLabelsCs.length > 0 ? (
           <p className="text-caption text-fg-muted">
-            Relativně slabší složky:{" "}
-            {plan.analysis.weakComponentLabelsCs.join(" · ")}
+            Relativně slabší linie:{" "}
+            {plan.analysis.weakLaneLabelsCs.join(" · ")}
           </p>
         ) : null}
       </div>
 
       <section className="space-y-3 rounded-2xl border border-danger/40 bg-danger/5 px-4 py-4">
         <div>
-          <h2 className="font-display text-xl text-fg">
-            Příští studijní session
-          </h2>
+          <h2 className="font-display text-xl text-fg">Dnešní plán</h2>
           <p className="text-body-sm text-fg-secondary">
-            {plan.nextSession.directiveCs}
-          </p>
-          <p className="mt-1 text-caption text-fg-muted">
-            {plan.nextSession.totalMinutes} min z{" "}
-            {plan.nextSession.availableMinutes} min rozpočtu
+            {plan.horizon.today.noteCs}
           </p>
         </div>
-        <ol className="space-y-2">
-          {plan.nextSession.steps.map((step) => (
-            <li key={step.itemId}>
-              <Link
-                href={step.href}
-                className="block rounded-xl border border-border bg-canvas px-3 py-3 hover:border-action"
-              >
-                <p className="font-semibold text-fg">
-                  {step.order}. {step.titleCs}
-                </p>
-                <p className="text-caption text-fg-secondary">
-                  {step.componentLabelCs} · ~{step.estimatedMinutes} min
-                </p>
-                <p className="mt-0.5 text-caption text-fg-muted">
-                  {step.reasonCs}
-                </p>
-              </Link>
-            </li>
-          ))}
-        </ol>
+        <HorizonList block={plan.horizon.today} />
         <Link
-          href={plan.nextSession.startHref}
-          className="inline-flex min-h-11 items-center rounded-md bg-action px-4 text-body-sm font-semibold text-fg-on-brand"
+          href={plan.startTodayHref}
+          className="inline-flex min-h-11 w-full items-center justify-center rounded-md bg-action px-4 text-body-sm font-semibold text-fg-on-brand"
         >
-          Začít session
+          {plan.ctaLabelCs}
         </Link>
       </section>
 
+      <HorizonSection block={plan.horizon.tomorrow} />
+      <HorizonSection block={plan.horizon.thisWeek} />
+
       <Bucket id="must_know" items={plan.mustKnow} tone="danger" />
-      <Bucket id="high_impact" items={plan.highImpact} tone="action" />
-      <Bucket id="should_know" items={plan.shouldKnow} tone="warning" />
+      <Bucket id="important" items={plan.important} tone="action" />
       <Bucket id="if_time" items={plan.ifTime} tone="neutral" />
-      <Bucket id="already_knows" items={plan.alreadyKnows} tone="success" />
 
       <Button variant="ghost" onClick={onReset}>
         Přepočítat
       </Button>
     </div>
+  );
+}
+
+function HorizonSection({ block }: { block: HorizonBlock }) {
+  if (block.steps.length === 0) {
+    return (
+      <section className="space-y-1 rounded-xl border border-border px-4 py-3">
+        <h2 className="font-display text-lg text-fg">{block.titleCs}</h2>
+        <p className="text-caption text-fg-secondary">{block.noteCs}</p>
+      </section>
+    );
+  }
+  return (
+    <section className="space-y-2 rounded-xl border border-border px-4 py-3">
+      <div>
+        <h2 className="font-display text-lg text-fg">{block.titleCs}</h2>
+        <p className="text-caption text-fg-secondary">{block.noteCs}</p>
+      </div>
+      <HorizonList block={block} />
+    </section>
+  );
+}
+
+function HorizonList({ block }: { block: HorizonBlock }) {
+  if (block.steps.length === 0) return null;
+  return (
+    <ol className="space-y-2">
+      {block.steps.map((step) => (
+        <li key={`${block.key}-${step.itemId}`}>
+          <Link
+            href={step.href}
+            className="block rounded-xl border border-border bg-canvas px-3 py-3 hover:border-action"
+          >
+            <p className="font-semibold text-fg">
+              {step.order}. {step.titleCs}
+            </p>
+            <p className="text-caption text-fg-secondary">
+              {step.laneLabelCs} · {zachranMeBucketLabelsCs[step.bucket]} · ~
+              {step.estimatedMinutes} min
+            </p>
+            <p className="mt-0.5 text-caption text-fg-muted">{step.reasonCs}</p>
+          </Link>
+        </li>
+      ))}
+    </ol>
   );
 }
 
@@ -275,7 +297,7 @@ function Bucket({
 }: {
   id: ZachranMeBucket;
   items: PriorityItem[];
-  tone: "action" | "danger" | "neutral" | "success" | "warning";
+  tone: "action" | "danger" | "neutral";
 }) {
   if (items.length === 0) return null;
   const border =
@@ -283,11 +305,7 @@ function Bucket({
       ? "border-action/40"
       : tone === "danger"
         ? "border-danger/40"
-        : tone === "success"
-          ? "border-success/30"
-          : tone === "warning"
-            ? "border-warning/40"
-            : "border-border";
+        : "border-border";
 
   return (
     <section className={cn("space-y-2 rounded-xl border px-4 py-3", border)}>
@@ -306,14 +324,13 @@ function Bucket({
               href={item.href}
               className="block rounded-lg px-2 py-2 hover:bg-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
             >
-              <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <p className="font-medium text-fg">{item.titleCs}</p>
-                <span className="tabular-nums text-caption text-fg-muted">
-                  {item.impactScore.toFixed(3)}
-                </span>
-              </div>
+              <p className="font-medium text-fg">{item.titleCs}</p>
               <p className="text-caption text-fg-secondary">
-                {item.componentLabelCs} · readiness {item.readinessPct}% · ~
+                {item.laneLabelCs}
+                {item.hasLearningEvidence && item.masteryPct != null
+                  ? ` · mastery evidence ~${item.masteryPct} %`
+                  : " · bez falešného %"}
+                {" · ~"}
                 {item.estimatedMinutes} min
               </p>
               <p className="mt-0.5 text-caption text-fg-muted">{item.detailCs}</p>

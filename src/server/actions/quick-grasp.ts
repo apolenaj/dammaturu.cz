@@ -8,6 +8,7 @@ import {
   type QuickGraspProgress,
 } from "@/domain/learning/quick-grasp";
 import { getLearnerIdFromCookies } from "@/server/learner-session";
+import { resolveLearnerIdForAction } from "@/server/viewer-session";
 import {
   getQuickGraspPackBySlug,
   getQuickGraspProgress,
@@ -50,9 +51,9 @@ export async function answerMicroAction(input: {
   choiceIndex: number;
 }): Promise<QuickGraspActionResult> {
   try {
-    const learnerId = await getLearnerIdFromCookies();
+    const learnerId = await resolveLearnerIdForAction();
     if (!learnerId) {
-      return { ok: false, error: "Nejdřív dokonči onboarding." };
+      return { ok: false, error: "Nepodařilo se připravit studijní session." };
     }
     const pack = await getQuickGraspPackBySlug(input.packSlug);
     if (!pack) return { ok: false, error: "Pack nenalezen." };
@@ -110,9 +111,9 @@ export async function answerCheckpointAction(input: {
   answeredItemIds: string[];
 }): Promise<QuickGraspActionResult> {
   try {
-    const learnerId = await getLearnerIdFromCookies();
+    const learnerId = await resolveLearnerIdForAction();
     if (!learnerId) {
-      return { ok: false, error: "Nejdřív dokonči onboarding." };
+      return { ok: false, error: "Nepodařilo se připravit studijní session." };
     }
     const pack = await getQuickGraspPackBySlug(input.packSlug);
     if (!pack) return { ok: false, error: "Pack nenalezen." };

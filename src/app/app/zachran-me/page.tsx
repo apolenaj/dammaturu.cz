@@ -14,8 +14,8 @@ export default async function ZachranMePage() {
         <ZachranMeWizard
           defaults={{
             examDate: defaults.examDate,
-            availableHours: defaults.availableHours,
-            components: defaults.components,
+            dailyMinutes: defaults.dailyMinutes,
+            scope: defaults.scope,
           }}
         />
       </EntitlementGate>

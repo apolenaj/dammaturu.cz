@@ -273,13 +273,24 @@ export function CermatPrepHub({ initialView }: { initialView: CermatHubView }) {
   return (
     <div className="space-y-8">
       <header className="space-y-2">
-        <Badge tone="brand">CERMAT ČJL</Badge>
+        <Badge tone="brand">CERMAT příprava</Badge>
+        <p className="text-overline text-action">
+          Maturita CERMAT – Český jazyk a literatura
+        </p>
         <h1 className="font-display text-display-md text-fg">{view.titleCs}</h1>
         <p className="text-body-md text-fg-secondary">{view.summaryCs}</p>
         <Alert title="Důležité" tone="warning">
           {view.disclaimerCs}
         </Alert>
         <p className="text-caption text-fg-muted">{view.generatedOnlyNoticeCs}</p>
+        <p className="text-caption text-fg-muted">
+          Toto není režim Moje materiály. Školní ústní podklady a nahrané soubory
+          najdeš v{" "}
+          <Link href="/app/materials" className="font-semibold text-action">
+            Moje materiály
+          </Link>
+          .
+        </p>
       </header>
 
       <section className="space-y-3">

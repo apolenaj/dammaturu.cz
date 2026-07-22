@@ -128,6 +128,7 @@ describe("daily-dashboard (D-037)", () => {
         dateKey: "2026-07-20",
         steps,
         budgetMinutes: plan.budgetMinutes,
+        plannerMode: "min_30",
         completedAt: null,
         knowledgeStrengthened: 0,
         updatedAt: now.toISOString(),
