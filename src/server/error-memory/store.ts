@@ -71,20 +71,41 @@ export async function saveErrorBook(book: ErrorMemoryBook): Promise<void> {
   const validated = errorMemoryBookSchema.parse(book);
   await ensureDirs();
   const file = bookPath(validated.learnerId);
-  const tmp = `${file}.tmp`;
+  // Unique tmp avoids parallel create races (fixed .tmp → ENOENT on rename).
+  const tmp = `${file}.${process.pid}.${Date.now()}.${Math.random()
+    .toString(16)
+    .slice(2)}.tmp`;
   await fs.writeFile(tmp, `${JSON.stringify(validated, null, 2)}\n`, "utf8");
-  await fs.rename(tmp, file);
+  try {
+    await fs.rename(tmp, file);
+  } catch (error) {
+    await fs.unlink(tmp).catch(() => undefined);
+    throw error;
+  }
 }
+
+/** Collapse parallel getOrCreate for the same learner (layout/page / home view). */
+const errorBookInFlight = new Map<string, Promise<ErrorMemoryBook>>();
 
 export async function getOrCreateErrorBook(
   learnerId: string,
 ): Promise<ErrorMemoryBook> {
-  const existing = await getErrorBook(learnerId);
-  if (existing) return existing;
-  const now = new Date().toISOString();
-  const book = emptyErrorBook(learnerId, now);
-  await saveErrorBook(book);
-  return book;
+  const inflight = errorBookInFlight.get(learnerId);
+  if (inflight) return inflight;
+
+  const task = (async () => {
+    const existing = await getErrorBook(learnerId);
+    if (existing) return existing;
+    const now = new Date().toISOString();
+    const book = emptyErrorBook(learnerId, now);
+    await saveErrorBook(book);
+    return book;
+  })().finally(() => {
+    errorBookInFlight.delete(learnerId);
+  });
+
+  errorBookInFlight.set(learnerId, task);
+  return task;
 }
 
 export async function recordLearnerError(
@@ -108,9 +129,16 @@ async function saveSession(session: MistakePracticeSession): Promise<void> {
   const validated = mistakePracticeSessionSchema.parse(session);
   await ensureDirs();
   const file = sessionPath(validated.learnerId, validated.id);
-  const tmp = `${file}.tmp`;
+  const tmp = `${file}.${process.pid}.${Date.now()}.${Math.random()
+    .toString(16)
+    .slice(2)}.tmp`;
   await fs.writeFile(tmp, `${JSON.stringify(validated, null, 2)}\n`, "utf8");
-  await fs.rename(tmp, file);
+  try {
+    await fs.rename(tmp, file);
+  } catch (error) {
+    await fs.unlink(tmp).catch(() => undefined);
+    throw error;
+  }
 }
 
 export async function getMistakeSession(

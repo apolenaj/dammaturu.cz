@@ -39,9 +39,16 @@ export async function saveBillingSubscription(
   const validated = parseBillingSubscription(sub);
   await ensureDir();
   const file = statePath(validated.learnerId);
-  const tmp = `${file}.tmp`;
+  const tmp = `${file}.${process.pid}.${Date.now()}.${Math.random()
+    .toString(16)
+    .slice(2)}.tmp`;
   await fs.writeFile(tmp, `${JSON.stringify(validated, null, 2)}\n`, "utf8");
-  await fs.rename(tmp, file);
+  try {
+    await fs.rename(tmp, file);
+  } catch (error) {
+    await fs.unlink(tmp).catch(() => undefined);
+    throw error;
+  }
 }
 
 export async function getOrCreateBillingSubscription(

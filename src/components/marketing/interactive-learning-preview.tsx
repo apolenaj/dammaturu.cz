@@ -98,7 +98,7 @@ export function InteractiveLearningPreview({
           ) : null}
         </div>
       ) : (
-        <div className="mt-5 space-y-4">
+        <div className="mt-2.5 space-y-5">
           <StudyPhaseFrame phase="question">
             <h3 className="font-display text-lg font-semibold text-fg sm:text-xl">
               {item.prompt}

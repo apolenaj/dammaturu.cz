@@ -265,3 +265,19 @@ export function resolveEvidenceText(
     return ev.publishedStatement;
   });
 }
+
+/**
+ * UI-safe evidence resolve — never throws during render.
+ * Missing ids are skipped (pack integrity still enforced at seed time).
+ */
+export function safeResolveEvidenceText(
+  pack: StoryPack,
+  evidenceIds: string[],
+): string[] {
+  const out: string[] = [];
+  for (const id of evidenceIds) {
+    const ev = pack.evidence[id];
+    if (ev?.publishedStatement) out.push(ev.publishedStatement);
+  }
+  return out;
+}

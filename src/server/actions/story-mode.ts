@@ -3,11 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { track } from "@/lib/analytics";
 import type { StoryPack, StoryProgress } from "@/domain/learning/story-mode";
-import { getLearnerIdFromCookies } from "@/server/learner-session";
+import { resolveLearnerIdForAction } from "@/server/viewer-session";
 import {
   answerStoryChoice,
   continueStoryBeat,
-  getStoryPackBySlug,
+  ensureStoryPackBySlug,
   getStoryProgress,
   listStoryPacks,
 } from "@/server/story-mode/store";
@@ -20,12 +20,34 @@ export async function getStorySessionAction(slug: string): Promise<{
   pack: StoryPack | null;
   progress: StoryProgress | null;
   learnerId: string | null;
+  unavailableReason: string | null;
 }> {
-  const learnerId = (await getLearnerIdFromCookies()) ?? null;
-  const pack = await getStoryPackBySlug(slug);
-  const progress =
-    learnerId && pack ? await getStoryProgress(learnerId, pack.id) : null;
-  return { pack, progress, learnerId };
+  try {
+    const learnerId = await resolveLearnerIdForAction();
+    const pack = await ensureStoryPackBySlug(slug);
+    if (!pack) {
+      return {
+        pack: null,
+        progress: null,
+        learnerId,
+        unavailableReason:
+          "Příběh zatím není připravený — chybí ověřený materiál k tomuto tématu.",
+      };
+    }
+    const progress = learnerId
+      ? await getStoryProgress(learnerId, pack.id)
+      : null;
+    return { pack, progress, learnerId, unavailableReason: null };
+  } catch (error) {
+    console.error("[story-mode] session load failed", slug, error);
+    return {
+      pack: null,
+      progress: null,
+      learnerId: null,
+      unavailableReason:
+        "Příběh se teď nepodařilo načíst. Zkus to znovu nebo se vrať k materiálům.",
+    };
+  }
 }
 
 export type StoryActionResult =
@@ -37,9 +59,11 @@ export async function storyContinueAction(input: {
   beatId: string;
 }): Promise<StoryActionResult> {
   try {
-    const learnerId = await getLearnerIdFromCookies();
-    if (!learnerId) return { ok: false, error: "Nejdřív dokonči onboarding." };
-    const pack = await getStoryPackBySlug(input.packSlug);
+    const learnerId = await resolveLearnerIdForAction();
+    if (!learnerId) {
+      return { ok: false, error: "Relace není připravená. Obnov stránku." };
+    }
+    const pack = await ensureStoryPackBySlug(input.packSlug);
     if (!pack) return { ok: false, error: "Příběh nenalezen." };
     const progress = await continueStoryBeat({
       learnerId,
@@ -66,12 +90,14 @@ export async function storyAnswerAction(input: {
   totalItems?: number;
 }): Promise<StoryActionResult> {
   try {
-    const learnerId = await getLearnerIdFromCookies();
-    if (!learnerId) return { ok: false, error: "Nejdřív dokonči onboarding." };
-    const pack = await getStoryPackBySlug(input.packSlug);
+    const learnerId = await resolveLearnerIdForAction();
+    if (!learnerId) {
+      return { ok: false, error: "Relace není připravená. Obnov stránku." };
+    }
+    const pack = await ensureStoryPackBySlug(input.packSlug);
     if (!pack) return { ok: false, error: "Příběh nenalezen." };
     const beat = pack.beats.find((b) => b.id === input.beatId);
-    if (!beat) return { ok: false, error: "Beat nenalezen." };
+    if (!beat) return { ok: false, error: "Scéna nenalezena." };
 
     let correct = false;
     if (beat.type === "what_next") {
@@ -84,7 +110,7 @@ export async function storyAnswerAction(input: {
       if (!item) return { ok: false, error: "Položka nenalezena." };
       correct = input.choiceIndex === item.correctIndex;
     } else {
-      return { ok: false, error: "Tento beat se nehodnotí volbou." };
+      return { ok: false, error: "Tato scéna se nehodnotí volbou." };
     }
 
     const completeBeat =

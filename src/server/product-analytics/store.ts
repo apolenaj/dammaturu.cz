@@ -80,9 +80,16 @@ async function writeIndex(index: IndexFile): Promise<void> {
 async function appendEventFile(event: ProductEvent): Promise<void> {
   await ensureDirs();
   const file = eventPath(event.id);
-  const tmp = `${file}.tmp`;
+  const tmp = `${file}.${process.pid}.${Date.now()}.${Math.random()
+    .toString(16)
+    .slice(2)}.tmp`;
   await fs.writeFile(tmp, `${JSON.stringify(event, null, 2)}\n`, "utf8");
-  await fs.rename(tmp, file);
+  try {
+    await fs.rename(tmp, file);
+  } catch (error) {
+    await fs.unlink(tmp).catch(() => undefined);
+    throw error;
+  }
 
   const index = await readIndex();
   if (!index.eventIds.includes(event.id)) index.eventIds.push(event.id);

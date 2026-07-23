@@ -40,16 +40,32 @@ async function loadIndex(): Promise<PackIndex> {
 
 async function saveIndex(index: PackIndex) {
   await ensureDirs();
-  await fs.writeFile(INDEX_PATH, `${JSON.stringify(index, null, 2)}\n`, "utf8");
+  const tmp = `${INDEX_PATH}.${process.pid}.${Date.now()}.${Math.random()
+    .toString(16)
+    .slice(2)}.tmp`;
+  await fs.writeFile(tmp, `${JSON.stringify(index, null, 2)}\n`, "utf8");
+  try {
+    await fs.rename(tmp, INDEX_PATH);
+  } catch (error) {
+    await fs.unlink(tmp).catch(() => undefined);
+    throw error;
+  }
 }
 
 export async function saveStoryPack(pack: StoryPack): Promise<void> {
   const validated = parseStoryPack(pack);
   await ensureDirs();
   const file = packPath(validated.id);
-  const tmp = `${file}.tmp`;
+  const tmp = `${file}.${process.pid}.${Date.now()}.${Math.random()
+    .toString(16)
+    .slice(2)}.tmp`;
   await fs.writeFile(tmp, `${JSON.stringify(validated, null, 2)}\n`, "utf8");
-  await fs.rename(tmp, file);
+  try {
+    await fs.rename(tmp, file);
+  } catch (error) {
+    await fs.unlink(tmp).catch(() => undefined);
+    throw error;
+  }
   const index = await loadIndex();
   index.bySlug[validated.slug] = validated.id;
   await saveIndex(index);
@@ -61,7 +77,8 @@ export async function getStoryPackById(id: string): Promise<StoryPack | null> {
   } catch (error) {
     const err = error as NodeJS.ErrnoException;
     if (err.code === "ENOENT") return null;
-    throw error;
+    console.error("[story-mode] pack unreadable", id, error);
+    return null;
   }
 }
 
@@ -72,6 +89,39 @@ export async function getStoryPackBySlug(
   const id = index.bySlug[slug];
   if (!id) return null;
   return getStoryPackById(id);
+}
+
+/** In-flight ensure — collapses parallel page/metadata loads for the same slug. */
+const ensurePackInFlight = new Map<string, Promise<StoryPack | null>>();
+
+/**
+ * Load pack by slug; if missing, try seeding from verified Content QA documents.
+ * Never throws — returns null when documents / pack are unavailable.
+ */
+export async function ensureStoryPackBySlug(
+  slug: string,
+): Promise<StoryPack | null> {
+  const inflight = ensurePackInFlight.get(slug);
+  if (inflight) return inflight;
+
+  const task = (async () => {
+    try {
+      const existing = await getStoryPackBySlug(slug);
+      if (existing) return existing;
+      if (slug !== "narodni-obrozeni") return null;
+      const { seedStoryMode } = await import("@/server/story-mode/seed");
+      await seedStoryMode();
+      return getStoryPackBySlug(slug);
+    } catch (error) {
+      console.error("[story-mode] ensure pack failed", slug, error);
+      return null;
+    }
+  })().finally(() => {
+    ensurePackInFlight.delete(slug);
+  });
+
+  ensurePackInFlight.set(slug, task);
+  return task;
 }
 
 export async function listStoryPacks(): Promise<StoryPack[]> {
@@ -96,7 +146,8 @@ export async function getStoryProgress(
   } catch (error) {
     const err = error as NodeJS.ErrnoException;
     if (err.code === "ENOENT") return null;
-    throw error;
+    console.error("[story-mode] progress unreadable", learnerId, packId, error);
+    return null;
   }
 }
 
@@ -104,9 +155,16 @@ export async function saveStoryProgress(progress: StoryProgress): Promise<void> 
   await ensureDirs();
   const validated = storyProgressSchema.parse(progress);
   const file = progressPath(validated.learnerId, validated.packId);
-  const tmp = `${file}.tmp`;
+  const tmp = `${file}.${process.pid}.${Date.now()}.${Math.random()
+    .toString(16)
+    .slice(2)}.tmp`;
   await fs.writeFile(tmp, `${JSON.stringify(validated, null, 2)}\n`, "utf8");
-  await fs.rename(tmp, file);
+  try {
+    await fs.rename(tmp, file);
+  } catch (error) {
+    await fs.unlink(tmp).catch(() => undefined);
+    throw error;
+  }
 }
 
 function emptyProgress(

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { StoryModePlayer } from "@/components/story-mode/story-mode-player";
-import { Card, CardDescription } from "@/components/ui/card";
+import { AppLoadingState } from "@/components/shell/app-screen";
+import { ContentUnavailableState } from "@/components/shell/study-recovery";
 import { getStorySessionAction } from "@/server/actions/story-mode";
 
 export const dynamic = "force-dynamic";
@@ -10,36 +11,56 @@ export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  const { pack } = await getStorySessionAction(slug);
-  return { title: pack ? pack.title : "Story Mode" };
+  try {
+    const { slug } = await params;
+    const { pack } = await getStorySessionAction(slug);
+    return { title: pack?.title ?? "Příběh" };
+  } catch {
+    return { title: "Příběh" };
+  }
+}
+
+async function StoryModeBody({ slug }: { slug: string }) {
+  const { pack, progress, unavailableReason } =
+    await getStorySessionAction(slug);
+
+  if (!pack) {
+    return (
+      <ContentUnavailableState
+        title="Příběh"
+        description={
+          unavailableReason ??
+          "Tento příběh zatím není k dispozici. Otevři materiály k tématu a zkus to znovu."
+        }
+      />
+    );
+  }
+
+  return (
+    <div className="mx-auto w-full max-w-2xl space-y-6 px-1 pb-12 sm:px-0">
+      <Link
+        href="/app/learn"
+        className="inline-flex text-body-sm font-semibold text-action underline-offset-2 hover:underline"
+      >
+        ← Zpět na Učit se
+      </Link>
+      <StoryModePlayer pack={pack} initialProgress={progress} />
+    </div>
+  );
 }
 
 export default async function StoryModePage({ params }: Props) {
   const { slug } = await params;
-  const { pack, progress, learnerId } = await getStorySessionAction(slug);
-  if (!pack) notFound();
 
   return (
-    <div className="space-y-4 pb-10">
-      <Link
-        href="/app/learn"
-        className="mx-auto block w-full max-w-xl text-body-sm font-semibold text-action hover:underline"
-      >
-        ← Učit se
-      </Link>
-      {!learnerId ? (
-        <Card className="mx-auto max-w-xl">
-          <CardDescription>
-            Pro uložení progressu{" "}
-            <Link href="/onboarding" className="font-semibold text-action">
-              dokonči onboarding
-            </Link>
-            .
-          </CardDescription>
-        </Card>
-      ) : null}
-      <StoryModePlayer pack={pack} initialProgress={progress} />
-    </div>
+    <Suspense
+      fallback={
+        <div className="mx-auto w-full max-w-2xl px-1 py-2 sm:px-0">
+          <AppLoadingState label="Načítám příběh…" />
+        </div>
+      }
+    >
+      <StoryModeBody slug={slug} />
+    </Suspense>
   );
 }

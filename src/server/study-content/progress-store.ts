@@ -40,9 +40,16 @@ export async function saveStudyContentProgress(
 ): Promise<void> {
   await ensureDir(progress.learnerId);
   const dest = filePath(progress.learnerId, progress.sourceId);
-  const tmp = `${dest}.${process.pid}.${Date.now()}.tmp`;
+  const tmp = `${dest}.${process.pid}.${Date.now()}.${Math.random()
+    .toString(16)
+    .slice(2)}.tmp`;
   await fs.writeFile(tmp, `${JSON.stringify(progress, null, 2)}\n`, "utf8");
-  await fs.rename(tmp, dest);
+  try {
+    await fs.rename(tmp, dest);
+  } catch (error) {
+    await fs.unlink(tmp).catch(() => undefined);
+    throw error;
+  }
 }
 
 export async function touchStudyContentOpen(input: {

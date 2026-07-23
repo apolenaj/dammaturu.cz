@@ -33,6 +33,9 @@ export function defaultGuestOnboardingInput(
 /**
  * Ensure a LearnerRecord exists for a guest (or any) learnerId.
  * Idempotent — does not overwrite an existing personalized profile.
+ *
+ * Critical: register `ensureInFlight` synchronously before any `await`, otherwise
+ * parallel layout + page both see "missing" and race on the same JSON write.
  */
 export async function ensureGuestLearner(
   learnerId: string,
@@ -41,15 +44,12 @@ export async function ensureGuestLearner(
     throw new Error("Neplatné learner id");
   }
 
-  const existing = await getLearner(learnerId);
-  if (existing) return existing;
-
   const inflight = ensureInFlight.get(learnerId);
   if (inflight) return inflight;
 
   const task = (async () => {
-    const again = await getLearner(learnerId);
-    if (again) return again;
+    const existing = await getLearner(learnerId);
+    if (existing) return existing;
     const profile = defaultGuestOnboardingInput();
     const studyPlan = buildStudyPlan(profile);
     return upsertLearner({ id: learnerId, profile, studyPlan });

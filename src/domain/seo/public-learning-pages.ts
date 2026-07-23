@@ -344,7 +344,7 @@ export const publicLearningPages: PublicLearningPage[] = [
       },
     ],
     relatedSlugs: ["romantismus", "literarni-smery", "maturitni-cetba"],
-    ctaHref: "/app/learn",
+    ctaHref: "/app/learn/pribeh/narodni-obrozeni",
     ctaLabel: "Příběh Národního obrození",
   },
   {

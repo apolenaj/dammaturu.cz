@@ -39,10 +39,15 @@ export async function buildCjlHomeView(
 
   let activeMistakes = 0;
   if (learnerId) {
-    const book =
-      (await getErrorBook(learnerId)) ??
-      (await getOrCreateErrorBook(learnerId));
-    activeMistakes = listActiveMemories(book).length;
+    try {
+      const book =
+        (await getErrorBook(learnerId)) ??
+        (await getOrCreateErrorBook(learnerId));
+      activeMistakes = listActiveMemories(book).length;
+    } catch (error) {
+      console.error("[cjl-home] error book unavailable", error);
+      activeMistakes = 0;
+    }
   }
 
   let canOral = false;

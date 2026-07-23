@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   assertStoryPackIntegrity,
   parseStoryPack,
+  safeResolveEvidenceText,
   type StoryPack,
 } from "@/domain/learning/story-mode";
 
@@ -143,5 +144,13 @@ describe("Story Mode integrity", () => {
       beat.options[0]!.evidenceIds = [];
     }
     expect(() => assertStoryPackIntegrity(pack)).toThrow(/evidence/);
+  });
+
+  it("safeResolveEvidenceText skips missing ids instead of throwing", () => {
+    const pack = minimalPack();
+    expect(safeResolveEvidenceText(pack, ["a", "missing", "b"])).toEqual([
+      pack.evidence.a!.publishedStatement,
+      pack.evidence.b!.publishedStatement,
+    ]);
   });
 });
