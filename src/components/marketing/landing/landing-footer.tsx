@@ -16,56 +16,63 @@ export function LandingAboutFooter() {
       className="scroll-mt-20 border-t border-white/5 px-4 py-16 sm:px-6 sm:py-20 lg:px-8"
     >
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
-        <div className="relative flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-slate-900/50 p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)] backdrop-blur-md sm:p-8">
+        <div className="relative flex min-h-[320px] flex-col overflow-hidden rounded-3xl border border-white/10 bg-slate-900/60 p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)] backdrop-blur-md sm:min-h-[360px] sm:p-8 lg:p-10">
           <div
-            className="pointer-events-none absolute -left-16 top-0 h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.2),transparent_70%)] blur-2xl"
+            className="pointer-events-none absolute -left-20 top-0 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.18),transparent_70%)] blur-3xl"
+            aria-hidden
+          />
+          <div
+            className="pointer-events-none absolute -bottom-16 -right-10 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(217,70,239,0.28),transparent_65%)] blur-3xl"
             aria-hidden
           />
 
-          <div className="relative flex items-start justify-between gap-4">
+          <div className="relative z-10 flex max-w-xl flex-col">
             <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
               O nás
             </h2>
-            <span
-              className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-fuchsia-500/20 text-fuchsia-300 ring-1 ring-fuchsia-400/40 shadow-[0_0_28px_rgba(232,121,249,0.7),0_0_56px_rgba(217,70,239,0.35)]"
-              aria-hidden
-            >
-              <Heart className="h-7 w-7 fill-fuchsia-400 text-fuchsia-300 drop-shadow-[0_0_10px_rgba(232,121,249,0.9)]" />
-            </span>
+            <p className="mt-4 text-sm leading-relaxed text-slate-300 sm:text-base">
+              DámMaturu vzniklo, protože věříme, že učení může být chytřejší,
+              osobnější a méně chaosu. Spojujeme ověřené materiály, AI a jasný
+              denní plán — tak, abys vždy věděl, co se učit dál a co už umíš.
+            </p>
           </div>
 
-          <p className="relative mt-4 text-sm leading-relaxed text-slate-400 sm:text-base">
-            DámMaturu vzniklo, protože věříme, že učení může být chytřejší,
-            osobnější a méně chaosu. Spojujeme ověřené materiály, AI a jasný
-            denní plán — tak, abys vždy věděl, co se učit dál a co už umíš.
-          </p>
-
-          <div className="relative mt-8 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm">
+          <div className="relative z-10 mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
             <div className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4 text-emerald-400" aria-hidden />
-              <span className="font-bold text-white">12 500+</span>
-              <span className="text-slate-400">studentů</span>
+              <span className="font-bold text-emerald-300">12 500+</span>
+              <span className="text-slate-300">studentů</span>
             </div>
             <div className="flex items-center gap-2">
-              <GraduationCap className="h-4 w-4 text-blue-400" aria-hidden />
-              <span className="font-bold text-white">250 000+</span>
-              <span className="text-slate-400">vyřešených testů</span>
+              <GraduationCap className="h-4 w-4 text-emerald-400" aria-hidden />
+              <span className="font-bold text-emerald-300">250 000+</span>
+              <span className="text-slate-300">vyřešených testů</span>
             </div>
             <div className="flex items-center gap-2">
-              <Star className="h-4 w-4 text-amber-400" aria-hidden />
-              <span className="font-bold text-white">4.9/5</span>
-              <span className="text-slate-400">hodnocení</span>
+              <Star className="h-4 w-4 text-emerald-400" aria-hidden />
+              <span className="font-bold text-emerald-300">4.9/5</span>
+              <span className="text-slate-300">hodnocení</span>
             </div>
           </div>
 
-          <div className="relative mt-auto pt-8">
+          <div className="relative z-10 mt-auto flex items-end justify-between gap-4 pt-10">
             <Link
               href="/o-projektu"
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 px-6 text-sm font-semibold text-white shadow-[0_0_24px_-6px_rgba(59,130,246,0.7)] transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-6 text-sm font-semibold text-white shadow-[0_0_28px_-6px_rgba(168,85,247,0.75)] transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/50"
             >
               Zjistit více o nás
               <ArrowRight className="h-4 w-4" aria-hidden />
             </Link>
+
+            <span
+              className="pointer-events-none mb-1 mr-1 inline-flex h-20 w-20 shrink-0 items-center justify-center sm:h-24 sm:w-24"
+              aria-hidden
+            >
+              <Heart
+                className="h-14 w-14 fill-fuchsia-500/30 text-fuchsia-400 drop-shadow-[0_0_18px_rgba(232,121,249,0.95)] sm:h-16 sm:w-16"
+                strokeWidth={1.5}
+              />
+            </span>
           </div>
         </div>
 

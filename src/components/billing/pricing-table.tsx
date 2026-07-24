@@ -1,12 +1,11 @@
 "use client";
 
+import { Check } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import type { BillingPlanDef } from "@/domain/billing/plans";
 import type { ResolvedPlanPrice } from "@/domain/billing/pricing";
 import { startCheckoutAction } from "@/server/actions/billing";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 
 export type PublicPlanCard = BillingPlanDef & {
@@ -64,82 +63,120 @@ export function PricingTable({
       {error ? (
         <p
           role="alert"
-          className="rounded-md border border-danger/30 bg-danger-soft/30 px-4 py-3 text-body-sm text-fg"
+          className="rounded-xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-100"
         >
           {error}
         </p>
       ) : null}
 
       {!checkoutConfigured ? (
-        <p className="rounded-xl border border-border bg-subtle/50 px-4 py-3 text-body-sm text-fg-secondary">
+        <p className="rounded-xl border border-white/10 bg-slate-900/50 px-4 py-3 text-sm text-slate-400 backdrop-blur-sm">
           Plány a entitlements jsou v kódu. Stripe checkout se zapne po doplnění{" "}
-          <code className="text-caption">STRIPE_SECRET_KEY</code> a Price ID.
-          Do té doby můžeš začít na FREE registrací.
+          <code className="text-xs text-cyan-300">STRIPE_SECRET_KEY</code> a Price
+          ID. Do té doby můžeš začít na FREE registrací.
         </p>
       ) : null}
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {plans.map((plan) => {
           const active = currentPlanId === plan.id;
-          return (
+          const highlighted = Boolean(plan.highlightCs);
+          const isPrimaryCta = plan.id === "smart";
+
+          const card = (
             <article
-              key={plan.id}
               className={cn(
-                "flex flex-col rounded-2xl border bg-surface p-5 shadow-xs",
-                plan.highlightCs
-                  ? "border-action/40 ring-1 ring-action/20"
-                  : "border-border",
+                "flex h-full flex-col p-5 backdrop-blur-sm",
+                highlighted
+                  ? "rounded-[15px] border border-white/10 bg-slate-900/80"
+                  : "rounded-2xl border border-white/10 bg-slate-900/50",
               )}
             >
               <div className="space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="font-display text-title-md text-fg">
+                  <h2 className="text-lg font-bold tracking-tight text-white">
                     {plan.nameCs}
                   </h2>
                   {plan.highlightCs ? (
-                    <Badge tone="brand">{plan.highlightCs}</Badge>
+                    <span className="inline-flex items-center rounded-full border border-violet-400/35 bg-violet-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-violet-200">
+                      {plan.highlightCs}
+                    </span>
                   ) : null}
-                  {active ? <Badge tone="success">Tvůj plán</Badge> : null}
+                  {active ? (
+                    <span className="inline-flex items-center rounded-full border border-emerald-400/35 bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300">
+                      Tvůj plán
+                    </span>
+                  ) : null}
                 </div>
-                <p className="text-body-sm text-fg-secondary">{plan.taglineCs}</p>
-                <p className="font-display text-2xl text-fg">
+                <p className="text-sm leading-relaxed text-slate-400">
+                  {plan.taglineCs}
+                </p>
+                <p className="text-2xl font-bold tracking-tight text-white">
                   {plan.resolved.price.labelCs}
                 </p>
                 {plan.resolved.isLaunchPrice && plan.price.amountCzk > 0 ? (
-                  <p className="text-caption text-fg-muted">
+                  <p className="text-xs text-slate-500">
                     Standardně {plan.price.labelCs}
                   </p>
                 ) : null}
               </div>
 
-              <ul className="mt-4 flex-1 space-y-1.5 text-body-sm text-fg-secondary">
+              <ul className="mt-4 flex-1 space-y-2 text-sm text-slate-300">
                 {plan.features.map((f) => (
-                  <li key={f}>· {featureLabelsCs[f] ?? f}</li>
+                  <li key={f} className="flex items-start gap-2">
+                    <Check
+                      className="mt-0.5 h-4 w-4 shrink-0 text-cyan-400"
+                      strokeWidth={2.5}
+                      aria-hidden
+                    />
+                    <span>{featureLabelsCs[f] ?? f}</span>
+                  </li>
                 ))}
               </ul>
 
-              <p className="mt-3 text-caption text-fg-muted">
+              <p className="mt-3 text-xs text-slate-500">
                 Max {plan.limits.maxMaterials} materiálů ·{" "}
                 {plan.limits.mockExamsPerMonth === "unlimited"
                   ? "neomezené nanečisto"
                   : `${plan.limits.mockExamsPerMonth}× nanečisto / měsíc`}
               </p>
 
-              <Button
+              <button
                 type="button"
-                className="mt-4 min-h-12 w-full"
-                variant={plan.id === "smart" ? "primary" : "outline"}
+                className={cn(
+                  "mt-4 inline-flex min-h-12 w-full items-center justify-center rounded-full text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/50 disabled:cursor-not-allowed disabled:opacity-60",
+                  isPrimaryCta || highlighted
+                    ? "bg-gradient-to-r from-blue-500 via-indigo-500 to-violet-600 text-white shadow-[0_0_24px_-4px_rgba(99,102,241,0.65)] hover:brightness-110"
+                    : "border border-white/15 bg-white/5 text-white hover:border-white/30 hover:bg-white/10",
+                )}
                 disabled={pending || active}
                 onClick={() => checkout(plan.id)}
               >
                 {active ? "Aktivní" : plan.ctaCs}
-              </Button>
+              </button>
             </article>
+          );
+
+          if (highlighted) {
+            return (
+              <div
+                key={plan.id}
+                className="rounded-2xl bg-gradient-to-br from-sky-400 via-indigo-500 to-violet-500 p-px shadow-[0_0_30px_rgba(139,92,246,0.2)]"
+              >
+                {card}
+              </div>
+            );
+          }
+
+          return (
+            <div key={plan.id} className="h-full">
+              {card}
+            </div>
           );
         })}
       </div>
 
-      <p className="text-caption text-fg-muted">
+      <p className="text-xs leading-relaxed text-slate-500">
         Po zrušení nebo vypršení předplatného nepřijdeš o už nahrané osobní
         materiály — zůstávají ke čtení. Omezí se nová nahrávání a placené
         funkce.
