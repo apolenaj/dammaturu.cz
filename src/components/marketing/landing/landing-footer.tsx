@@ -16,10 +16,9 @@ export function LandingAboutFooter() {
       className="scroll-mt-20 border-t border-white/5 px-4 py-16 sm:px-6 sm:py-20 lg:px-8"
     >
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
-        {/* O nás */}
-        <div className="relative flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-slate-950/90 p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)] sm:p-8">
+        <div className="relative flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-slate-900/50 p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)] backdrop-blur-md sm:p-8">
           <div
-            className="pointer-events-none absolute -left-16 top-0 h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.18),transparent_70%)] blur-2xl"
+            className="pointer-events-none absolute -left-16 top-0 h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.2),transparent_70%)] blur-2xl"
             aria-hidden
           />
 
@@ -62,7 +61,7 @@ export function LandingAboutFooter() {
           <div className="relative mt-auto pt-8">
             <Link
               href="/o-projektu"
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-6 text-sm font-semibold text-white shadow-[0_0_24px_-6px_rgba(168,85,247,0.7)] transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/50"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 px-6 text-sm font-semibold text-white shadow-[0_0_24px_-6px_rgba(59,130,246,0.7)] transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50"
             >
               Zjistit více o nás
               <ArrowRight className="h-4 w-4" aria-hidden />
@@ -70,23 +69,28 @@ export function LandingAboutFooter() {
           </div>
         </div>
 
-        {/* easy2school.com */}
-        <div className="relative flex flex-col overflow-hidden rounded-3xl border border-violet-400/20 bg-gradient-to-br from-[#1a0b2e] via-[#2e1065] to-[#0f172a] p-6 shadow-[0_0_50px_-18px_rgba(139,92,246,0.55)] sm:p-8">
+        <div className="relative flex flex-col overflow-hidden rounded-3xl border border-violet-400/25 bg-gradient-to-br from-[#1a0b2e] via-[#2e1065] to-[#0f172a] p-6 shadow-[0_0_50px_-18px_rgba(139,92,246,0.55)] sm:p-8">
           <div
             className="pointer-events-none absolute -right-8 -top-8 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(232,121,249,0.4),rgba(139,92,246,0.15)_45%,transparent_70%)] blur-xl"
             aria-hidden
           />
           <div
-            className="pointer-events-none absolute bottom-2 right-2 flex h-36 w-36 items-center justify-center opacity-50 sm:h-44 sm:w-44"
+            className="pointer-events-none absolute bottom-2 right-2 flex h-36 w-36 items-center justify-center opacity-60 sm:h-48 sm:w-48"
             aria-hidden
           >
             <span className="absolute inset-2 rounded-full border border-white/15" />
-            <span className="absolute inset-6 rounded-full border border-dashed border-violet-300/25" />
-            <span className="absolute inset-10 rounded-full bg-gradient-to-br from-violet-400/25 to-cyan-400/10 blur-md" />
-            <Globe className="relative h-16 w-16 text-violet-100 sm:h-20 sm:w-20" strokeWidth={1.1} />
-            <GraduationCap className="absolute right-2 top-6 h-5 w-5 text-amber-300" />
+            <span className="absolute inset-6 rounded-full border border-dashed border-violet-300/30" />
+            <span className="absolute inset-10 rounded-full bg-gradient-to-br from-violet-400/30 to-cyan-400/15 blur-md" />
+            <Globe
+              className="relative h-16 w-16 text-violet-100 sm:h-20 sm:w-20"
+              strokeWidth={1.1}
+            />
+            <GraduationCap className="absolute right-2 top-6 h-5 w-5 text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
+            <GraduationCap className="absolute left-4 top-10 h-4 w-4 rotate-12 text-amber-200/80" />
             <span className="absolute left-3 bottom-10 text-lg">✈️</span>
             <span className="absolute right-8 bottom-6 text-base">🗼</span>
+            <span className="absolute left-10 top-4 text-sm">🗽</span>
+            <span className="absolute right-4 bottom-14 text-sm">🎡</span>
           </div>
 
           <p className="relative inline-flex w-fit items-center rounded-full border border-cyan-400/25 bg-cyan-500/10 px-3 py-1 text-xs font-semibold text-cyan-200">
@@ -105,7 +109,7 @@ export function LandingAboutFooter() {
               href="https://easy2school.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-7 text-sm font-bold text-white shadow-[0_10px_30px_-8px_rgba(168,85,247,0.55)] transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-white px-7 text-sm font-bold text-violet-700 shadow-[0_10px_30px_-8px_rgba(0,0,0,0.35)] transition hover:bg-violet-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
             >
               Přejít na easy2school.com
               <ArrowRight className="h-4 w-4" aria-hidden />
@@ -120,13 +124,17 @@ export function LandingAboutFooter() {
 export function LandingFinalCta() {
   return (
     <section className="border-t border-white/5 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-      <div className="relative mx-auto max-w-7xl overflow-hidden rounded-3xl bg-gradient-to-r from-[#4c1d95] via-[#7c3aed] to-[#a855f7] px-6 py-10 shadow-[0_20px_60px_-20px_rgba(124,58,237,0.65)] sm:px-10 sm:py-12 lg:px-12">
+      <div className="relative mx-auto max-w-7xl overflow-hidden rounded-3xl bg-gradient-to-r from-[#4c1d95] via-[#6d28d9] to-[#7c3aed] px-6 py-10 shadow-[0_20px_60px_-20px_rgba(124,58,237,0.65)] sm:px-10 sm:py-12 lg:px-12">
         <div
           className="pointer-events-none absolute -left-10 top-1/2 h-40 w-40 -translate-y-1/2 rounded-full bg-white/10 blur-2xl"
           aria-hidden
         />
         <div
           className="pointer-events-none absolute -right-8 -top-8 h-36 w-36 rounded-full bg-fuchsia-300/20 blur-2xl"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute bottom-0 left-1/3 h-24 w-64 rounded-full bg-violet-300/10 blur-2xl"
           aria-hidden
         />
 
@@ -137,6 +145,7 @@ export function LandingFinalCta() {
               aria-hidden
             >
               <div className="absolute bottom-1 h-6 w-14 rounded-full bg-white/25 blur-md" />
+              <div className="absolute bottom-0 left-1/2 h-8 w-4 -translate-x-1/2 rounded-full bg-gradient-to-t from-orange-500 via-amber-300 to-transparent opacity-80 blur-[1px]" />
               <Rocket className="relative h-12 w-12 -rotate-45 text-white drop-shadow-[0_8px_20px_rgba(0,0,0,0.35)] sm:h-14 sm:w-14" />
               <span className="absolute -bottom-0.5 left-1/2 h-3 w-3 -translate-x-1/2 rounded-full bg-orange-400 blur-[2px]" />
             </div>
@@ -154,7 +163,7 @@ export function LandingFinalCta() {
 
           <div className="relative shrink-0 text-left lg:pl-4 lg:text-right">
             <svg
-              className="pointer-events-none absolute -right-2 -top-8 hidden h-16 w-20 text-violet-200/70 lg:block"
+              className="pointer-events-none absolute -right-2 -top-8 hidden h-16 w-20 text-pink-200/80 lg:block"
               viewBox="0 0 80 64"
               fill="none"
               aria-hidden

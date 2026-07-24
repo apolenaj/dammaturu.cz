@@ -17,9 +17,9 @@ const steps = [
     icon: CloudUpload,
     title: "Nahraj nebo vyber materiály",
     body: "Nahraj své skripta, otázky nebo použij naše ověřené materiály.",
-    iconClassName: "text-violet-300",
+    iconClassName: "text-violet-200",
     iconShellClassName:
-      "bg-violet-500/15 ring-1 ring-violet-400/40 shadow-[0_0_15px_rgba(167,139,250,0.55),0_0_35px_rgba(139,92,246,0.25)]",
+      "bg-[#0f111a] ring-1 ring-violet-400/45 shadow-[0_0_20px_rgba(167,139,250,0.55),0_0_40px_rgba(139,92,246,0.25)]",
     badgeClassName:
       "bg-violet-500 text-white ring-2 ring-violet-300/40 shadow-[0_0_12px_rgba(139,92,246,0.65)]",
   },
@@ -27,9 +27,9 @@ const steps = [
     icon: Brain,
     title: "AI analyzuje a vytvoří plán",
     body: "Zjistíme, co umíš, co ne a připravíme ti osobní studijní plán.",
-    iconClassName: "text-cyan-300",
+    iconClassName: "text-cyan-200",
     iconShellClassName:
-      "bg-cyan-500/15 ring-1 ring-cyan-400/40 shadow-[0_0_15px_rgba(34,211,238,0.55),0_0_35px_rgba(6,182,212,0.25)]",
+      "bg-[#0f111a] ring-1 ring-cyan-400/45 shadow-[0_0_20px_rgba(34,211,238,0.55),0_0_40px_rgba(6,182,212,0.25)]",
     badgeClassName:
       "bg-cyan-500 text-white ring-2 ring-cyan-300/40 shadow-[0_0_12px_rgba(6,182,212,0.65)]",
   },
@@ -37,9 +37,9 @@ const steps = [
     icon: Target,
     title: "Učíš se chytře každý den",
     body: "Podle času, nálady a stylu učení. Krátké lekce, které dávají smysl.",
-    iconClassName: "text-fuchsia-300",
+    iconClassName: "text-fuchsia-200",
     iconShellClassName:
-      "bg-fuchsia-500/15 ring-1 ring-fuchsia-400/40 shadow-[0_0_15px_rgba(232,121,249,0.55),0_0_35px_rgba(217,70,239,0.25)]",
+      "bg-[#0f111a] ring-1 ring-fuchsia-400/45 shadow-[0_0_20px_rgba(232,121,249,0.55),0_0_40px_rgba(217,70,239,0.25)]",
     badgeClassName:
       "bg-fuchsia-500 text-white ring-2 ring-fuchsia-300/40 shadow-[0_0_12px_rgba(217,70,239,0.65)]",
   },
@@ -47,9 +47,9 @@ const steps = [
     icon: BarChart3,
     title: "Sleduj pokrok a zlepšuj se",
     body: "Vidíš výsledky, motivuje tě to a my tě vedeme dál.",
-    iconClassName: "text-orange-300",
+    iconClassName: "text-orange-200",
     iconShellClassName:
-      "bg-orange-500/15 ring-1 ring-orange-400/40 shadow-[0_0_15px_rgba(251,146,60,0.55),0_0_35px_rgba(249,115,22,0.25)]",
+      "bg-[#0f111a] ring-1 ring-orange-400/45 shadow-[0_0_20px_rgba(251,146,60,0.55),0_0_40px_rgba(249,115,22,0.25)]",
     badgeClassName:
       "bg-orange-500 text-white ring-2 ring-orange-300/40 shadow-[0_0_12px_rgba(249,115,22,0.65)]",
   },
@@ -57,9 +57,9 @@ const steps = [
     icon: Trophy,
     title: "Zvládni maturitu na jedničku",
     body: "Přijdeš připravený a sebevědomý. Maturita bude jen formalita.",
-    iconClassName: "text-emerald-300",
+    iconClassName: "text-emerald-200",
     iconShellClassName:
-      "bg-emerald-500/15 ring-1 ring-emerald-400/40 shadow-[0_0_15px_rgba(52,211,153,0.55),0_0_35px_rgba(16,185,129,0.25)]",
+      "bg-[#0f111a] ring-1 ring-emerald-400/45 shadow-[0_0_20px_rgba(52,211,153,0.55),0_0_40px_rgba(16,185,129,0.25)]",
     badgeClassName:
       "bg-emerald-500 text-white ring-2 ring-emerald-300/40 shadow-[0_0_12px_rgba(16,185,129,0.65)]",
   },
@@ -147,31 +147,36 @@ const smallFeatures = [
     icon: CloudUpload,
     title: "Vlastní materiály",
     body: "Nahraj PDF, fotky, poznámky nebo odkazy.",
-    color: "text-blue-300 bg-blue-500/15 ring-blue-400/30",
+    color: "text-blue-300 bg-blue-500/15 ring-blue-400/35",
+    glow: "shadow-[0_0_22px_rgba(96,165,250,0.35)]",
   },
   {
     icon: MessageCircle,
     title: "AI vysvětlení",
     body: "Nerozumíš? Vysvětlíme to jinak. Jednoduše, s příklady.",
-    color: "text-violet-300 bg-violet-500/15 ring-violet-400/30",
+    color: "text-violet-300 bg-violet-500/15 ring-violet-400/35",
+    glow: "shadow-[0_0_22px_rgba(167,139,250,0.35)]",
   },
   {
     icon: BarChart3,
     title: "Detailní statistiky",
     body: "Přesně víš, kde máš mezery a co zlepšovat.",
-    color: "text-orange-300 bg-orange-500/15 ring-orange-400/30",
+    color: "text-orange-300 bg-orange-500/15 ring-orange-400/35",
+    glow: "shadow-[0_0_22px_rgba(251,146,60,0.35)]",
   },
   {
     icon: Cloud,
     title: "Cloud & sync",
     body: "Uč se kdekoliv a na jakémkoliv zařízení.",
-    color: "text-emerald-300 bg-emerald-500/15 ring-emerald-400/30",
+    color: "text-emerald-300 bg-emerald-500/15 ring-emerald-400/35",
+    glow: "shadow-[0_0_22px_rgba(52,211,153,0.35)]",
   },
   {
     icon: Star,
     title: "Motivace & odměny",
     body: "Odznaky, série, XP a výzvy ti pomůžou vytrvat.",
-    color: "text-fuchsia-300 bg-fuchsia-500/15 ring-fuchsia-400/30",
+    color: "text-fuchsia-300 bg-fuchsia-500/15 ring-fuchsia-400/35",
+    glow: "shadow-[0_0_22px_rgba(232,121,249,0.35)]",
   },
 ] as const;
 
@@ -184,15 +189,16 @@ export function LandingSmallFeatures() {
       <div className="mx-auto max-w-7xl">
         <SectionHeading title="Vše, co potřebuješ na jednom místě" />
         <ul className="mx-auto mt-12 grid max-w-5xl grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-5">
-          {smallFeatures.map(({ icon: Icon, title, body, color }) => (
+          {smallFeatures.map(({ icon: Icon, title, body, color, glow }) => (
             <li
               key={title}
-              className="flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-slate-900/60 px-4 py-6 text-center shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)] backdrop-blur-md transition hover:border-violet-400/30 hover:shadow-[0_0_28px_-10px_rgba(139,92,246,0.45)]"
+              className="flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-slate-900/50 px-4 py-6 text-center shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)] backdrop-blur-md transition hover:border-blue-400/25 hover:shadow-[0_0_28px_-10px_rgba(59,130,246,0.4)]"
             >
               <span
                 className={cn(
-                  "flex h-12 w-12 items-center justify-center rounded-xl ring-1 shadow-[0_0_18px_rgba(167,139,250,0.2)]",
+                  "flex h-12 w-12 items-center justify-center rounded-xl ring-1",
                   color,
+                  glow,
                 )}
               >
                 <Icon className="h-5 w-5" aria-hidden />
@@ -206,5 +212,3 @@ export function LandingSmallFeatures() {
     </section>
   );
 }
-
-
