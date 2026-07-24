@@ -14,10 +14,13 @@ import {
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
+import { canPersistLocalFs } from "@/server/runtime/local-fs";
 
 export const ERROR_MEMORY_DIR = path.join(process.cwd(), "data", "error-memory");
 const BOOKS_DIR = path.join(ERROR_MEMORY_DIR, "books");
 const SESSIONS_DIR = path.join(ERROR_MEMORY_DIR, "sessions");
+
+const memoryBooks = new Map<string, ErrorMemoryBook>();
 
 async function ensureDirs() {
   await fs.mkdir(BOOKS_DIR, { recursive: true });
@@ -44,11 +47,18 @@ function sessionPath(learnerId: string, sessionId: string) {
 export async function getErrorBook(
   learnerId: string,
 ): Promise<ErrorMemoryBook | null> {
+  const cached = memoryBooks.get(learnerId);
+  if (cached) return cached;
+
+  if (!canPersistLocalFs()) return null;
+
   try {
     const raw = JSON.parse(await fs.readFile(bookPath(learnerId), "utf8"));
     const migrated = migrateErrorBook(raw);
     if (!migrated) {
-      return errorMemoryBookSchema.parse(raw);
+      const parsed = errorMemoryBookSchema.parse(raw);
+      memoryBooks.set(learnerId, parsed);
+      return parsed;
     }
     // Persist migration so legacy fields disappear from disk
     const legacyHint =
@@ -59,16 +69,22 @@ export async function getErrorBook(
     if (legacyHint) {
       await saveErrorBook(migrated);
     }
+    memoryBooks.set(learnerId, migrated);
     return migrated;
   } catch (error) {
     const err = error as NodeJS.ErrnoException;
-    if (err.code === "ENOENT") return null;
+    if (err.code === "ENOENT" || err.code === "EROFS" || err.code === "EACCES") {
+      return null;
+    }
     throw error;
   }
 }
 
 export async function saveErrorBook(book: ErrorMemoryBook): Promise<void> {
   const validated = errorMemoryBookSchema.parse(book);
+  memoryBooks.set(validated.learnerId, validated);
+  if (!canPersistLocalFs()) return;
+
   await ensureDirs();
   const file = bookPath(validated.learnerId);
   // Unique tmp avoids parallel create races (fixed .tmp → ENOENT on rename).
@@ -127,6 +143,7 @@ export async function recordLearnerError(
 
 async function saveSession(session: MistakePracticeSession): Promise<void> {
   const validated = mistakePracticeSessionSchema.parse(session);
+  if (!canPersistLocalFs()) return;
   await ensureDirs();
   const file = sessionPath(validated.learnerId, validated.id);
   const tmp = `${file}.${process.pid}.${Date.now()}.${Math.random()

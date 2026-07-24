@@ -1,27 +1,17 @@
 import type { Metadata } from "next";
 import { HomepageAnalyticsBeacon } from "@/components/analytics/homepage-analytics-beacon";
-import { MarketingShell } from "@/components/shell/MarketingShell";
-import {
-  HomeCzechContent,
-  HomeFaq,
-  HomeFinalCta,
-  HomeFreeBeta,
-  HomeHero,
-  HomeHowItWorks,
-  HomeMistakesReview,
-  HomeProgressConcept,
-  homeFaqItems,
-} from "@/components/marketing/home/home-sections";
+import { LandingPage } from "@/components/marketing/landing";
+import { homeFaqItems } from "@/components/marketing/home/home-sections";
 import { absoluteUrl, buildPublicMetadata, getSiteUrl } from "@/lib/seo";
 
 const siteUrl = getSiteUrl();
-const promise = "Víš, co se naučit. Víš, co už umíš.";
+const promise = "Maturita? Dám!";
 
 export const metadata: Metadata = {
   ...buildPublicMetadata({
-    title: "DámMaturu.cz — maturita z češtiny bez chaosu",
+    title: "DámMaturu.cz — #1 AI studijní systém pro maturitu",
     description:
-      "Otázky, zpětná vazba ze zdroje, chyby k opakování a jasný pokrok. Víš, co se naučit — a co už umíš. Beta zdarma, bez registrace.",
+      "Chytré učení, které se přizpůsobí tobě. Nahraj své materiály nebo použij naše a my tě dovedeme k úspěchu. Zdarma na vyzkoušení.",
     path: "/",
     ogTitle: `DámMaturu.cz — ${promise}`,
   }),
@@ -48,13 +38,13 @@ const jsonLd = {
       operatingSystem: "Web",
       url: siteUrl,
       description:
-        "Studijní systém k maturitě z češtiny: otázky, zpětná vazba, chyby a pokrok. Beta zdarma.",
+        "AI studijní systém k maturitě: materiály, chytré učení, pokrok a motivace. Zdarma na vyzkoušení.",
       inLanguage: "cs-CZ",
       offers: {
         "@type": "Offer",
         price: "0",
         priceCurrency: "CZK",
-        description: "Beta zdarma — placené plány zatím neprodáváme",
+        description: "Zdarma na vyzkoušení — nevyžadujeme platební kartu",
       },
     },
     {
@@ -97,20 +87,13 @@ const jsonLd = {
 
 export default function HomePage() {
   return (
-    <MarketingShell>
+    <>
       <HomepageAnalyticsBeacon />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <HomeHero />
-      <HomeHowItWorks />
-      <HomeMistakesReview />
-      <HomeProgressConcept />
-      <HomeCzechContent />
-      <HomeFreeBeta />
-      <HomeFaq />
-      <HomeFinalCta />
-    </MarketingShell>
+      <LandingPage />
+    </>
   );
 }

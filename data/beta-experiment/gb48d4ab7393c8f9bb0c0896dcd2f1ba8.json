@@ -1,0 +1,145 @@
+{
+  "learnerId": "gb48d4ab7393c8f9bb0c0896dcd2f1ba8",
+  "framing": "N=1 beta validation",
+  "cohortId": "cjl-private-aug-2026",
+  "targetDate": "2026-08-31",
+  "createdAt": "2026-07-22T05:41:43.689Z",
+  "updatedAt": "2026-07-22T05:41:43.701Z",
+  "diagnosticStartedAt": null,
+  "baseline": null,
+  "dailyByDate": {
+    "2026-07-22": {
+      "dateKey": "2026-07-22",
+      "minutesStudied": 2,
+      "plannedMinutes": 25,
+      "planAdherencePct": 8,
+      "lessonsCompleted": 0,
+      "reviewsCompleted": 0,
+      "questionsAnswered": 1,
+      "questionsCorrect": 0,
+      "accuracyPct": 0,
+      "masteryDelta": 0,
+      "masteryEndPct": 0,
+      "topicsStudied": [
+        "cjl-otazky",
+        "Question Engine — ČJL literární historie"
+      ],
+      "methodsUsed": [
+        "mixed_test"
+      ],
+      "updatedAt": "2026-07-22T05:41:43.687Z"
+    }
+  },
+  "methodStats": [
+    {
+      "method": "microlearning",
+      "attempts": 0,
+      "correct": 0,
+      "partial": 0,
+      "incorrect": 0,
+      "scoreSum": 0,
+      "minutes": 0,
+      "avgScore": null,
+      "accuracyPct": null
+    },
+    {
+      "method": "flashcards",
+      "attempts": 0,
+      "correct": 0,
+      "partial": 0,
+      "incorrect": 0,
+      "scoreSum": 0,
+      "minutes": 0,
+      "avgScore": null,
+      "accuracyPct": null
+    },
+    {
+      "method": "active_recall",
+      "attempts": 0,
+      "correct": 0,
+      "partial": 0,
+      "incorrect": 0,
+      "scoreSum": 0,
+      "minutes": 0,
+      "avgScore": null,
+      "accuracyPct": null
+    },
+    {
+      "method": "matching",
+      "attempts": 0,
+      "correct": 0,
+      "partial": 0,
+      "incorrect": 0,
+      "scoreSum": 0,
+      "minutes": 0,
+      "avgScore": null,
+      "accuracyPct": null
+    },
+    {
+      "method": "story_mode",
+      "attempts": 0,
+      "correct": 0,
+      "partial": 0,
+      "incorrect": 0,
+      "scoreSum": 0,
+      "minutes": 0,
+      "avgScore": null,
+      "accuracyPct": null
+    },
+    {
+      "method": "timeline",
+      "attempts": 0,
+      "correct": 0,
+      "partial": 0,
+      "incorrect": 0,
+      "scoreSum": 0,
+      "minutes": 0,
+      "avgScore": null,
+      "accuracyPct": null
+    },
+    {
+      "method": "teach_back",
+      "attempts": 0,
+      "correct": 0,
+      "partial": 0,
+      "incorrect": 0,
+      "scoreSum": 0,
+      "minutes": 0,
+      "avgScore": null,
+      "accuracyPct": null
+    },
+    {
+      "method": "mixed_test",
+      "attempts": 1,
+      "correct": 0,
+      "partial": 0,
+      "incorrect": 1,
+      "scoreSum": 0,
+      "minutes": 2,
+      "avgScore": 0,
+      "accuracyPct": 0
+    },
+    {
+      "method": "oral_simulation",
+      "attempts": 0,
+      "correct": 0,
+      "partial": 0,
+      "incorrect": 0,
+      "scoreSum": 0,
+      "minutes": 0,
+      "avgScore": null,
+      "accuracyPct": null
+    }
+  ],
+  "retention": [],
+  "assessments": [],
+  "seenQuestionIds": [
+    "a3755a43-333e-5f53-ac48-09057a133385"
+  ],
+  "final": null,
+  "oral": {
+    "simulationCount": 0,
+    "lastScore": null,
+    "avgScore": null
+  }
+}

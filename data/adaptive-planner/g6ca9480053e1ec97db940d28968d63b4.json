@@ -1,0 +1,40 @@
+{
+  "learnerId": "g6ca9480053e1ec97db940d28968d63b4",
+  "preferredMode": "min_30",
+  "units": {
+    "2c43595f-ec16-45fb-b47b-3553b4d7c80e": {
+      "knowledgeUnitId": "2c43595f-ec16-45fb-b47b-3553b4d7c80e",
+      "lastAttempt": "2026-07-22T06:23:52.145Z",
+      "result": "incorrect",
+      "difficulty": 3,
+      "consecutiveSuccessfulRetrievals": 0,
+      "mistakeCount": 1,
+      "nextReview": "2026-07-22T07:35:52.145Z",
+      "reviewHistory": [
+        {
+          "at": "2026-07-22T06:23:52.145Z",
+          "result": "incorrect",
+          "grade": "dont_know",
+          "intervalDaysAfter": 0.05,
+          "sessionKey": "2026-07-22T06"
+        }
+      ],
+      "separatedSuccessfulSessions": 0,
+      "lastSuccessSessionKey": null,
+      "examPriority": 3,
+      "schedule": {
+        "easiness": 2.47,
+        "intervalDays": 0,
+        "repetitions": 0,
+        "lapses": 1,
+        "dueAt": "2026-07-22T07:35:52.145Z",
+        "lastReviewedAt": "2026-07-22T06:23:52.145Z",
+        "lastGrade": "dont_know",
+        "stability": 0.381,
+        "difficulty": 7.33
+      },
+      "updatedAt": "2026-07-22T06:23:52.145Z"
+    }
+  },
+  "updatedAt": "2026-07-22T06:23:52.145Z"
+}

@@ -1,8 +1,15 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import type { StudyContentProgress } from "@/domain/study-content/registry";
+import { canPersistLocalFs } from "@/server/runtime/local-fs";
 
 const ROOT = path.join(process.cwd(), "data", "study-content-progress");
+
+const memoryProgress = new Map<string, StudyContentProgress>();
+
+function progressKey(learnerId: string, sourceId: string) {
+  return `${learnerId}::${sourceId}`;
+}
 
 function assertSafe(id: string, label: string) {
   if (!/^[a-zA-Z0-9_-]+$/.test(id)) {
@@ -25,12 +32,22 @@ export async function getStudyContentProgress(
   learnerId: string,
   sourceId: string,
 ): Promise<StudyContentProgress | null> {
+  const key = progressKey(learnerId, sourceId);
+  const cached = memoryProgress.get(key);
+  if (cached) return cached;
+
+  if (!canPersistLocalFs()) return null;
+
   try {
     const raw = await fs.readFile(filePath(learnerId, sourceId), "utf8");
-    return JSON.parse(raw) as StudyContentProgress;
+    const parsed = JSON.parse(raw) as StudyContentProgress;
+    memoryProgress.set(key, parsed);
+    return parsed;
   } catch (error) {
     const err = error as NodeJS.ErrnoException;
-    if (err.code === "ENOENT") return null;
+    if (err.code === "ENOENT" || err.code === "EROFS" || err.code === "EACCES") {
+      return null;
+    }
     throw error;
   }
 }
@@ -38,6 +55,12 @@ export async function getStudyContentProgress(
 export async function saveStudyContentProgress(
   progress: StudyContentProgress,
 ): Promise<void> {
+  memoryProgress.set(
+    progressKey(progress.learnerId, progress.sourceId),
+    progress,
+  );
+  if (!canPersistLocalFs()) return;
+
   await ensureDir(progress.learnerId);
   const dest = filePath(progress.learnerId, progress.sourceId);
   const tmp = `${dest}.${process.pid}.${Date.now()}.${Math.random()
@@ -181,6 +204,15 @@ export async function listProgressForLearner(
   learnerId: string,
 ): Promise<StudyContentProgress[]> {
   assertSafe(learnerId, "learner id");
+
+  if (!canPersistLocalFs()) {
+    const prefix = `${learnerId}::`;
+    return [...memoryProgress.entries()]
+      .filter(([key]) => key.startsWith(prefix))
+      .map(([, value]) => value)
+      .sort((a, b) => b.lastOpenedAt.localeCompare(a.lastOpenedAt));
+  }
+
   const dir = path.join(ROOT, learnerId);
   try {
     const files = await fs.readdir(dir);
@@ -195,7 +227,9 @@ export async function listProgressForLearner(
     );
   } catch (error) {
     const err = error as NodeJS.ErrnoException;
-    if (err.code === "ENOENT") return [];
+    if (err.code === "ENOENT" || err.code === "EROFS" || err.code === "EACCES") {
+      return [];
+    }
     throw error;
   }
 }

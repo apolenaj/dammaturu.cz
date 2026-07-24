@@ -39,6 +39,8 @@ async function loadIndex(): Promise<PackIndex> {
 }
 
 async function saveIndex(index: PackIndex) {
+  const { canPersistLocalFs } = await import("@/server/runtime/local-fs");
+  if (!canPersistLocalFs()) return;
   await ensureDirs();
   const tmp = `${INDEX_PATH}.${process.pid}.${Date.now()}.${Math.random()
     .toString(16)
@@ -54,6 +56,11 @@ async function saveIndex(index: PackIndex) {
 
 export async function saveStoryPack(pack: StoryPack): Promise<void> {
   const validated = parseStoryPack(pack);
+  const { canPersistLocalFs } = await import("@/server/runtime/local-fs");
+  if (!canPersistLocalFs()) {
+    // Seeded packs must ship with the deployment; do not write on Vercel.
+    return;
+  }
   await ensureDirs();
   const file = packPath(validated.id);
   const tmp = `${file}.${process.pid}.${Date.now()}.${Math.random()
@@ -152,6 +159,9 @@ export async function getStoryProgress(
 }
 
 export async function saveStoryProgress(progress: StoryProgress): Promise<void> {
+  const { canPersistLocalFs } = await import("@/server/runtime/local-fs");
+  if (!canPersistLocalFs()) return;
+
   await ensureDirs();
   const validated = storyProgressSchema.parse(progress);
   const file = progressPath(validated.learnerId, validated.packId);

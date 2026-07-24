@@ -5,8 +5,11 @@ import {
 } from "@/domain/billing/subscription";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { canPersistLocalFs } from "@/server/runtime/local-fs";
 
 export const BILLING_DIR = path.join(process.cwd(), "data", "billing");
+
+const memorySubs = new Map<string, BillingSubscription>();
 
 function statePath(learnerId: string) {
   if (!/^[a-zA-Z0-9_-]+$/.test(learnerId)) {
@@ -22,13 +25,22 @@ async function ensureDir() {
 export async function getBillingSubscription(
   learnerId: string,
 ): Promise<BillingSubscription | null> {
+  const cached = memorySubs.get(learnerId);
+  if (cached) return cached;
+
+  if (!canPersistLocalFs()) return null;
+
   try {
-    return parseBillingSubscription(
+    const sub = parseBillingSubscription(
       JSON.parse(await fs.readFile(statePath(learnerId), "utf8")),
     );
+    memorySubs.set(learnerId, sub);
+    return sub;
   } catch (error) {
     const err = error as NodeJS.ErrnoException;
-    if (err.code === "ENOENT") return null;
+    if (err.code === "ENOENT" || err.code === "EROFS" || err.code === "EACCES") {
+      return null;
+    }
     throw error;
   }
 }
@@ -37,6 +49,9 @@ export async function saveBillingSubscription(
   sub: BillingSubscription,
 ): Promise<void> {
   const validated = parseBillingSubscription(sub);
+  memorySubs.set(validated.learnerId, validated);
+  if (!canPersistLocalFs()) return;
+
   await ensureDir();
   const file = statePath(validated.learnerId);
   const tmp = `${file}.${process.pid}.${Date.now()}.${Math.random()

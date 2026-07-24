@@ -163,6 +163,9 @@ export async function listProductLearnerStates(): Promise<ProductLearnerState[]>
 export async function recordProductEvent(
   input: ProductEventInput,
 ): Promise<ProductEvent[]> {
+  const { canPersistLocalFs } = await import("@/server/runtime/local-fs");
+  if (!canPersistLocalFs()) return [];
+
   try {
     const written: ProductEvent[] = [];
     const funnelStep = input.funnelStep ?? funnelStepForEvent(input.event);

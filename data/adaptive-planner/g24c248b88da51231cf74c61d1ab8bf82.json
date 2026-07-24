@@ -1,0 +1,259 @@
+{
+  "learnerId": "g24c248b88da51231cf74c61d1ab8bf82",
+  "preferredMode": "min_30",
+  "units": {
+    "2c43595f-ec16-45fb-b47b-3553b4d7c80e": {
+      "knowledgeUnitId": "2c43595f-ec16-45fb-b47b-3553b4d7c80e",
+      "lastAttempt": "2026-07-22T03:35:38.936Z",
+      "result": "partial",
+      "difficulty": 3,
+      "consecutiveSuccessfulRetrievals": 0,
+      "mistakeCount": 2,
+      "nextReview": "2026-07-22T21:35:38.936Z",
+      "reviewHistory": [
+        {
+          "at": "2026-07-22T03:35:38.897Z",
+          "result": "incorrect",
+          "grade": "dont_know",
+          "intervalDaysAfter": 0.05,
+          "sessionKey": "2026-07-22T03"
+        },
+        {
+          "at": "2026-07-22T03:35:38.932Z",
+          "result": "incorrect",
+          "grade": "dont_know",
+          "intervalDaysAfter": 0.05,
+          "sessionKey": "2026-07-22T03"
+        },
+        {
+          "at": "2026-07-22T03:35:38.936Z",
+          "result": "partial",
+          "grade": "almost",
+          "intervalDaysAfter": 0.75,
+          "sessionKey": "2026-07-22T03"
+        }
+      ],
+      "separatedSuccessfulSessions": 0,
+      "lastSuccessSessionKey": null,
+      "examPriority": 3,
+      "schedule": {
+        "easiness": 2.7,
+        "intervalDays": 1,
+        "repetitions": 1,
+        "lapses": 2,
+        "dueAt": "2026-07-22T21:35:38.936Z",
+        "lastReviewedAt": "2026-07-22T03:35:38.936Z",
+        "lastGrade": "almost",
+        "stability": 1.056,
+        "difficulty": 6.76
+      },
+      "updatedAt": "2026-07-22T03:35:38.936Z"
+    },
+    "2c2847fc-e82a-494e-a394-3e8936330948": {
+      "knowledgeUnitId": "2c2847fc-e82a-494e-a394-3e8936330948",
+      "lastAttempt": "2026-07-22T03:35:38.948Z",
+      "result": "incorrect",
+      "difficulty": 3,
+      "consecutiveSuccessfulRetrievals": 0,
+      "mistakeCount": 1,
+      "nextReview": "2026-07-22T04:47:38.948Z",
+      "reviewHistory": [
+        {
+          "at": "2026-07-22T03:35:38.945Z",
+          "result": "correct",
+          "grade": "know",
+          "intervalDaysAfter": 2.5,
+          "sessionKey": "2026-07-22T03"
+        },
+        {
+          "at": "2026-07-22T03:35:38.948Z",
+          "result": "incorrect",
+          "grade": "dont_know",
+          "intervalDaysAfter": 0.05,
+          "sessionKey": "2026-07-22T03"
+        }
+      ],
+      "separatedSuccessfulSessions": 0,
+      "lastSuccessSessionKey": "2026-07-22T03",
+      "examPriority": 3,
+      "schedule": {
+        "easiness": 2.08,
+        "intervalDays": 0,
+        "repetitions": 0,
+        "lapses": 1,
+        "dueAt": "2026-07-22T04:47:38.948Z",
+        "lastReviewedAt": "2026-07-22T03:35:38.948Z",
+        "lastGrade": "dont_know",
+        "stability": 0.773,
+        "difficulty": 8.31
+      },
+      "updatedAt": "2026-07-22T03:35:38.948Z"
+    },
+    "7d46817f-b38e-46dd-bf09-1f24d6db1ea5": {
+      "knowledgeUnitId": "7d46817f-b38e-46dd-bf09-1f24d6db1ea5",
+      "lastAttempt": "2026-07-22T03:35:38.960Z",
+      "result": "incorrect",
+      "difficulty": 3,
+      "consecutiveSuccessfulRetrievals": 0,
+      "mistakeCount": 1,
+      "nextReview": "2026-07-22T04:47:38.960Z",
+      "reviewHistory": [
+        {
+          "at": "2026-07-22T03:35:38.960Z",
+          "result": "incorrect",
+          "grade": "dont_know",
+          "intervalDaysAfter": 0.05,
+          "sessionKey": "2026-07-22T03"
+        }
+      ],
+      "separatedSuccessfulSessions": 0,
+      "lastSuccessSessionKey": null,
+      "examPriority": 3,
+      "schedule": {
+        "easiness": 2.47,
+        "intervalDays": 0,
+        "repetitions": 0,
+        "lapses": 1,
+        "dueAt": "2026-07-22T04:47:38.960Z",
+        "lastReviewedAt": "2026-07-22T03:35:38.960Z",
+        "lastGrade": "dont_know",
+        "stability": 0.381,
+        "difficulty": 7.33
+      },
+      "updatedAt": "2026-07-22T03:35:38.960Z"
+    },
+    "d684d41f-4ffc-4880-ad1c-fd0fbefcbe1a": {
+      "knowledgeUnitId": "d684d41f-4ffc-4880-ad1c-fd0fbefcbe1a",
+      "lastAttempt": "2026-07-22T03:35:38.985Z",
+      "result": "incorrect",
+      "difficulty": 3,
+      "consecutiveSuccessfulRetrievals": 0,
+      "mistakeCount": 1,
+      "nextReview": "2026-07-22T04:47:38.985Z",
+      "reviewHistory": [
+        {
+          "at": "2026-07-22T03:35:38.985Z",
+          "result": "incorrect",
+          "grade": "dont_know",
+          "intervalDaysAfter": 0.05,
+          "sessionKey": "2026-07-22T03"
+        }
+      ],
+      "separatedSuccessfulSessions": 0,
+      "lastSuccessSessionKey": null,
+      "examPriority": 3,
+      "schedule": {
+        "easiness": 2.47,
+        "intervalDays": 0,
+        "repetitions": 0,
+        "lapses": 1,
+        "dueAt": "2026-07-22T04:47:38.985Z",
+        "lastReviewedAt": "2026-07-22T03:35:38.985Z",
+        "lastGrade": "dont_know",
+        "stability": 0.381,
+        "difficulty": 7.33
+      },
+      "updatedAt": "2026-07-22T03:35:38.985Z"
+    },
+    "2a77ac83-5414-4236-8d91-35ded70ee789": {
+      "knowledgeUnitId": "2a77ac83-5414-4236-8d91-35ded70ee789",
+      "lastAttempt": "2026-07-22T03:35:38.990Z",
+      "result": "incorrect",
+      "difficulty": 3,
+      "consecutiveSuccessfulRetrievals": 0,
+      "mistakeCount": 1,
+      "nextReview": "2026-07-22T04:47:38.990Z",
+      "reviewHistory": [
+        {
+          "at": "2026-07-22T03:35:38.990Z",
+          "result": "incorrect",
+          "grade": "dont_know",
+          "intervalDaysAfter": 0.05,
+          "sessionKey": "2026-07-22T03"
+        }
+      ],
+      "separatedSuccessfulSessions": 0,
+      "lastSuccessSessionKey": null,
+      "examPriority": 3,
+      "schedule": {
+        "easiness": 2.47,
+        "intervalDays": 0,
+        "repetitions": 0,
+        "lapses": 1,
+        "dueAt": "2026-07-22T04:47:38.990Z",
+        "lastReviewedAt": "2026-07-22T03:35:38.990Z",
+        "lastGrade": "dont_know",
+        "stability": 0.381,
+        "difficulty": 7.33
+      },
+      "updatedAt": "2026-07-22T03:35:38.990Z"
+    },
+    "75683b88-2665-459e-98d0-ad6c983c7831": {
+      "knowledgeUnitId": "75683b88-2665-459e-98d0-ad6c983c7831",
+      "lastAttempt": "2026-07-22T03:35:38.998Z",
+      "result": "incorrect",
+      "difficulty": 3,
+      "consecutiveSuccessfulRetrievals": 0,
+      "mistakeCount": 1,
+      "nextReview": "2026-07-22T04:47:38.998Z",
+      "reviewHistory": [
+        {
+          "at": "2026-07-22T03:35:38.998Z",
+          "result": "incorrect",
+          "grade": "dont_know",
+          "intervalDaysAfter": 0.05,
+          "sessionKey": "2026-07-22T03"
+        }
+      ],
+      "separatedSuccessfulSessions": 0,
+      "lastSuccessSessionKey": null,
+      "examPriority": 3,
+      "schedule": {
+        "easiness": 2.47,
+        "intervalDays": 0,
+        "repetitions": 0,
+        "lapses": 1,
+        "dueAt": "2026-07-22T04:47:38.998Z",
+        "lastReviewedAt": "2026-07-22T03:35:38.998Z",
+        "lastGrade": "dont_know",
+        "stability": 0.381,
+        "difficulty": 7.33
+      },
+      "updatedAt": "2026-07-22T03:35:38.998Z"
+    },
+    "7fe9980c-1a5f-4fd6-9970-f9b831e490f5": {
+      "knowledgeUnitId": "7fe9980c-1a5f-4fd6-9970-f9b831e490f5",
+      "lastAttempt": "2026-07-22T03:35:39.003Z",
+      "result": "incorrect",
+      "difficulty": 3,
+      "consecutiveSuccessfulRetrievals": 0,
+      "mistakeCount": 1,
+      "nextReview": "2026-07-22T04:47:39.003Z",
+      "reviewHistory": [
+        {
+          "at": "2026-07-22T03:35:39.003Z",
+          "result": "incorrect",
+          "grade": "dont_know",
+          "intervalDaysAfter": 0.05,
+          "sessionKey": "2026-07-22T03"
+        }
+      ],
+      "separatedSuccessfulSessions": 0,
+      "lastSuccessSessionKey": null,
+      "examPriority": 3,
+      "schedule": {
+        "easiness": 2.47,
+        "intervalDays": 0,
+        "repetitions": 0,
+        "lapses": 1,
+        "dueAt": "2026-07-22T04:47:39.003Z",
+        "lastReviewedAt": "2026-07-22T03:35:39.003Z",
+        "lastGrade": "dont_know",
+        "stability": 0.381,
+        "difficulty": 7.33
+      },
+      "updatedAt": "2026-07-22T03:35:39.003Z"
+    }
+  },
+  "updatedAt": "2026-07-22T03:35:39.003Z"
+}

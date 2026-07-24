@@ -7,60 +7,55 @@ describe("homepage conversion copy", () => {
     path.join(process.cwd(), "src/app/page.tsx"),
     "utf8",
   );
-  const sections = readFileSync(
-    path.join(process.cwd(), "src/components/marketing/home/home-sections.tsx"),
-    "utf8",
+  const landingDir = path.join(
+    process.cwd(),
+    "src/components/marketing/landing",
   );
-  const preview = readFileSync(
-    path.join(
-      process.cwd(),
-      "src/components/marketing/interactive-learning-preview.tsx",
-    ),
-    "utf8",
-  );
+  const landing = [
+    "index.tsx",
+    "landing-nav.tsx",
+    "landing-hero.tsx",
+    "landing-process.tsx",
+    "landing-features.tsx",
+    "landing-footer.tsx",
+    "landing-ui.tsx",
+  ]
+    .map((f) => readFileSync(path.join(landingDir, f), "utf8"))
+    .join("\n");
 
   it("leads with the product promise and free CTA", () => {
-    expect(sections).toMatch(/Víš, co se naučit\. Víš, co už/);
-    expect(sections).toMatch(/Začít se učit zdarma/);
-    expect(sections).toMatch(/Bez registrace\. Začni během pár sekund\./);
-    expect(sections).toMatch(/Jak to funguje/);
+    expect(landing).toMatch(/Maturita\?\s*\{?/);
+    expect(landing).toMatch(/Dám!/);
+    expect(landing).toMatch(/Začít se učit zdarma/);
+    expect(landing).toMatch(/Zdarma na vyzkoušení/);
+    expect(landing).toMatch(/Jak to funguje/);
   });
 
-  it("wires conversion sections around real usage", () => {
-    for (const name of [
-      "HomeHero",
-      "HomeHowItWorks",
-      "HomeMistakesReview",
-      "HomeProgressConcept",
-      "HomeCzechContent",
-      "HomeFreeBeta",
-      "HomeFaq",
-      "HomeFinalCta",
-    ]) {
-      expect(page).toContain(name);
-    }
-    expect(page).not.toContain("HomePricingPreview");
-    expect(page).not.toContain("HomeUploadDemo");
-    expect(sections).toContain("InteractiveLearningPreview");
-    expect(preview).toContain("publicPreviewItems");
+  it("wires conversion sections around the dark landing", () => {
+    expect(page).toContain("LandingPage");
+    expect(landing).toContain("LandingHero");
+    expect(landing).toContain("LandingProcess");
+    expect(landing).toContain("LandingFeatures");
+    expect(landing).toContain("LandingSmallFeatures");
+    expect(landing).toContain("LandingAboutFooter");
+    expect(landing).toContain("LandingFinalCta");
+    expect(landing).toContain("LandingNav");
   });
 
   it("avoids internal jargon and fake conversion props", () => {
-    expect(sections).not.toMatch(/\bmastery\b/i);
-    expect(sections).not.toMatch(/\bprovenance\b/i);
-    expect(sections).not.toMatch(/error loop/i);
-    expect(sections).not.toMatch(/due reviews/i);
-    expect(sections).not.toMatch(/Maturita Score/i);
-    expect(sections).not.toMatch(/testimon/i);
-    expect(sections).not.toMatch(/úspěšnost/i);
+    expect(landing).not.toMatch(/\bmastery\b/i);
+    expect(landing).not.toMatch(/\bprovenance\b/i);
+    expect(landing).not.toMatch(/error loop/i);
+    expect(landing).not.toMatch(/due reviews/i);
+    expect(landing).not.toMatch(/Maturita Score/i);
+    expect(landing).not.toMatch(/testimon/i);
+    expect(landing).not.toMatch(/úspěšnost/i);
   });
 
-  it("stays honest about free beta and CERMAT", () => {
-    expect(sections).toMatch(/Beta je zdarma|beta zdarma/i);
-    expect(sections).toMatch(/cvičné/i);
-    expect(sections).toMatch(/ne jako oficiální|ne oficiální/i);
-    expect(sections).not.toMatch(/FREE · SMART · AI PRO/);
-    expect(page).toMatch(/Beta zdarma/);
+  it("stays honest about free trial and payment", () => {
+    expect(landing).toMatch(/Zdarma na vyzkoušení|Bez závazků/i);
+    expect(landing).toMatch(/Nevyžadujeme platební kartu/);
+    expect(landing).not.toMatch(/FREE · SMART · AI PRO/);
   });
 
   it("exports SEO metadata and FAQ JSON-LD", () => {

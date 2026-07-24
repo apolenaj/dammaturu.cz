@@ -1,0 +1,94 @@
+{
+  "learnerId": "gc09c9c323f4f98d2a68b2b67a73a08a2",
+  "preferredMode": "min_30",
+  "units": {
+    "2c43595f-ec16-45fb-b47b-3553b4d7c80e": {
+      "knowledgeUnitId": "2c43595f-ec16-45fb-b47b-3553b4d7c80e",
+      "lastAttempt": "2026-07-22T06:33:55.574Z",
+      "result": "incorrect",
+      "difficulty": 3,
+      "consecutiveSuccessfulRetrievals": 0,
+      "mistakeCount": 3,
+      "nextReview": "2026-07-22T07:45:55.574Z",
+      "reviewHistory": [
+        {
+          "at": "2026-07-22T06:33:54.485Z",
+          "result": "incorrect",
+          "grade": "dont_know",
+          "intervalDaysAfter": 0.05,
+          "sessionKey": "2026-07-22T06"
+        },
+        {
+          "at": "2026-07-22T06:33:55.045Z",
+          "result": "incorrect",
+          "grade": "dont_know",
+          "intervalDaysAfter": 0.05,
+          "sessionKey": "2026-07-22T06"
+        },
+        {
+          "at": "2026-07-22T06:33:55.574Z",
+          "result": "incorrect",
+          "grade": "dont_know",
+          "intervalDaysAfter": 0.05,
+          "sessionKey": "2026-07-22T06"
+        }
+      ],
+      "separatedSuccessfulSessions": 0,
+      "lastSuccessSessionKey": null,
+      "examPriority": 3,
+      "schedule": {
+        "easiness": 2.42,
+        "intervalDays": 0,
+        "repetitions": 0,
+        "lapses": 3,
+        "dueAt": "2026-07-22T07:45:55.574Z",
+        "lastReviewedAt": "2026-07-22T06:33:55.574Z",
+        "lastGrade": "dont_know",
+        "stability": 0.359,
+        "difficulty": 7.46
+      },
+      "updatedAt": "2026-07-22T06:33:55.574Z"
+    },
+    "2c2847fc-e82a-494e-a394-3e8936330948": {
+      "knowledgeUnitId": "2c2847fc-e82a-494e-a394-3e8936330948",
+      "lastAttempt": "2026-07-22T06:33:56.842Z",
+      "result": "incorrect",
+      "difficulty": 3,
+      "consecutiveSuccessfulRetrievals": 0,
+      "mistakeCount": 2,
+      "nextReview": "2026-07-22T07:45:56.842Z",
+      "reviewHistory": [
+        {
+          "at": "2026-07-22T06:33:56.277Z",
+          "result": "incorrect",
+          "grade": "dont_know",
+          "intervalDaysAfter": 0.05,
+          "sessionKey": "2026-07-22T06"
+        },
+        {
+          "at": "2026-07-22T06:33:56.842Z",
+          "result": "incorrect",
+          "grade": "dont_know",
+          "intervalDaysAfter": 0.05,
+          "sessionKey": "2026-07-22T06"
+        }
+      ],
+      "separatedSuccessfulSessions": 0,
+      "lastSuccessSessionKey": null,
+      "examPriority": 3,
+      "schedule": {
+        "easiness": 2.47,
+        "intervalDays": 0,
+        "repetitions": 0,
+        "lapses": 2,
+        "dueAt": "2026-07-22T07:45:56.842Z",
+        "lastReviewedAt": "2026-07-22T06:33:56.842Z",
+        "lastGrade": "dont_know",
+        "stability": 0.381,
+        "difficulty": 7.33
+      },
+      "updatedAt": "2026-07-22T06:33:56.842Z"
+    }
+  },
+  "updatedAt": "2026-07-22T06:33:56.842Z"
+}

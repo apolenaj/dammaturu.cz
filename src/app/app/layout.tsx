@@ -22,7 +22,11 @@ export default async function AppLayout({
   // mounts and GuestPersistenceBridge mints via server action.
   if (viewer) {
     if (viewer.kind === "guest") {
-      await ensureGuestLearner(viewer.learnerId);
+      try {
+        await ensureGuestLearner(viewer.learnerId);
+      } catch (error) {
+        console.error("[app-layout] guest bootstrap failed", error);
+      }
       void recordProductEvent({
         learnerKey: viewer.learnerId,
         event: "guest_start",

@@ -76,7 +76,7 @@ export function InteractiveLearningPreview({
       </p>
 
       {phase === "done" ? (
-        <div className="mt-5 space-y-4">
+        <div className="mt-4 space-y-4">
           <StudyPhaseFrame phase="feedback" showLabel={false}>
             <h3 className="font-display text-xl font-semibold text-fg">
               Tohle je learning loop
@@ -98,15 +98,18 @@ export function InteractiveLearningPreview({
           ) : null}
         </div>
       ) : (
-        <div className="mt-2.5 space-y-5">
-          <StudyPhaseFrame phase="question">
+        <div className="mt-0 space-y-4">
+          <StudyPhaseFrame
+            phase="question"
+            className="-mt-2 py-3 sm:px-4 sm:py-3.5"
+          >
             <h3 className="font-display text-lg font-semibold text-fg sm:text-xl">
               {item.prompt}
             </h3>
           </StudyPhaseFrame>
 
           {phase === "question" ? (
-            <StudyPhaseFrame phase="answer">
+            <StudyPhaseFrame phase="answer" className="py-3 sm:py-3.5">
               <ul className="space-y-2">
                 {item.choices.map((c) => (
                   <li key={c.id}>

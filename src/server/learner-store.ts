@@ -9,6 +9,7 @@ import {
   type BetaEnrollment,
 } from "@/domain/learning/beta-profile";
 import type { DiagnosticBaseline } from "@/domain/learning/beta-feedback";
+import { canPersistLocalFs } from "@/server/runtime/local-fs";
 
 export type LearnerRecord = {
   id: string;
@@ -24,6 +25,9 @@ export type LearnerRecord = {
 };
 
 const DATA_DIR = path.join(process.cwd(), "data", "learners");
+
+/** Process-local cache — used on Vercel (no durable FS) and as write-through locally. */
+const memoryLearners = new Map<string, LearnerRecord>();
 
 async function ensureDir() {
   await fs.mkdir(DATA_DIR, { recursive: true });
@@ -42,6 +46,9 @@ export async function createLearnerId(): Promise<string> {
 }
 
 export async function saveLearner(record: LearnerRecord): Promise<void> {
+  memoryLearners.set(record.id, record);
+  if (!canPersistLocalFs()) return;
+
   await ensureDir();
   const dest = filePath(record.id);
   // Unique tmp avoids parallel upsert races (same .tmp path → ENOENT on rename).
@@ -61,12 +68,21 @@ export async function saveLearner(record: LearnerRecord): Promise<void> {
 export async function getLearner(
   id: string,
 ): Promise<LearnerRecord | null> {
+  const cached = memoryLearners.get(id);
+  if (cached) return cached;
+
+  if (!canPersistLocalFs()) return null;
+
   try {
     const raw = await fs.readFile(filePath(id), "utf8");
-    return JSON.parse(raw) as LearnerRecord;
+    const record = JSON.parse(raw) as LearnerRecord;
+    memoryLearners.set(id, record);
+    return record;
   } catch (error) {
     const err = error as NodeJS.ErrnoException;
-    if (err.code === "ENOENT") return null;
+    if (err.code === "ENOENT" || err.code === "EROFS" || err.code === "EACCES") {
+      return null;
+    }
     throw error;
   }
 }
@@ -112,4 +128,9 @@ export async function patchLearnerDiagnosticBaseline(
   };
   await saveLearner(next);
   return next;
+}
+
+/** Test helper — clear process-local cache. */
+export function clearLearnerMemoryForTests(): void {
+  memoryLearners.clear();
 }
