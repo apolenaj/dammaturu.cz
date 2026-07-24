@@ -10,32 +10,58 @@ import {
   Upload,
 } from "lucide-react";
 import { SectionHeading } from "./landing-ui";
+import { cn } from "@/lib/cn";
 
 const steps = [
   {
     icon: Upload,
     title: "Nahraj materiály",
     body: "PDF, poznámky nebo fotky — nahraj, co už máš.",
+    iconClassName: "text-violet-300",
+    iconShellClassName:
+      "bg-violet-500/15 ring-1 ring-violet-400/40 shadow-[0_0_15px_rgba(167,139,250,0.55),0_0_35px_rgba(139,92,246,0.25)]",
+    badgeClassName:
+      "bg-violet-500 text-white ring-2 ring-violet-300/40 shadow-[0_0_12px_rgba(139,92,246,0.65)]",
   },
   {
     icon: Brain,
     title: "AI analyzuje",
     body: "Systém vytáhne klíčové pojmy, mezery a priority.",
+    iconClassName: "text-cyan-300",
+    iconShellClassName:
+      "bg-cyan-500/15 ring-1 ring-cyan-400/40 shadow-[0_0_15px_rgba(34,211,238,0.55),0_0_35px_rgba(6,182,212,0.25)]",
+    badgeClassName:
+      "bg-cyan-500 text-white ring-2 ring-cyan-300/40 shadow-[0_0_12px_rgba(6,182,212,0.65)]",
   },
   {
     icon: Sparkles,
     title: "Učíš se chytře",
     body: "Audio, příběhy, kartičky, testy i hry — podle tebe.",
+    iconClassName: "text-emerald-300",
+    iconShellClassName:
+      "bg-emerald-500/15 ring-1 ring-emerald-400/40 shadow-[0_0_15px_rgba(52,211,153,0.55),0_0_35px_rgba(16,185,129,0.25)]",
+    badgeClassName:
+      "bg-emerald-500 text-white ring-2 ring-emerald-300/40 shadow-[0_0_12px_rgba(16,185,129,0.65)]",
   },
   {
     icon: BarChart3,
     title: "Sleduješ pokrok",
     body: "Denní plán, statistiky a série, které drží rytmus.",
+    iconClassName: "text-orange-300",
+    iconShellClassName:
+      "bg-orange-500/15 ring-1 ring-orange-400/40 shadow-[0_0_15px_rgba(251,146,60,0.55),0_0_35px_rgba(249,115,22,0.25)]",
+    badgeClassName:
+      "bg-orange-500 text-white ring-2 ring-orange-300/40 shadow-[0_0_12px_rgba(249,115,22,0.65)]",
   },
   {
     icon: GraduationCap,
     title: "Zvládneš maturitu",
     body: "Připravený na didaktický test i ústní zkoušku.",
+    iconClassName: "text-fuchsia-300",
+    iconShellClassName:
+      "bg-fuchsia-500/15 ring-1 ring-fuchsia-400/40 shadow-[0_0_15px_rgba(232,121,249,0.55),0_0_35px_rgba(217,70,239,0.25)]",
+    badgeClassName:
+      "bg-fuchsia-500 text-white ring-2 ring-fuchsia-300/40 shadow-[0_0_12px_rgba(217,70,239,0.65)]",
   },
 ] as const;
 
@@ -48,31 +74,67 @@ export function LandingProcess() {
       <div className="mx-auto max-w-7xl">
         <SectionHeading title="Jak tě dovedeme k maturitě" />
 
-        <ol className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-5 lg:gap-3">
+        <ol className="mt-14 flex flex-col items-stretch gap-8 lg:flex-row lg:items-start lg:justify-between lg:gap-0">
           {steps.map((step, index) => {
             const Icon = step.icon;
+            const stepNumber = index + 1;
+            const isLast = index === steps.length - 1;
+
             return (
-              <li key={step.title} className="relative">
-                {index < steps.length - 1 ? (
-                  <ArrowRight
-                    className="pointer-events-none absolute -right-2 top-10 z-10 hidden h-4 w-4 text-white/20 lg:block"
+              <li
+                key={step.title}
+                className={cn(
+                  "relative flex flex-1 flex-col items-center text-center",
+                  !isLast && "lg:pr-8",
+                )}
+              >
+                {/* Thin purple arrow between steps — desktop only */}
+                {!isLast ? (
+                  <div
+                    className="pointer-events-none absolute left-[calc(50%+2.75rem)] right-0 top-[2.35rem] z-10 hidden items-center lg:flex"
                     aria-hidden
-                  />
+                  >
+                    <div className="h-px flex-1 bg-gradient-to-r from-violet-400/70 via-fuchsia-400/50 to-violet-400/20" />
+                    <ArrowRight
+                      className="ml-0.5 h-3.5 w-3.5 shrink-0 text-violet-400"
+                      strokeWidth={2.25}
+                    />
+                  </div>
                 ) : null}
-                <div className="h-full rounded-2xl border border-white/10 bg-white/5 p-5 text-center backdrop-blur-md transition hover:border-white/20 hover:shadow-[0_0_32px_-10px_rgba(64,224,208,0.3)]">
-                  <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#40E0D0]/20 to-[#8A2BE2]/20 text-[#40E0D0]">
-                    <Icon className="h-6 w-6" aria-hidden />
+
+                {/* Neon icon with overlapping step badge */}
+                <div className="relative mb-5">
+                  <div
+                    className={cn(
+                      "flex h-[4.75rem] w-[4.75rem] items-center justify-center rounded-2xl",
+                      step.iconShellClassName,
+                    )}
+                  >
+                    <Icon
+                      className={cn(
+                        "h-8 w-8 drop-shadow-[0_0_8px_currentColor]",
+                        step.iconClassName,
+                      )}
+                      aria-hidden
+                    />
+                  </div>
+                  <span
+                    className={cn(
+                      "absolute -bottom-1 -left-1 flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold",
+                      step.badgeClassName,
+                    )}
+                    aria-label={`Krok ${stepNumber}`}
+                  >
+                    {stepNumber}
                   </span>
-                  <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500">
-                    Krok {index + 1}
-                  </p>
-                  <h3 className="mt-1.5 text-base font-semibold text-white">
-                    {step.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-gray-400">
-                    {step.body}
-                  </p>
                 </div>
+
+                <h3 className="max-w-[11rem] text-base font-semibold tracking-tight text-white sm:text-lg">
+                  {step.title}
+                </h3>
+                <p className="mt-2 max-w-[14rem] text-sm leading-relaxed text-slate-400">
+                  {step.body}
+                </p>
               </li>
             );
           })}
@@ -98,13 +160,13 @@ export function LandingSmallFeatures() {
     >
       <div className="mx-auto max-w-7xl">
         <SectionHeading title="Vše, co potřebuješ na jednom místě" />
-        <ul className="mx-auto mt-12 grid max-w-5xl gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <ul className="mx-auto mt-12 grid max-w-5xl grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-5">
           {smallFeatures.map(({ icon: Icon, title }) => (
             <li
               key={title}
-              className="flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-6 text-center backdrop-blur-md transition hover:border-white/20 hover:shadow-[0_0_28px_-10px_rgba(138,43,226,0.35)]"
+              className="flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-slate-900/60 px-4 py-6 text-center shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)] backdrop-blur-md transition hover:border-violet-400/30 hover:shadow-[0_0_28px_-10px_rgba(139,92,246,0.45)]"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#40E0D0]/15 to-[#8A2BE2]/15 text-[#40E0D0]">
+              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-500/15 text-violet-300 ring-1 ring-violet-400/30 shadow-[0_0_18px_rgba(167,139,250,0.35)]">
                 <Icon className="h-5 w-5" aria-hidden />
               </span>
               <span className="text-sm font-semibold text-white">{title}</span>
