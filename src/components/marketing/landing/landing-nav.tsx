@@ -110,7 +110,7 @@ export function LandingNav() {
             Přihlásit se
           </Link>
           <Link
-            href="/app/learn"
+            href="/registrace"
             className="inline-flex min-h-9 items-center rounded-full bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500 px-4 text-xs font-semibold text-white shadow-[0_0_22px_-4px_rgba(59,130,246,0.75)] transition hover:brightness-110"
           >
             Začít zdarma
@@ -163,7 +163,7 @@ export function LandingNav() {
               Přihlásit se
             </Link>
             <Link
-              href="/app/learn"
+              href="/registrace"
               className="inline-flex min-h-11 items-center justify-center rounded-full bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500 text-sm font-semibold text-white"
             >
               Začít zdarma

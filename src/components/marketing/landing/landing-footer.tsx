@@ -232,7 +232,7 @@ export function LandingFinalCta() {
               />
             </svg>
             <Link
-              href="/app/learn"
+              href="/registrace"
               className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-white px-8 text-sm font-bold text-violet-700 shadow-[0_12px_32px_-8px_rgba(0,0,0,0.35)] transition hover:bg-violet-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-violet-600 sm:w-auto sm:min-h-14 sm:px-10 sm:text-base"
             >
               Začít se učit zdarma

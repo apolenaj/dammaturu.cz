@@ -297,8 +297,8 @@ export function LandingHero() {
           </p>
 
           <h1 className="mt-6 text-5xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-6xl lg:text-7xl">
-            Maturita?{" "}
-            <span className="inline-flex items-center gap-2 sm:gap-3">
+            Maturita?
+            <span className="mt-2 flex items-center gap-2 sm:gap-3">
               <span className="bg-gradient-to-r from-sky-300 via-blue-400 to-blue-600 bg-clip-text text-transparent">
                 Dám!
               </span>
@@ -318,7 +318,7 @@ export function LandingHero() {
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Link
-              href="/app/learn"
+              href="/registrace"
               className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 px-7 text-sm font-semibold text-white shadow-[0_8px_24px_-6px_rgba(37,99,235,0.55)] transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070913]"
             >
               Začít se učit zdarma
