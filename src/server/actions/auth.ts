@@ -96,9 +96,16 @@ function authAvailable(): boolean {
 
 function ensureAuthAvailable(): AuthActionResult | null {
   if (!authAvailable()) {
+    console.error("[auth] ensureAuthAvailable: Auth není dostupná", {
+      supabaseConfigured: isSupabaseConfigured(),
+      hasUrl: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL?.trim()),
+      hasAnonKey: Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim()),
+      nodeEnv: process.env.NODE_ENV,
+    });
     return {
       ok: false,
-      error: "Přihlášení teď není dostupné. Zkus to prosím později.",
+      error:
+        "Supabase Auth není nakonfigurována. Zkontroluj NEXT_PUBLIC_SUPABASE_URL a NEXT_PUBLIC_SUPABASE_ANON_KEY v .env.local a restartuj dev server.",
       code: "not_configured",
     };
   }
@@ -169,8 +176,19 @@ export async function signUpWithPasswordAction(input: {
     });
 
     if (error) {
-      const mapped = mapAuthError(error.message);
-      return { ok: false, ...mapped };
+      console.error("[auth] supabase.auth.signUp error:", {
+        message: error.message,
+        status: error.status,
+        name: error.name,
+        code: (error as { code?: string }).code,
+        full: error,
+      });
+      // Při vývoji vrať přesnou zprávu ze Supabase (ne obecný mapovaný text).
+      return {
+        ok: false,
+        error: error.message,
+        code: (error as { code?: string }).code ?? mapAuthError(error.message).code,
+      };
     }
 
     if (
@@ -248,8 +266,18 @@ export async function signInWithPasswordAction(input: {
     });
 
     if (error) {
-      const mapped = mapAuthError(error.message);
-      return { ok: false, ...mapped };
+      console.error("[auth] supabase.auth.signInWithPassword error:", {
+        message: error.message,
+        status: error.status,
+        name: error.name,
+        code: (error as { code?: string }).code,
+        full: error,
+      });
+      return {
+        ok: false,
+        error: error.message,
+        code: (error as { code?: string }).code ?? mapAuthError(error.message).code,
+      };
     }
 
     revalidatePath("/", "layout");

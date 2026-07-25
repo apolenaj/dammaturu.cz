@@ -51,6 +51,30 @@ export function isSupabaseConfigured(): boolean {
   return getSupabasePublicEnv() !== null;
 }
 
+/** Diagnostika pro Auth UI / Server Actions (bez úniku celého klíče). */
+export function getSupabaseConfigDiagnostics(): {
+  configured: boolean;
+  hasUrl: boolean;
+  hasAnonKey: boolean;
+  urlHost: string | null;
+} {
+  const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ?? "";
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ?? "";
+  const env = getSupabasePublicEnv();
+  let urlHost: string | null = null;
+  try {
+    urlHost = env ? new URL(env.url).host : rawUrl ? new URL(normalizeSupabaseUrl(rawUrl)).host : null;
+  } catch {
+    urlHost = null;
+  }
+  return {
+    configured: env !== null,
+    hasUrl: Boolean(rawUrl),
+    hasAnonKey: Boolean(anonKey),
+    urlHost,
+  };
+}
+
 /** Google OAuth button — only when project has Google provider enabled. */
 export function isGoogleAuthEnabled(): boolean {
   return process.env.NEXT_PUBLIC_AUTH_GOOGLE === "true";
