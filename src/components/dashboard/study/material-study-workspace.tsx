@@ -87,15 +87,36 @@ export function MaterialStudyWorkspace({
   source,
   warning,
   info,
+  error,
 }: {
   materialId: string;
   title: string;
-  pack: MaterialStudyPack;
-  source: "extracted" | "title_fallback";
+  pack: MaterialStudyPack | null;
+  source: "extracted" | "topic_ai" | "failed";
   warning?: string | null;
   info?: string | null;
+  error?: string | null;
 }) {
   const [mode, setMode] = useState<StudyMode>("flashcards");
+
+  if (error || !pack) {
+    return (
+      <GlassCard className="border-rose-400/30 bg-rose-500/10 space-y-3">
+        <p className="flex items-start gap-2 text-sm font-semibold text-rose-100">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+          Generování učení selhalo
+        </p>
+        <p className="text-sm leading-relaxed text-rose-50/95">
+          {error ??
+            "Chyba připojení k AI: Zkontrolujte OPENAI_API_KEY a zkuste stránku obnovit."}
+        </p>
+        <p className="text-xs text-rose-100/70">
+          Aplikace záměrně nepoužívá zástupné texty — bez funkční AI nevracíme
+          falešný obsah.
+        </p>
+      </GlassCard>
+    );
+  }
 
   return (
     <div className="space-y-5">
@@ -123,10 +144,9 @@ export function MaterialStudyWorkspace({
         </GlassCard>
       ) : null}
 
-      {source === "title_fallback" && !warning ? (
+      {source === "topic_ai" ? (
         <p className="text-xs text-slate-500">
-          Režim podle názvu materiálu — u nahraných souborů se snažíme číst obsah
-          PDF/DOCX/TXT.
+          Systémové téma — obsah vytvořila AI podle maturitního okruhu.
         </p>
       ) : null}
 

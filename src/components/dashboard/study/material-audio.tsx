@@ -6,62 +6,23 @@ import { GlassCard } from "@/components/dashboard/glass-card";
 import { cn } from "@/lib/cn";
 
 /**
- * Projde dostupné hlasy a vybere ten, jehož lang obsahuje „cs“
- * (případně cz / Czech), ať prohlížeč nečte češtinu anglickým hlasem.
+ * Najde český hlas. Nikdy nevrací anglický hlas jako „fallback“.
  */
 function findCzechVoice(
   voices: SpeechSynthesisVoice[],
 ): SpeechSynthesisVoice | null {
   if (voices.length === 0) return null;
 
-  const score = (voice: SpeechSynthesisVoice): number => {
-    const lang = voice.lang.toLowerCase().replace("_", "-");
-    const name = voice.name.toLowerCase();
-    let points = 0;
-
-    if (lang === "cs-cz") points += 100;
-    else if (lang.startsWith("cs")) points += 80;
-    else if (lang.includes("cs")) points += 60;
-    else if (lang.includes("cz")) points += 40;
-
-    if (/czech|čeština|cesky|česk/i.test(voice.name)) points += 50;
-    if (name.includes("zira") || name.includes("jakub") || name.includes("elsa")) {
-      points += 10;
-    }
-    // Preferuj lokální hlasy (méně anglické „fallback“ výslovnosti).
-    if (voice.localService) points += 15;
-
-    return points;
-  };
-
-  const ranked = [...voices]
-    .map((voice) => ({ voice, points: score(voice) }))
-    .filter((row) => row.points > 0)
-    .sort((a, b) => b.points - a.points);
-
-  return ranked[0]?.voice ?? null;
-}
-
-function configureCzechUtterance(
-  text: string,
-  voices: SpeechSynthesisVoice[],
-): SpeechSynthesisUtterance {
-  const utterance = new SpeechSynthesisUtterance(text);
-  // Striktně čeština — prohlížeč nesmí padnout na výchozí anglický hlas.
-  utterance.lang = "cs-CZ";
-  utterance.rate = 0.92;
-  utterance.pitch = 1;
-  utterance.volume = 1;
-
-  const czechVoice = findCzechVoice(voices);
-  if (czechVoice) {
-    utterance.voice = czechVoice;
-  }
-
-  // Pojistka: lang musí zůstat cs-CZ i po přiřazení hlasu.
-  utterance.lang = "cs-CZ";
-
-  return utterance;
+  return (
+    voices.find(
+      (v) =>
+        v.lang.toLowerCase().includes("cs") ||
+        v.lang.toLowerCase().includes("cz") ||
+        v.name.toLowerCase().includes("czech") ||
+        v.name.toLowerCase().includes("česk") ||
+        v.name.toLowerCase().includes("cesk"),
+    ) ?? null
+  );
 }
 
 export function MaterialAudioSummary({
@@ -75,8 +36,12 @@ export function MaterialAudioSummary({
   const [playing, setPlaying] = useState(false);
   const [paused, setPaused] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-  const [voiceLabel, setVoiceLabel] = useState<string | null>(null);
+  const [czechVoice, setCzechVoice] = useState<SpeechSynthesisVoice | null>(
+    null,
+  );
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  const hasCzechVoice = Boolean(czechVoice);
 
   const sentences = useMemo(
     () =>
@@ -91,14 +56,7 @@ export function MaterialAudioSummary({
     if (typeof window === "undefined" || !window.speechSynthesis) return;
     const list = window.speechSynthesis.getVoices();
     setVoices(list);
-    const czech = findCzechVoice(list);
-    setVoiceLabel(
-      czech
-        ? `${czech.name} (${czech.lang})`
-        : list.length > 0
-          ? "Český hlas v systému nebyl nalezen — výslovnost může být horší"
-          : null,
-    );
+    setCzechVoice(findCzechVoice(list));
   }, []);
 
   useEffect(() => {
@@ -109,7 +67,6 @@ export function MaterialAudioSummary({
 
     refreshVoices();
     window.speechSynthesis.addEventListener("voiceschanged", refreshVoices);
-    // Chrome někdy potřebuje „probuzení“ getVoices.
     window.speechSynthesis.getVoices();
 
     return () => {
@@ -140,12 +97,16 @@ export function MaterialAudioSummary({
       return;
     }
 
-    // Před spuštěním znovu načti hlasy (Chrome je někdy dodá až pozdě).
     const latestVoices = window.speechSynthesis.getVoices();
-    if (latestVoices.length > 0) {
-      setVoices(latestVoices);
-    }
+    if (latestVoices.length > 0) setVoices(latestVoices);
     const voicePool = latestVoices.length > 0 ? latestVoices : voices;
+    const czech = findCzechVoice(voicePool);
+    setCzechVoice(czech);
+
+    if (!czech) {
+      // Bez českého hlasu nepřehrajeme anglický hlas — jen varování.
+      return;
+    }
 
     if (paused && utteranceRef.current) {
       window.speechSynthesis.resume();
@@ -155,14 +116,13 @@ export function MaterialAudioSummary({
     }
 
     window.speechSynthesis.cancel();
-    const utterance = configureCzechUtterance(summary, voicePool);
-
-    const czech = findCzechVoice(voicePool);
-    setVoiceLabel(
-      czech
-        ? `${czech.name} (${czech.lang})`
-        : "Český hlas v systému nebyl nalezen — výslovnost může být horší",
-    );
+    const utterance = new SpeechSynthesisUtterance(summary);
+    utterance.lang = "cs-CZ";
+    utterance.rate = 0.92;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+    utterance.voice = czech;
+    utterance.lang = "cs-CZ";
 
     utterance.onend = () => {
       setPlaying(false);
@@ -206,8 +166,12 @@ export function MaterialAudioSummary({
       {!supported ? (
         <p className="text-sm text-amber-200">
           Tvůj prohlížeč nepodporuje hlasové čtení. Můžeš si shrnutí přečíst výše
-          nahlas sám — funguje to stejně dobře.
+          nahlas sám.
         </p>
+      ) : !hasCzechVoice ? (
+        <div className="rounded-2xl border border-amber-400/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+          Ve vašem zařízení není nainstalován český hlas pro čtení textu.
+        </div>
       ) : (
         <div className="space-y-3">
           <div className="flex flex-wrap gap-3">
@@ -241,11 +205,10 @@ export function MaterialAudioSummary({
               Stop
             </button>
           </div>
-          {voiceLabel ? (
-            <p className="text-xs text-slate-500">
-              Hlas: {voiceLabel} · jazyk utterance: cs-CZ
-            </p>
-          ) : null}
+          <p className="text-xs text-slate-500">
+            Hlas: {czechVoice?.name} ({czechVoice?.lang}) · utterance.lang =
+            cs-CZ
+          </p>
         </div>
       )}
 
@@ -264,12 +227,6 @@ export function MaterialAudioSummary({
           ))}
         </ul>
       </div>
-
-      <p className="text-xs text-slate-500">
-        Přehrávání používá Web Speech API s preferencí českého hlasu (lang obsahuje
-        „cs“). Pokud v systému český hlas chybí, nainstaluj ho v nastavení OS /
-        prohlížeče.
-      </p>
     </GlassCard>
   );
 }

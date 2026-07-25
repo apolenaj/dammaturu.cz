@@ -45,9 +45,11 @@ export default async function UceniMaterialPage({ params }: PageProps) {
     material.type === "system" ? "Systémové učivo" : "Tvůj materiál";
 
   const heroHint =
-    study.source === "extracted"
-      ? `Učení je sestavené z obsahu souboru „${material.title}“.`
-      : `Vyber si způsob učení: kartičky, test nebo audio shrnutí podle tématu „${material.title}“.`;
+    study.error
+      ? "Generování přes AI se nepodařilo — podívej se na chybovou hlášku níže."
+      : study.source === "extracted"
+        ? `Učení je sestavené z obsahu souboru „${material.title}“ přes AI.`
+        : `Učení k tématu „${material.title}“ vytvořila AI.`;
 
   return (
     <div className="space-y-5">
@@ -71,7 +73,12 @@ export default async function UceniMaterialPage({ params }: PageProps) {
               </span>
               {study.source === "extracted" ? (
                 <span className="rounded-full border border-emerald-400/25 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-200">
-                  Z obsahu souboru
+                  Z obsahu souboru · AI
+                </span>
+              ) : null}
+              {study.source === "topic_ai" ? (
+                <span className="rounded-full border border-violet-400/25 bg-violet-500/10 px-2.5 py-1 text-xs font-medium text-violet-200">
+                  AI téma
                 </span>
               ) : null}
             </div>
@@ -105,6 +112,7 @@ export default async function UceniMaterialPage({ params }: PageProps) {
         source={study.source}
         warning={study.warning}
         info={study.info}
+        error={study.error}
       />
 
       <GlassCard>
