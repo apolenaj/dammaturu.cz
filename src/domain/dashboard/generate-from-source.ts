@@ -1,7 +1,11 @@
 /**
  * Generuje studijní balíček výhradně přes OpenAI.
  * Žádné lokální „dummy“ fallbacky — při chybě vyhodí Error.
+ *
+ * POUZE SERVER — nesmí se importovat z `'use client'` komponent.
  */
+
+import "server-only";
 
 import { z } from "zod";
 import type { MaterialStudyPack } from "@/domain/dashboard/material-study-content";
@@ -52,6 +56,9 @@ const generatedPackSchema = z.object({
 });
 
 function requireOpenAiApiKey(): string {
+  // Diagnostika: boolean only — nikdy nelogovat hodnotu klíče.
+  console.log("[DEBUG] OpenAI Key Status:", !!process.env.OPENAI_API_KEY);
+
   const key = process.env.OPENAI_API_KEY?.trim();
   if (!key) {
     throw new OpenAiStudyError(

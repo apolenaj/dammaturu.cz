@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useId, useMemo, useRef, useState, useTransition } from "react";
 import {
   BookOpen,
@@ -45,10 +46,19 @@ function MaterialCard({
   onDelete?: (id: string) => void;
   deleting?: boolean;
 }) {
+  const router = useRouter();
+  const [navigating, setNavigating] = useState(false);
   const isUser = material.type === "user";
+  const studyHref = `/uceni/${material.id}`;
+
+  const startLearning = useCallback(() => {
+    if (!material.id || navigating) return;
+    setNavigating(true);
+    router.push(studyHref);
+  }, [material.id, navigating, router, studyHref]);
 
   return (
-    <GlassCard className="flex h-full flex-col bg-gradient-to-br from-slate-900/60 via-slate-900/40 to-indigo-950/20">
+    <GlassCard className="relative z-10 flex h-full flex-col bg-gradient-to-br from-slate-900/60 via-slate-900/40 to-indigo-950/20">
       <div className="flex items-start justify-between gap-3">
         <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-500/15 text-blue-300 ring-1 ring-blue-400/25">
           {isUser ? (
@@ -76,19 +86,42 @@ function MaterialCard({
         </p>
       )}
 
-      <div className="mt-auto flex flex-col gap-2 pt-5">
+      <div className="relative z-20 mt-auto flex flex-col gap-2 pt-5">
         <Link
-          href={`/uceni/${material.id}`}
-          className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-gradient-to-r from-blue-500 via-indigo-500 to-violet-600 text-sm font-semibold text-white shadow-[0_0_24px_-6px_rgba(99,102,241,0.65)] transition hover:brightness-110"
+          href={studyHref}
+          prefetch
+          onClick={(event) => {
+            // Zajistí navigaci i když by Link měkká navigace „visela“ na AI RSC.
+            if (
+              event.defaultPrevented ||
+              event.metaKey ||
+              event.ctrlKey ||
+              event.shiftKey ||
+              event.altKey ||
+              event.button !== 0
+            ) {
+              return;
+            }
+            event.preventDefault();
+            startLearning();
+          }}
+          aria-busy={navigating}
+          className={cn(
+            "relative z-20 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-blue-500 via-indigo-500 to-violet-600 text-sm font-semibold text-white shadow-[0_0_24px_-6px_rgba(99,102,241,0.65)] transition hover:brightness-110",
+            navigating && "opacity-90",
+          )}
         >
-          Začít se učit
+          {navigating ? (
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+          ) : null}
+          {navigating ? "Otevírám učení…" : "Začít se učit"}
         </Link>
         {onDelete ? (
           <button
             type="button"
-            disabled={deleting}
+            disabled={Boolean(deleting) || navigating}
             onClick={() => onDelete(material.id)}
-            className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.03] text-sm font-medium text-slate-400 transition hover:border-rose-400/30 hover:bg-rose-500/10 hover:text-rose-200 disabled:opacity-50"
+            className="relative z-20 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.03] text-sm font-medium text-slate-400 transition hover:border-rose-400/30 hover:bg-rose-500/10 hover:text-rose-200 disabled:opacity-50"
           >
             {deleting ? (
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
@@ -274,7 +307,7 @@ function UploadDropzone({
           onFiles(e.dataTransfer.files);
         }}
         className={cn(
-          "flex cursor-pointer flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed px-6 py-14 text-center transition",
+          "relative z-0 flex cursor-pointer flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed px-6 py-14 text-center transition",
           busy && "pointer-events-none opacity-70",
           dragging
             ? "border-blue-400 bg-blue-500/15 shadow-[0_0_40px_-10px_rgba(59,130,246,0.55)]"
@@ -375,7 +408,7 @@ export function MaterialsPageContent({
   }, []);
 
   return (
-    <div className="space-y-8">
+    <div className="relative z-10 space-y-8">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
           Materiály
@@ -399,8 +432,8 @@ export function MaterialsPageContent({
         </GlassCard>
       ) : null}
 
-      <div className="grid gap-8 xl:grid-cols-2">
-        <section className="space-y-5" aria-labelledby="nase-ucivo-heading">
+      <div className="relative z-10 grid gap-8 xl:grid-cols-2">
+        <section className="relative z-10 space-y-5" aria-labelledby="nase-ucivo-heading">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-blue-300/90">
               Sekce A
@@ -433,7 +466,7 @@ export function MaterialsPageContent({
                     </span>
                     {subject}
                   </h3>
-                  <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="relative z-10 grid gap-4 sm:grid-cols-2">
                     {materials.map((material) => (
                       <MaterialCard key={material.id} material={material} />
                     ))}
@@ -444,7 +477,7 @@ export function MaterialsPageContent({
           )}
         </section>
 
-        <section className="space-y-5" aria-labelledby="vlastni-materialy-heading">
+        <section className="relative z-10 space-y-5" aria-labelledby="vlastni-materialy-heading">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-violet-300/90">
               Sekce B
@@ -460,7 +493,9 @@ export function MaterialsPageContent({
             </p>
           </div>
 
-          <UploadDropzone onUploaded={onUploaded} />
+          <div className="relative z-0">
+            <UploadDropzone onUploaded={onUploaded} />
+          </div>
 
           {deleteError ? (
             <p className="text-sm text-rose-300">{deleteError}</p>
@@ -474,7 +509,7 @@ export function MaterialsPageContent({
               </p>
             </GlassCard>
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+            <div className="relative z-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
               {userMaterials.map((material) => (
                 <MaterialCard
                   key={material.id}

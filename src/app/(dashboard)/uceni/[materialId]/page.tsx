@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { ArrowLeft, BookOpen, Sparkles } from "lucide-react";
+import { ArrowLeft, BookOpen, Loader2, Sparkles } from "lucide-react";
 import { GlassCard } from "@/components/dashboard/glass-card";
 import { MaterialStudyWorkspace } from "@/components/dashboard/study/material-study-workspace";
-import { subjectShortLabel } from "@/domain/dashboard/study-materials";
+import {
+  subjectShortLabel,
+  type StudyMaterial,
+} from "@/domain/dashboard/study-materials";
 import { buildPublicMetadata } from "@/lib/seo";
 import { createClient } from "@/lib/supabase/server";
 import { getStudyMaterialById } from "@/server/dashboard/study-materials";
@@ -30,6 +34,36 @@ export async function generateMetadata({
 
 export const dynamic = "force-dynamic";
 
+function StudyPackFallback({ title }: { title: string }) {
+  return (
+    <GlassCard className="flex min-h-52 flex-col items-center justify-center gap-3 text-center">
+      <Loader2 className="h-8 w-8 animate-spin text-blue-300" aria-hidden />
+      <p className="text-sm font-medium text-white">
+        Generuji učení pro „{title}“…
+      </p>
+      <p className="max-w-md text-xs text-slate-400">
+        Kartičky, testy, příběh a hry vytváří AI — obvykle to trvá několik sekund.
+      </p>
+    </GlassCard>
+  );
+}
+
+async function MaterialStudySection({ material }: { material: StudyMaterial }) {
+  const study = await resolveMaterialStudyPack(material);
+
+  return (
+    <MaterialStudyWorkspace
+      materialId={material.id}
+      title={material.title}
+      pack={study.pack}
+      source={study.source}
+      warning={study.warning}
+      info={study.info}
+      error={study.error}
+    />
+  );
+}
+
 export default async function UceniMaterialPage({ params }: PageProps) {
   const { materialId } = await params;
   const supabase = await createClient();
@@ -39,17 +73,8 @@ export default async function UceniMaterialPage({ params }: PageProps) {
     notFound();
   }
 
-  const study = await resolveMaterialStudyPack(material);
-
   const typeLabel =
     material.type === "system" ? "Systémové učivo" : "Tvůj materiál";
-
-  const heroHint =
-    study.error
-      ? "Generování přes AI se nepodařilo — podívej se na chybovou hlášku níže."
-      : study.source === "extracted"
-        ? `Učení je sestavené z obsahu souboru „${material.title}“ přes AI.`
-        : `Učení k tématu „${material.title}“ vytvořila AI.`;
 
   return (
     <div className="space-y-5">
@@ -71,16 +96,6 @@ export default async function UceniMaterialPage({ params }: PageProps) {
               <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-slate-400">
                 {typeLabel}
               </span>
-              {study.source === "extracted" ? (
-                <span className="rounded-full border border-emerald-400/25 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-200">
-                  Z obsahu souboru · AI
-                </span>
-              ) : null}
-              {study.source === "topic_ai" ? (
-                <span className="rounded-full border border-violet-400/25 bg-violet-500/10 px-2.5 py-1 text-xs font-medium text-violet-200">
-                  AI téma
-                </span>
-              ) : null}
             </div>
             <h1 className="mt-3 text-2xl font-bold tracking-tight text-white sm:text-3xl">
               {material.title}
@@ -100,20 +115,14 @@ export default async function UceniMaterialPage({ params }: PageProps) {
               className="mt-0.5 h-4 w-4 shrink-0 text-blue-300"
               aria-hidden
             />
-            {heroHint}
+            Připravujeme učení z materiálu „{material.title}“ přes AI.
           </p>
         </div>
       </GlassCard>
 
-      <MaterialStudyWorkspace
-        materialId={material.id}
-        title={material.title}
-        pack={study.pack}
-        source={study.source}
-        warning={study.warning}
-        info={study.info}
-        error={study.error}
-      />
+      <Suspense fallback={<StudyPackFallback title={material.title} />}>
+        <MaterialStudySection material={material} />
+      </Suspense>
 
       <GlassCard>
         <h2 className="text-base font-semibold text-white">Další materiál</h2>

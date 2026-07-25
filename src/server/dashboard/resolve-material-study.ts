@@ -1,3 +1,5 @@
+import "server-only";
+
 import type { MaterialStudyPack } from "@/domain/dashboard/material-study-content";
 import {
   generateStudyPackFromSource,
@@ -20,6 +22,7 @@ export type ResolvedMaterialStudy = {
 /**
  * Stáhne / sestaví zdrojový text a vygeneruje učební balíček přes OpenAI.
  * Žádné dummy fallbacky — chyby se vrací jako `error`.
+ * Běží jen na Node.js serveru (RSC / Server Action) — ne Edge, ne klient.
  */
 export async function resolveMaterialStudyPack(
   material: StudyMaterial,
