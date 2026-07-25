@@ -17,6 +17,7 @@ import {
   readGuestIdFromCookieHeader,
   verifyGuestCookieValue,
 } from "@/server/guest/guest-cookie";
+import { isDashboardPath } from "@/lib/dashboard-paths";
 
 async function hasLearnerAuth(
   request: NextRequest,
@@ -107,8 +108,6 @@ export async function middleware(request: NextRequest) {
   const isApp = pathname.startsWith("/app");
   const isOnboarding =
     pathname === "/onboarding" || pathname.startsWith("/onboarding/");
-  const isPrehled =
-    pathname === "/prehled" || pathname.startsWith("/prehled/");
   const isAuthPage =
     pathname === "/prihlaseni" ||
     pathname.startsWith("/prihlaseni/") ||
@@ -127,8 +126,8 @@ export async function middleware(request: NextRequest) {
     return ensureGuestCookieOnResponse(request, response);
   }
 
-  // Chráněný studijní přehled — vyžaduje přihlášení.
-  if (isPrehled && configured && !authenticated) {
+  // Chráněný studijní dashboard — vyžaduje přihlášení.
+  if (isDashboardPath(pathname) && configured && !authenticated) {
     const login = new URL("/login", request.url);
     login.searchParams.set("next", pathname);
     return NextResponse.redirect(login);
@@ -172,6 +171,16 @@ export const config = {
     "/register/:path*",
     "/prehled",
     "/prehled/:path*",
+    "/uceni",
+    "/uceni/:path*",
+    "/moje-chyby",
+    "/moje-chyby/:path*",
+    "/materialy",
+    "/materialy/:path*",
+    "/plan",
+    "/plan/:path*",
+    "/statistiky",
+    "/statistiky/:path*",
     "/auth/:path*",
   ],
 };
