@@ -4,14 +4,17 @@ import { useMemo, useState } from "react";
 import { CheckCircle2, RotateCcw, XCircle } from "lucide-react";
 import { GlassCard } from "@/components/dashboard/glass-card";
 import type { MaterialQuizQuestion } from "@/domain/dashboard/material-study-content";
+import { addStudyMistake } from "@/domain/dashboard/study-mistakes";
 import { cn } from "@/lib/cn";
 
 export function MaterialQuiz({
   questions,
   materialTitle,
+  materialId,
 }: {
   questions: MaterialQuizQuestion[];
   materialTitle: string;
+  materialId: string;
 }) {
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<"A" | "B" | "C" | "D" | null>(null);
@@ -32,7 +35,20 @@ export function MaterialQuiz({
     setSelected(optionId);
     if (optionId === question.correctOptionId) {
       setCorrectCount((n) => n + 1);
+      return;
     }
+    const correct = question.options.find(
+      (o) => o.id === question.correctOptionId,
+    );
+    addStudyMistake({
+      materialId,
+      kind: "quiz",
+      prompt: question.prompt,
+      answer: correct
+        ? `${correct.id}) ${correct.text}\n\n${question.explanation}`
+        : question.explanation,
+      sourceId: question.id,
+    });
   }
 
   function next() {

@@ -68,8 +68,8 @@ export async function resolveMaterialStudyPack(
       engine,
       warning: null,
       info: extracted.truncated
-        ? `Kartičky a testy jsou z obsahu tvého souboru (text byl zkrácen na nejpodstatnější část, původně ${extracted.charCount.toLocaleString("cs-CZ")} znaků).`
-        : `Kartičky a testy jsou vygenerované přímo z obsahu tvého souboru (${extracted.format.toUpperCase()}, ${extracted.charCount.toLocaleString("cs-CZ")} znaků).`,
+        ? `Všech 6 metod učení je z obsahu tvého souboru (text byl zkrácen, původně ${extracted.charCount.toLocaleString("cs-CZ")} znaků).`
+        : `Všech 6 metod učení je vygenerovaných z obsahu tvého souboru (${extracted.format.toUpperCase()}, ${extracted.charCount.toLocaleString("cs-CZ")} znaků).`,
       truncated: extracted.truncated,
     };
   } catch (error) {

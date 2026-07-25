@@ -1,15 +1,33 @@
 "use client";
 
 import { useState } from "react";
-import { AlertTriangle, BookOpen, Headphones, Layers, Sparkles } from "lucide-react";
+import {
+  AlertTriangle,
+  BookMarked,
+  BookOpen,
+  Gamepad2,
+  Headphones,
+  Layers,
+  Sparkles,
+  Star,
+} from "lucide-react";
 import { MaterialAudioSummary } from "@/components/dashboard/study/material-audio";
 import { MaterialFlashcards } from "@/components/dashboard/study/material-flashcards";
+import { MaterialMatchGame } from "@/components/dashboard/study/material-match-game";
 import { MaterialQuiz } from "@/components/dashboard/study/material-quiz";
+import { MaterialReview } from "@/components/dashboard/study/material-review";
+import { MaterialStory } from "@/components/dashboard/study/material-story";
 import { GlassCard } from "@/components/dashboard/glass-card";
 import type { MaterialStudyPack } from "@/domain/dashboard/material-study-content";
 import { cn } from "@/lib/cn";
 
-type StudyMode = "flashcards" | "quiz" | "audio";
+type StudyMode =
+  | "flashcards"
+  | "quiz"
+  | "audio"
+  | "stories"
+  | "games"
+  | "review";
 
 const modes: Array<{
   id: StudyMode;
@@ -39,15 +57,38 @@ const modes: Array<{
     icon: Headphones,
     accent: "text-violet-300",
   },
+  {
+    id: "stories",
+    label: "Příběhy",
+    description: "Látka jako příběh",
+    icon: BookMarked,
+    accent: "text-sky-300",
+  },
+  {
+    id: "games",
+    label: "Hry",
+    description: "Spojovačka pojmů",
+    icon: Gamepad2,
+    accent: "text-fuchsia-300",
+  },
+  {
+    id: "review",
+    label: "Opakovačka",
+    description: "Tvoje chyby",
+    icon: Star,
+    accent: "text-amber-300",
+  },
 ];
 
 export function MaterialStudyWorkspace({
+  materialId,
   title,
   pack,
   source,
   warning,
   info,
 }: {
+  materialId: string;
   title: string;
   pack: MaterialStudyPack;
   source: "extracted" | "title_fallback";
@@ -89,7 +130,7 @@ export function MaterialStudyWorkspace({
         </p>
       ) : null}
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {modes.map(({ id, label, description, icon: Icon, accent }) => {
           const active = mode === id;
           return (
@@ -118,13 +159,30 @@ export function MaterialStudyWorkspace({
       </div>
 
       {mode === "flashcards" ? (
-        <MaterialFlashcards cards={pack.flashcards} materialTitle={title} />
+        <MaterialFlashcards
+          cards={pack.flashcards}
+          materialTitle={title}
+          materialId={materialId}
+        />
       ) : null}
       {mode === "quiz" ? (
-        <MaterialQuiz questions={pack.quiz} materialTitle={title} />
+        <MaterialQuiz
+          questions={pack.quiz}
+          materialTitle={title}
+          materialId={materialId}
+        />
       ) : null}
       {mode === "audio" ? (
         <MaterialAudioSummary summary={pack.audioSummary} materialTitle={title} />
+      ) : null}
+      {mode === "stories" ? (
+        <MaterialStory story={pack.story} materialTitle={title} />
+      ) : null}
+      {mode === "games" ? (
+        <MaterialMatchGame pairs={pack.matchPairs} materialTitle={title} />
+      ) : null}
+      {mode === "review" ? (
+        <MaterialReview materialId={materialId} materialTitle={title} />
       ) : null}
     </div>
   );

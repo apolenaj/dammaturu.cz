@@ -22,15 +22,26 @@ export type MaterialQuizQuestion = {
   explanation: string;
 };
 
-export type MaterialStudyPack = {
+export type MaterialMatchPair = {
+  id: string;
+  term: string;
+  definition: string;
+};
+
+export type MaterialStudyPackCore = {
   flashcards: MaterialFlashcard[];
   quiz: MaterialQuizQuestion[];
   audioSummary: string;
 };
 
+export type MaterialStudyPack = MaterialStudyPackCore & {
+  story: string;
+  matchPairs: MaterialMatchPair[];
+};
+
 type ContentSeed = {
   match: (title: string, subject: string) => boolean;
-  pack: MaterialStudyPack;
+  pack: MaterialStudyPackCore;
 };
 
 function normalize(text: string): string {
@@ -1020,7 +1031,7 @@ const SEEDS: ContentSeed[] = [
   },
 ];
 
-function buildFallbackPack(title: string, subject: string): MaterialStudyPack {
+function buildFallbackPack(title: string, subject: string): MaterialStudyPackCore {
   const safeTitle = title.trim() || "materiál";
   const safeSubject = subject.trim() || "maturita";
 
@@ -1110,6 +1121,63 @@ function buildFallbackPack(title: string, subject: string): MaterialStudyPack {
   };
 }
 
+/**
+ * Doplní příběh a spojovačku, pokud v balíčku chybí (seed / starší generátor).
+ */
+export function ensureLearningExtras(
+  pack: MaterialStudyPackCore & {
+    story?: string;
+    matchPairs?: MaterialMatchPair[];
+  },
+  title: string,
+  subject: string,
+): MaterialStudyPack {
+  const story =
+    pack.story?.trim() ||
+    [
+      `Představ si, že „${title}“ není suchý seznam faktů, ale příběh, který ti má pomoct k maturitě.`,
+      `Hrdinou jsi ty — student, který musí v oblasti ${subject} spojit pojmy, data a souvislosti do jedné jasné linie.`,
+      `Každá kartička a každá otázka je další scéna: nejdřív poznáš postavy (pojmy), pak jejich vztahy, nakonec pointu, kterou řekneš u zkoušky nahlas.`,
+      `Když si příběh převyprávíš vlastními slovy, paměť ho drží mnohem lépe než biflování jednotlivých vět.`,
+    ].join("\n\n");
+
+  let matchPairs = (pack.matchPairs ?? []).filter(
+    (p) => p.term.trim() && p.definition.trim(),
+  );
+
+  if (matchPairs.length < 5) {
+    const fromCards = pack.flashcards.slice(0, 5).map((card, i) => ({
+      id: `match-${i + 1}`,
+      term:
+        card.front.length > 70
+          ? `${card.front.slice(0, 67).trim()}…`
+          : card.front,
+      definition:
+        card.back.length > 140
+          ? `${card.back.slice(0, 137).trim()}…`
+          : card.back,
+    }));
+    matchPairs = [...matchPairs, ...fromCards].slice(0, 5);
+  }
+
+  while (matchPairs.length < 5) {
+    const n = matchPairs.length + 1;
+    matchPairs.push({
+      id: `match-fill-${n}`,
+      term: `Klíčový bod ${n} · ${title}`,
+      definition: `Stručná definice z oblasti ${subject}, kterou si máš umět říct vlastními slovy.`,
+    });
+  }
+
+  return {
+    flashcards: pack.flashcards,
+    quiz: pack.quiz,
+    audioSummary: pack.audioSummary,
+    story,
+    matchPairs: matchPairs.slice(0, 5),
+  };
+}
+
 export function buildMaterialStudyPack(
   title: string,
   subject: string,
@@ -1119,16 +1187,16 @@ export function buildMaterialStudyPack(
 
   for (const seed of SEEDS) {
     if (seed.match(nTitle, nSubject)) {
-      return seed.pack;
+      return ensureLearningExtras(seed.pack, title, subject);
     }
   }
 
   // Druhý průchod: match i proti subject, pokud title nic nenašel
   for (const seed of SEEDS) {
     if (seed.match(nSubject, nTitle)) {
-      return seed.pack;
+      return ensureLearningExtras(seed.pack, title, subject);
     }
   }
 
-  return buildFallbackPack(title, subject);
+  return ensureLearningExtras(buildFallbackPack(title, subject), title, subject);
 }

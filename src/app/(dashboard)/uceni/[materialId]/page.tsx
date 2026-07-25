@@ -99,6 +99,7 @@ export default async function UceniMaterialPage({ params }: PageProps) {
       </GlassCard>
 
       <MaterialStudyWorkspace
+        materialId={material.id}
         title={material.title}
         pack={study.pack}
         source={study.source}

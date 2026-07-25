@@ -4,14 +4,17 @@ import { useMemo, useState } from "react";
 import { RotateCcw } from "lucide-react";
 import { GlassCard } from "@/components/dashboard/glass-card";
 import type { MaterialFlashcard } from "@/domain/dashboard/material-study-content";
+import { addStudyMistake } from "@/domain/dashboard/study-mistakes";
 import { cn } from "@/lib/cn";
 
 export function MaterialFlashcards({
   cards,
   materialTitle,
+  materialId,
 }: {
   cards: MaterialFlashcard[];
   materialTitle: string;
+  materialId: string;
 }) {
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
@@ -28,8 +31,19 @@ export function MaterialFlashcards({
   }, [finished, index, total]);
 
   function goNext(knewIt: boolean) {
-    if (knewIt) setKnownCount((n) => n + 1);
-    else setLearningCount((n) => n + 1);
+    if (!card) return;
+    if (knewIt) {
+      setKnownCount((n) => n + 1);
+    } else {
+      setLearningCount((n) => n + 1);
+      addStudyMistake({
+        materialId,
+        kind: "flashcard",
+        prompt: card.front,
+        answer: card.back,
+        sourceId: card.id,
+      });
+    }
 
     setFlipped(false);
     if (index >= total - 1) {
@@ -77,6 +91,11 @@ export function MaterialFlashcards({
             <p className="mt-1 text-sm text-amber-100/80">Ještě ne</p>
           </div>
         </div>
+        {learningCount > 0 ? (
+          <p className="text-sm text-amber-200/90">
+            Položky s „Ještě ne“ jsou v Opakovačce k dalšímu procvičení.
+          </p>
+        ) : null}
         <button
           type="button"
           onClick={restart}

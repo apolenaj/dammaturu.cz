@@ -1,18 +1,67 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Pause, Play, Square } from "lucide-react";
 import { GlassCard } from "@/components/dashboard/glass-card";
 import { cn } from "@/lib/cn";
 
-function pickCzechVoice(): SpeechSynthesisVoice | null {
-  if (typeof window === "undefined" || !window.speechSynthesis) return null;
-  const voices = window.speechSynthesis.getVoices();
-  const czech =
-    voices.find((v) => v.lang.toLowerCase().startsWith("cs")) ??
-    voices.find((v) => v.lang.toLowerCase().includes("cz")) ??
-    voices.find((v) => /czech|čeština|cesky/i.test(v.name));
-  return czech ?? null;
+/**
+ * Projde dostupné hlasy a vybere ten, jehož lang obsahuje „cs“
+ * (případně cz / Czech), ať prohlížeč nečte češtinu anglickým hlasem.
+ */
+function findCzechVoice(
+  voices: SpeechSynthesisVoice[],
+): SpeechSynthesisVoice | null {
+  if (voices.length === 0) return null;
+
+  const score = (voice: SpeechSynthesisVoice): number => {
+    const lang = voice.lang.toLowerCase().replace("_", "-");
+    const name = voice.name.toLowerCase();
+    let points = 0;
+
+    if (lang === "cs-cz") points += 100;
+    else if (lang.startsWith("cs")) points += 80;
+    else if (lang.includes("cs")) points += 60;
+    else if (lang.includes("cz")) points += 40;
+
+    if (/czech|čeština|cesky|česk/i.test(voice.name)) points += 50;
+    if (name.includes("zira") || name.includes("jakub") || name.includes("elsa")) {
+      points += 10;
+    }
+    // Preferuj lokální hlasy (méně anglické „fallback“ výslovnosti).
+    if (voice.localService) points += 15;
+
+    return points;
+  };
+
+  const ranked = [...voices]
+    .map((voice) => ({ voice, points: score(voice) }))
+    .filter((row) => row.points > 0)
+    .sort((a, b) => b.points - a.points);
+
+  return ranked[0]?.voice ?? null;
+}
+
+function configureCzechUtterance(
+  text: string,
+  voices: SpeechSynthesisVoice[],
+): SpeechSynthesisUtterance {
+  const utterance = new SpeechSynthesisUtterance(text);
+  // Striktně čeština — prohlížeč nesmí padnout na výchozí anglický hlas.
+  utterance.lang = "cs-CZ";
+  utterance.rate = 0.92;
+  utterance.pitch = 1;
+  utterance.volume = 1;
+
+  const czechVoice = findCzechVoice(voices);
+  if (czechVoice) {
+    utterance.voice = czechVoice;
+  }
+
+  // Pojistka: lang musí zůstat cs-CZ i po přiřazení hlasu.
+  utterance.lang = "cs-CZ";
+
+  return utterance;
 }
 
 export function MaterialAudioSummary({
@@ -25,6 +74,8 @@ export function MaterialAudioSummary({
   const [supported, setSupported] = useState(true);
   const [playing, setPlaying] = useState(false);
   const [paused, setPaused] = useState(false);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [voiceLabel, setVoiceLabel] = useState<string | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   const sentences = useMemo(
@@ -36,22 +87,36 @@ export function MaterialAudioSummary({
     [summary],
   );
 
+  const refreshVoices = useCallback(() => {
+    if (typeof window === "undefined" || !window.speechSynthesis) return;
+    const list = window.speechSynthesis.getVoices();
+    setVoices(list);
+    const czech = findCzechVoice(list);
+    setVoiceLabel(
+      czech
+        ? `${czech.name} (${czech.lang})`
+        : list.length > 0
+          ? "Český hlas v systému nebyl nalezen — výslovnost může být horší"
+          : null,
+    );
+  }, []);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     const ok = "speechSynthesis" in window;
     setSupported(ok);
+    if (!ok) return;
 
-    // Některé prohlížeče načítají hlasy asynchronně.
-    if (ok) {
-      window.speechSynthesis.getVoices();
-      const onVoices = () => window.speechSynthesis.getVoices();
-      window.speechSynthesis.addEventListener("voiceschanged", onVoices);
-      return () => {
-        window.speechSynthesis.removeEventListener("voiceschanged", onVoices);
-        window.speechSynthesis.cancel();
-      };
-    }
-  }, []);
+    refreshVoices();
+    window.speechSynthesis.addEventListener("voiceschanged", refreshVoices);
+    // Chrome někdy potřebuje „probuzení“ getVoices.
+    window.speechSynthesis.getVoices();
+
+    return () => {
+      window.speechSynthesis.removeEventListener("voiceschanged", refreshVoices);
+      window.speechSynthesis.cancel();
+    };
+  }, [refreshVoices]);
 
   useEffect(() => {
     return () => {
@@ -75,6 +140,13 @@ export function MaterialAudioSummary({
       return;
     }
 
+    // Před spuštěním znovu načti hlasy (Chrome je někdy dodá až pozdě).
+    const latestVoices = window.speechSynthesis.getVoices();
+    if (latestVoices.length > 0) {
+      setVoices(latestVoices);
+    }
+    const voicePool = latestVoices.length > 0 ? latestVoices : voices;
+
     if (paused && utteranceRef.current) {
       window.speechSynthesis.resume();
       setPaused(false);
@@ -83,12 +155,14 @@ export function MaterialAudioSummary({
     }
 
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(summary);
-    utterance.lang = "cs-CZ";
-    utterance.rate = 0.95;
-    utterance.pitch = 1;
-    const voice = pickCzechVoice();
-    if (voice) utterance.voice = voice;
+    const utterance = configureCzechUtterance(summary, voicePool);
+
+    const czech = findCzechVoice(voicePool);
+    setVoiceLabel(
+      czech
+        ? `${czech.name} (${czech.lang})`
+        : "Český hlas v systému nebyl nalezen — výslovnost může být horší",
+    );
 
     utterance.onend = () => {
       setPlaying(false);
@@ -135,36 +209,43 @@ export function MaterialAudioSummary({
           nahlas sám — funguje to stejně dobře.
         </p>
       ) : (
-        <div className="flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={playing ? pause : play}
-            className={cn(
-              "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-6 text-sm font-semibold text-white shadow-[0_0_24px_-6px_rgba(99,102,241,0.65)] transition hover:brightness-110",
-              "bg-gradient-to-r from-blue-500 via-indigo-500 to-violet-600",
-            )}
-          >
-            {playing ? (
-              <>
-                <Pause className="h-4 w-4" aria-hidden />
-                Pauza
-              </>
-            ) : (
-              <>
-                <Play className="h-4 w-4" aria-hidden />
-                {paused ? "Pokračovat" : "Spustit"}
-              </>
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={stop}
-            disabled={!playing && !paused}
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-5 text-sm font-semibold text-slate-300 transition hover:bg-white/[0.08] disabled:opacity-40"
-          >
-            <Square className="h-3.5 w-3.5" aria-hidden />
-            Stop
-          </button>
+        <div className="space-y-3">
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={playing ? pause : play}
+              className={cn(
+                "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-6 text-sm font-semibold text-white shadow-[0_0_24px_-6px_rgba(99,102,241,0.65)] transition hover:brightness-110",
+                "bg-gradient-to-r from-blue-500 via-indigo-500 to-violet-600",
+              )}
+            >
+              {playing ? (
+                <>
+                  <Pause className="h-4 w-4" aria-hidden />
+                  Pauza
+                </>
+              ) : (
+                <>
+                  <Play className="h-4 w-4" aria-hidden />
+                  {paused ? "Pokračovat" : "Spustit"}
+                </>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={stop}
+              disabled={!playing && !paused}
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-5 text-sm font-semibold text-slate-300 transition hover:bg-white/[0.08] disabled:opacity-40"
+            >
+              <Square className="h-3.5 w-3.5" aria-hidden />
+              Stop
+            </button>
+          </div>
+          {voiceLabel ? (
+            <p className="text-xs text-slate-500">
+              Hlas: {voiceLabel} · jazyk utterance: cs-CZ
+            </p>
+          ) : null}
         </div>
       )}
 
@@ -185,8 +266,9 @@ export function MaterialAudioSummary({
       </div>
 
       <p className="text-xs text-slate-500">
-        Přehrávání využívá Web Speech API přímo v prohlížeči (čeština, pokud je
-        v systému dostupný český hlas).
+        Přehrávání používá Web Speech API s preferencí českého hlasu (lang obsahuje
+        „cs“). Pokud v systému český hlas chybí, nainstaluj ho v nastavení OS /
+        prohlížeče.
       </p>
     </GlassCard>
   );

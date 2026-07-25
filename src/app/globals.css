@@ -317,3 +317,9 @@
     @apply min-w-0 max-w-full overflow-x-clip;
   }
 }
+
+@keyframes dmXpPop {
+  0% { transform: scale(0.6); opacity: 0; }
+  60% { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
