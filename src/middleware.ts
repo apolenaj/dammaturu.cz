@@ -111,7 +111,11 @@ export async function middleware(request: NextRequest) {
     pathname === "/prihlaseni" ||
     pathname.startsWith("/prihlaseni/") ||
     pathname === "/registrace" ||
-    pathname.startsWith("/registrace/");
+    pathname.startsWith("/registrace/") ||
+    pathname === "/login" ||
+    pathname.startsWith("/login/") ||
+    pathname === "/register" ||
+    pathname.startsWith("/register/");
   const isPasswordUpdate =
     pathname === "/auth/nove-heslo" || pathname.startsWith("/auth/nove-heslo/");
 
@@ -122,7 +126,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (isPasswordUpdate && configured && !authenticated) {
-    const login = new URL("/prihlaseni", request.url);
+    const login = new URL("/login", request.url);
     login.searchParams.set("reason", "expired");
     login.searchParams.set("next", "/auth/nove-heslo");
     return NextResponse.redirect(login);
@@ -135,7 +139,7 @@ export async function middleware(request: NextRequest) {
     !request.nextUrl.searchParams.get("stay")
   ) {
     const next = request.nextUrl.searchParams.get("next");
-    const dest = safeInternalPath(next, "/app/dashboard");
+    const dest = safeInternalPath(next, "/prehled");
     return NextResponse.redirect(new URL(dest, request.url));
   }
 
@@ -153,6 +157,12 @@ export const config = {
     "/prihlaseni/:path*",
     "/registrace",
     "/registrace/:path*",
+    "/login",
+    "/login/:path*",
+    "/register",
+    "/register/:path*",
+    "/prehled",
+    "/prehled/:path*",
     "/auth/:path*",
   ],
 };

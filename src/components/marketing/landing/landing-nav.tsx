@@ -104,13 +104,13 @@ export function LandingNav() {
             <ExternalLink className="h-3 w-3" aria-hidden />
           </a>
           <Link
-            href="/prihlaseni"
+            href="/login"
             className="px-2 text-sm font-medium text-slate-300 transition hover:text-white"
           >
             Přihlásit se
           </Link>
           <Link
-            href="/registrace"
+            href="/register"
             className="inline-flex min-h-9 items-center rounded-full bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500 px-4 text-xs font-semibold text-white shadow-[0_0_22px_-4px_rgba(59,130,246,0.75)] transition hover:brightness-110"
           >
             Začít zdarma
@@ -157,13 +157,13 @@ export function LandingNav() {
               <ExternalLink className="h-3.5 w-3.5" aria-hidden />
             </a>
             <Link
-              href="/prihlaseni"
+              href="/login"
               className="rounded-lg px-3 py-2.5 text-center text-sm font-medium text-slate-200 hover:bg-white/5"
             >
               Přihlásit se
             </Link>
             <Link
-              href="/registrace"
+              href="/register"
               className="inline-flex min-h-11 items-center justify-center rounded-full bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500 text-sm font-semibold text-white"
             >
               Začít zdarma

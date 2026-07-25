@@ -8,11 +8,42 @@ export type SupabasePublicEnv = {
   anonKey: string;
 };
 
+const PLACEHOLDER_URLS = new Set([
+  "tvoje-url",
+  "supabase_project_url",
+  "https://YOUR_PROJECT.supabase.co",
+]);
+
+const PLACEHOLDER_KEYS = new Set([
+  "tvuj-anon-key",
+  "YOUR_ANON_KEY",
+  "supabase_publishable_key",
+]);
+
+function isPlaceholderUrl(url: string): boolean {
+  if (PLACEHOLDER_URLS.has(url)) return true;
+  if (url.includes("YOUR_PROJECT")) return true;
+  if (!/^https?:\/\//i.test(url)) return true;
+  return false;
+}
+
+function isPlaceholderKey(key: string): boolean {
+  if (PLACEHOLDER_KEYS.has(key)) return true;
+  if (key.includes("YOUR_ANON")) return true;
+  if (key.includes("tvuj-anon")) return true;
+  return false;
+}
+
+function normalizeSupabaseUrl(url: string): string {
+  return url.replace(/\/+$/, "").replace(/\/rest\/v1$/i, "");
+}
+
 export function getSupabasePublicEnv(): SupabasePublicEnv | null {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
-  if (!url || !anonKey) return null;
-  if (url.includes("YOUR_PROJECT") || anonKey.includes("YOUR_ANON")) return null;
+  if (!rawUrl || !anonKey) return null;
+  const url = normalizeSupabaseUrl(rawUrl);
+  if (isPlaceholderUrl(url) || isPlaceholderKey(anonKey)) return null;
   return { url, anonKey };
 }
 
