@@ -1,18 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  ArrowLeft,
-  BookOpen,
-  Headphones,
-  Layers,
-  Sparkles,
-} from "lucide-react";
+import { ArrowLeft, BookOpen, Sparkles } from "lucide-react";
 import { GlassCard } from "@/components/dashboard/glass-card";
+import { MaterialStudyWorkspace } from "@/components/dashboard/study/material-study-workspace";
 import { subjectShortLabel } from "@/domain/dashboard/study-materials";
 import { buildPublicMetadata } from "@/lib/seo";
 import { createClient } from "@/lib/supabase/server";
 import { getStudyMaterialById } from "@/server/dashboard/study-materials";
+import { resolveMaterialStudyPack } from "@/server/dashboard/resolve-material-study";
 
 type PageProps = {
   params: Promise<{ materialId: string }>;
@@ -32,6 +28,8 @@ export async function generateMetadata({
   };
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function UceniMaterialPage({ params }: PageProps) {
   const { materialId } = await params;
   const supabase = await createClient();
@@ -41,8 +39,15 @@ export default async function UceniMaterialPage({ params }: PageProps) {
     notFound();
   }
 
+  const study = await resolveMaterialStudyPack(material);
+
   const typeLabel =
     material.type === "system" ? "Systémové učivo" : "Tvůj materiál";
+
+  const heroHint =
+    study.source === "extracted"
+      ? `Učení je sestavené z obsahu souboru „${material.title}“.`
+      : `Vyber si způsob učení: kartičky, test nebo audio shrnutí podle tématu „${material.title}“.`;
 
   return (
     <div className="space-y-5">
@@ -64,6 +69,11 @@ export default async function UceniMaterialPage({ params }: PageProps) {
               <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-slate-400">
                 {typeLabel}
               </span>
+              {study.source === "extracted" ? (
+                <span className="rounded-full border border-emerald-400/25 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-200">
+                  Z obsahu souboru
+                </span>
+              ) : null}
             </div>
             <h1 className="mt-3 text-2xl font-bold tracking-tight text-white sm:text-3xl">
               {material.title}
@@ -79,44 +89,34 @@ export default async function UceniMaterialPage({ params }: PageProps) {
 
         <div className="mt-6 rounded-2xl border border-blue-400/20 bg-gradient-to-r from-blue-500/15 via-indigo-500/10 to-violet-500/15 px-4 py-4 sm:px-5">
           <p className="flex items-start gap-2 text-sm leading-relaxed text-blue-100">
-            <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-blue-300" aria-hidden />
-            Brzy z tohoto materiálu vygenerujeme kartičky, testy a audio. Teď
-            máš připravený studijní prostor — generování spustíme v dalším
-            kroku.
+            <Sparkles
+              className="mt-0.5 h-4 w-4 shrink-0 text-blue-300"
+              aria-hidden
+            />
+            {heroHint}
           </p>
         </div>
       </GlassCard>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <GlassCard className="text-center">
-          <Layers className="mx-auto h-6 w-6 text-blue-300" aria-hidden />
-          <p className="mt-3 text-sm font-semibold text-white">Kartičky</p>
-          <p className="mt-1 text-xs text-slate-500">Připravujeme</p>
-        </GlassCard>
-        <GlassCard className="text-center">
-          <BookOpen className="mx-auto h-6 w-6 text-indigo-300" aria-hidden />
-          <p className="mt-3 text-sm font-semibold text-white">Testy</p>
-          <p className="mt-1 text-xs text-slate-500">Připravujeme</p>
-        </GlassCard>
-        <GlassCard className="text-center">
-          <Headphones className="mx-auto h-6 w-6 text-violet-300" aria-hidden />
-          <p className="mt-3 text-sm font-semibold text-white">Audio</p>
-          <p className="mt-1 text-xs text-slate-500">Připravujeme</p>
-        </GlassCard>
-      </div>
+      <MaterialStudyWorkspace
+        title={material.title}
+        pack={study.pack}
+        source={study.source}
+        warning={study.warning}
+        info={study.info}
+      />
 
       <GlassCard>
-        <h2 className="text-base font-semibold text-white">Další kroky</h2>
-        <ul className="mt-3 space-y-2 text-sm text-slate-400">
-          <li>· Extrakce klíčových pojmů z materiálu</li>
-          <li>· Generování procvičovacích otázek</li>
-          <li>· Krátké audio shrnutí k poslechu</li>
-        </ul>
+        <h2 className="text-base font-semibold text-white">Další materiál</h2>
+        <p className="mt-2 text-sm text-slate-400">
+          Až dokončíš opakování, můžeš přejít na jiné učivo nebo nahrát vlastní
+          podklad.
+        </p>
         <Link
           href="/materialy"
           className="mt-5 inline-flex min-h-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-5 text-sm font-semibold text-white transition hover:bg-white/[0.08]"
         >
-          Vybrat jiný materiál
+          Zpět na materiály
         </Link>
       </GlassCard>
     </div>
