@@ -107,6 +107,8 @@ export async function middleware(request: NextRequest) {
   const isApp = pathname.startsWith("/app");
   const isOnboarding =
     pathname === "/onboarding" || pathname.startsWith("/onboarding/");
+  const isPrehled =
+    pathname === "/prehled" || pathname.startsWith("/prehled/");
   const isAuthPage =
     pathname === "/prihlaseni" ||
     pathname.startsWith("/prihlaseni/") ||
@@ -123,6 +125,13 @@ export async function middleware(request: NextRequest) {
   // Mint a stable guest cookie so learning stores can key progress.
   if ((isApp || isOnboarding) && !authenticated) {
     return ensureGuestCookieOnResponse(request, response);
+  }
+
+  // Chráněný studijní přehled — vyžaduje přihlášení.
+  if (isPrehled && configured && !authenticated) {
+    const login = new URL("/login", request.url);
+    login.searchParams.set("next", pathname);
+    return NextResponse.redirect(login);
   }
 
   if (isPasswordUpdate && configured && !authenticated) {
