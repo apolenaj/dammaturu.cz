@@ -10,17 +10,19 @@ import {
   Sparkles,
   Trash2,
 } from "lucide-react";
-import {
-  deleteUserStudyMaterialAction,
-  uploadStudyMaterialAction,
-} from "@/app/actions/study-materials";
+import { deleteUserStudyMaterialAction } from "@/app/actions/study-materials";
 import { GlassCard } from "@/components/dashboard/glass-card";
 import {
+  buildUserMaterialStoragePath,
   groupMaterialsBySubject,
+  isAllowedStudyMaterialFile,
+  STUDY_MATERIALS_BUCKET,
   subjectShortLabel,
+  titleFromFileName,
   type StudyMaterial,
 } from "@/domain/dashboard/study-materials";
 import { cn } from "@/lib/cn";
+import { createClient } from "@/lib/supabase/client";
 
 function formatCreatedAt(iso: string): string {
   try {
@@ -101,6 +103,89 @@ function MaterialCard({
   );
 }
 
+async function uploadStudyMaterialFromBrowser(
+  file: File,
+): Promise<{ ok: true; material: StudyMaterial } | { ok: false; error: string }> {
+  const validation = isAllowedStudyMaterialFile(file);
+  if (!validation.ok) {
+    return { ok: false, error: validation.error };
+  }
+
+  const supabase = createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { ok: false, error: "Pro nahrání se musíš přihlásit." };
+  }
+
+  const title = titleFromFileName(file.name);
+  const subject = "Vlastní materiály";
+  const filePath = buildUserMaterialStoragePath(user.id, file.name);
+
+  // Přímý upload z prohlížeče → obejde limit Server Actions na Vercelu (~4,5 MB).
+  const { error: uploadError } = await supabase.storage
+    .from(STUDY_MATERIALS_BUCKET)
+    .upload(filePath, file, {
+      contentType: file.type || "application/octet-stream",
+      upsert: false,
+      cacheControl: "3600",
+    });
+
+  if (uploadError) {
+    console.error("[study_materials] client storage upload failed", uploadError.message);
+    return {
+      ok: false,
+      error:
+        "Soubor se nepodařilo nahrát do úložiště. Ověř bucket user_materials a RLS pravidla.",
+    };
+  }
+
+  const { data: inserted, error: insertError } = await supabase
+    .from("study_materials")
+    .insert({
+      title,
+      subject,
+      type: "user",
+      file_url: filePath,
+      user_id: user.id,
+    })
+    .select("id, title, subject, type, file_url, user_id, created_at")
+    .single();
+
+  if (insertError || !inserted) {
+    console.error(
+      "[study_materials] client insert failed",
+      insertError?.message ?? "no row",
+    );
+    await supabase.storage.from(STUDY_MATERIALS_BUCKET).remove([filePath]);
+    return {
+      ok: false,
+      error:
+        "Soubor se nahrál, ale záznam do databáze se neuložil. Zkus to prosím znovu.",
+    };
+  }
+
+  if (inserted.type !== "system" && inserted.type !== "user") {
+    return { ok: false, error: "Neplatný typ materiálu v databázi." };
+  }
+
+  return {
+    ok: true,
+    material: {
+      id: inserted.id,
+      title: inserted.title,
+      subject: inserted.subject,
+      type: inserted.type,
+      file_url: inserted.file_url,
+      user_id: inserted.user_id,
+      created_at: inserted.created_at,
+    },
+  };
+}
+
 function UploadDropzone({
   onUploaded,
 }: {
@@ -109,7 +194,7 @@ function UploadDropzone({
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
-  const [pending, startTransition] = useTransition();
+  const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<
     | { kind: "idle" }
     | { kind: "uploading"; name: string }
@@ -118,21 +203,26 @@ function UploadDropzone({
   >({ kind: "idle" });
 
   const upload = useCallback(
-    (file: File) => {
+    async (file: File) => {
+      setBusy(true);
       setStatus({ kind: "uploading", name: file.name });
-      const body = new FormData();
-      body.append("file", file);
-      body.append("subject", "Vlastní materiály");
-
-      startTransition(async () => {
-        const result = await uploadStudyMaterialAction(body);
+      try {
+        const result = await uploadStudyMaterialFromBrowser(file);
         if (!result.ok) {
           setStatus({ kind: "error", message: result.error });
           return;
         }
         onUploaded(result.material);
         setStatus({ kind: "done", name: result.material.title });
-      });
+      } catch (error) {
+        console.error("[study_materials] client upload exception", error);
+        setStatus({
+          kind: "error",
+          message: "Nahrání selhalo. Zkontroluj připojení a zkus to znovu.",
+        });
+      } finally {
+        setBusy(false);
+      }
     },
     [onUploaded],
   );
@@ -140,13 +230,11 @@ function UploadDropzone({
   const onFiles = useCallback(
     (files: FileList | null) => {
       const file = files?.[0];
-      if (!file) return;
-      upload(file);
+      if (!file || busy) return;
+      void upload(file);
     },
-    [upload],
+    [busy, upload],
   );
-
-  const busy = pending || status.kind === "uploading";
 
   return (
     <GlassCard className="space-y-5">
@@ -159,8 +247,8 @@ function UploadDropzone({
             Uč se podle svých materiálů
           </h2>
           <p className="mt-1 text-sm text-slate-400">
-            Nahraj PDF, DOCX nebo TXT. Soubor uložíme do bezpečného úložiště a
-            hned ho připravíme na učení.
+            Nahraj PDF, DOCX nebo TXT přímo do úložiště (i větší soubory nad
+            8&nbsp;MB). Soubor hned připravíme na učení.
           </p>
         </div>
       </div>
@@ -233,7 +321,8 @@ function UploadDropzone({
       {status.kind === "uploading" || busy ? (
         <p className="flex items-center gap-2 text-sm text-blue-300">
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-          Nahrávám {status.kind === "uploading" ? status.name : "soubor"}…
+          Nahrávám {status.kind === "uploading" ? status.name : "soubor"} přímo
+          do úložiště…
         </p>
       ) : null}
       {status.kind === "done" ? (

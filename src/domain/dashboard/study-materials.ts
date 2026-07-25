@@ -66,6 +66,27 @@ export function titleFromFileName(fileName: string): string {
   return base || "Můj materiál";
 }
 
+/** Bezpečný název souboru pro Storage path (bez diakritiky a mezer). */
+export function sanitizeStorageFileName(name: string): string {
+  return (
+    name
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9._-]+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 120) || "material"
+  );
+}
+
+/** Cesta ve tvaru `{userId}/{uuid}-{filename}` — musí sedět s RLS na bucketu. */
+export function buildUserMaterialStoragePath(
+  userId: string,
+  fileName: string,
+): string {
+  return `${userId}/${crypto.randomUUID()}-${sanitizeStorageFileName(fileName)}`;
+}
+
 export function groupMaterialsBySubject(
   materials: StudyMaterial[],
 ): Array<{ subject: string; materials: StudyMaterial[] }> {
