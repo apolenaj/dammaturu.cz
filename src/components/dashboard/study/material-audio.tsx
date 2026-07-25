@@ -1,29 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Pause, Play, Square } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Loader2, Pause, Play, Square } from "lucide-react";
 import { GlassCard } from "@/components/dashboard/glass-card";
 import { cn } from "@/lib/cn";
-
-/**
- * Najde český hlas. Nikdy nevrací anglický hlas jako „fallback“.
- */
-function findCzechVoice(
-  voices: SpeechSynthesisVoice[],
-): SpeechSynthesisVoice | null {
-  if (voices.length === 0) return null;
-
-  return (
-    voices.find(
-      (v) =>
-        v.lang.toLowerCase().includes("cs") ||
-        v.lang.toLowerCase().includes("cz") ||
-        v.name.toLowerCase().includes("czech") ||
-        v.name.toLowerCase().includes("česk") ||
-        v.name.toLowerCase().includes("cesk"),
-    ) ?? null
-  );
-}
 
 export function MaterialAudioSummary({
   summary,
@@ -32,16 +12,14 @@ export function MaterialAudioSummary({
   summary: string;
   materialTitle: string;
 }) {
-  const [supported, setSupported] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [paused, setPaused] = useState(false);
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-  const [czechVoice, setCzechVoice] = useState<SpeechSynthesisVoice | null>(
-    null,
-  );
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const hasCzechVoice = Boolean(czechVoice);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const objectUrlRef = useRef<string | null>(null);
+  const cachedTextRef = useRef<string | null>(null);
 
   const sentences = useMemo(
     () =>
@@ -52,100 +30,140 @@ export function MaterialAudioSummary({
     [summary],
   );
 
-  const refreshVoices = useCallback(() => {
-    if (typeof window === "undefined" || !window.speechSynthesis) return;
-    const list = window.speechSynthesis.getVoices();
-    setVoices(list);
-    setCzechVoice(findCzechVoice(list));
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const ok = "speechSynthesis" in window;
-    setSupported(ok);
-    if (!ok) return;
-
-    refreshVoices();
-    window.speechSynthesis.addEventListener("voiceschanged", refreshVoices);
-    window.speechSynthesis.getVoices();
-
-    return () => {
-      window.speechSynthesis.removeEventListener("voiceschanged", refreshVoices);
-      window.speechSynthesis.cancel();
-    };
-  }, [refreshVoices]);
-
   useEffect(() => {
     return () => {
-      if (typeof window !== "undefined" && "speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+        audioRef.current = null;
+      }
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+        objectUrlRef.current = null;
       }
     };
   }, []);
 
-  function stop() {
-    if (typeof window === "undefined" || !window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    utteranceRef.current = null;
-    setPlaying(false);
-    setPaused(false);
+  function clearCachedAudio() {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = "";
+      audioRef.current = null;
+    }
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
+    cachedTextRef.current = null;
   }
 
-  function play() {
-    if (typeof window === "undefined" || !window.speechSynthesis) {
-      setSupported(false);
-      return;
-    }
-
-    const latestVoices = window.speechSynthesis.getVoices();
-    if (latestVoices.length > 0) setVoices(latestVoices);
-    const voicePool = latestVoices.length > 0 ? latestVoices : voices;
-    const czech = findCzechVoice(voicePool);
-    setCzechVoice(czech);
-
-    if (!czech) {
-      // Bez českého hlasu nepřehrajeme anglický hlas — jen varování.
-      return;
-    }
-
-    if (paused && utteranceRef.current) {
-      window.speechSynthesis.resume();
+  function bindAudioEvents(audio: HTMLAudioElement) {
+    audio.onended = () => {
+      setPlaying(false);
       setPaused(false);
+    };
+    audio.onpause = () => {
+      if (!audio.ended) {
+        setPlaying(false);
+        setPaused(true);
+      }
+    };
+    audio.onplay = () => {
       setPlaying(true);
-      return;
+      setPaused(false);
+    };
+    audio.onerror = () => {
+      setPlaying(false);
+      setPaused(false);
+      setError("Přehrávání audia selhalo. Zkus to prosím znovu.");
+    };
+  }
+
+  async function ensureAudioElement(): Promise<HTMLAudioElement> {
+    if (
+      audioRef.current &&
+      objectUrlRef.current &&
+      cachedTextRef.current === summary
+    ) {
+      return audioRef.current;
     }
 
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(summary);
-    utterance.lang = "cs-CZ";
-    utterance.rate = 0.92;
-    utterance.pitch = 1;
-    utterance.volume = 1;
-    utterance.voice = czech;
-    utterance.lang = "cs-CZ";
+    clearCachedAudio();
+    setLoading(true);
+    setError(null);
 
-    utterance.onend = () => {
+    try {
+      const response = await fetch("/api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: summary.slice(0, 4096) }),
+      });
+
+      const contentType = response.headers.get("content-type") ?? "";
+
+      if (!response.ok || !contentType.includes("audio")) {
+        let message = "Nepodařilo se stáhnout audio shrnutí.";
+        try {
+          const json = (await response.json()) as {
+            error?: string;
+          };
+          if (json.error) message = json.error;
+        } catch {
+          // ignore non-JSON error body
+        }
+        throw new Error(message);
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      bindAudioEvents(audio);
+
+      objectUrlRef.current = url;
+      audioRef.current = audio;
+      cachedTextRef.current = summary;
+      return audio;
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function play() {
+    if (loading) return;
+
+    try {
+      if (paused && audioRef.current && cachedTextRef.current === summary) {
+        await audioRef.current.play();
+        return;
+      }
+
+      const audio = await ensureAudioElement();
+      await audio.play();
+    } catch (err) {
+      console.error("[material-audio] play failed", err);
       setPlaying(false);
       setPaused(false);
-      utteranceRef.current = null;
-    };
-    utterance.onerror = () => {
-      setPlaying(false);
-      setPaused(false);
-      utteranceRef.current = null;
-    };
-
-    utteranceRef.current = utterance;
-    window.speechSynthesis.speak(utterance);
-    setPlaying(true);
-    setPaused(false);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Nepodařilo se přehrát audio shrnutí.",
+      );
+    }
   }
 
   function pause() {
-    if (typeof window === "undefined" || !window.speechSynthesis) return;
-    window.speechSynthesis.pause();
-    setPaused(true);
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.pause();
+  }
+
+  function stop() {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
     setPlaying(false);
+    setPaused(false);
   }
 
   return (
@@ -163,54 +181,54 @@ export function MaterialAudioSummary({
         </p>
       </div>
 
-      {!supported ? (
-        <p className="text-sm text-amber-200">
-          Tvůj prohlížeč nepodporuje hlasové čtení. Můžeš si shrnutí přečíst výše
-          nahlas sám.
+      {error ? (
+        <div className="rounded-2xl border border-rose-400/25 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">
+          {error}
+        </div>
+      ) : null}
+
+      <div className="space-y-3">
+        <div className="flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={playing ? pause : () => void play()}
+            disabled={loading}
+            className={cn(
+              "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-6 text-sm font-semibold text-white shadow-[0_0_24px_-6px_rgba(99,102,241,0.65)] transition hover:brightness-110 disabled:opacity-70",
+              "bg-gradient-to-r from-blue-500 via-indigo-500 to-violet-600",
+            )}
+          >
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                Generuji audio…
+              </>
+            ) : playing ? (
+              <>
+                <Pause className="h-4 w-4" aria-hidden />
+                Pauza
+              </>
+            ) : (
+              <>
+                <Play className="h-4 w-4" aria-hidden />
+                {paused ? "Pokračovat" : "Spustit"}
+              </>
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={stop}
+            disabled={loading || (!playing && !paused)}
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-5 text-sm font-semibold text-slate-300 transition hover:bg-white/[0.08] disabled:opacity-40"
+          >
+            <Square className="h-3.5 w-3.5" aria-hidden />
+            Stop
+          </button>
+        </div>
+        <p className="text-xs text-slate-500">
+          Hlas: OpenAI TTS (nova) · formát MP3
         </p>
-      ) : !hasCzechVoice ? (
-        <div className="rounded-2xl border border-amber-400/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
-          Ve vašem zařízení není nainstalován český hlas pro čtení textu.
-        </div>
-      ) : (
-        <div className="space-y-3">
-          <div className="flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={playing ? pause : play}
-              className={cn(
-                "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-6 text-sm font-semibold text-white shadow-[0_0_24px_-6px_rgba(99,102,241,0.65)] transition hover:brightness-110",
-                "bg-gradient-to-r from-blue-500 via-indigo-500 to-violet-600",
-              )}
-            >
-              {playing ? (
-                <>
-                  <Pause className="h-4 w-4" aria-hidden />
-                  Pauza
-                </>
-              ) : (
-                <>
-                  <Play className="h-4 w-4" aria-hidden />
-                  {paused ? "Pokračovat" : "Spustit"}
-                </>
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={stop}
-              disabled={!playing && !paused}
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-5 text-sm font-semibold text-slate-300 transition hover:bg-white/[0.08] disabled:opacity-40"
-            >
-              <Square className="h-3.5 w-3.5" aria-hidden />
-              Stop
-            </button>
-          </div>
-          <p className="text-xs text-slate-500">
-            Hlas: {czechVoice?.name} ({czechVoice?.lang}) · utterance.lang =
-            cs-CZ
-          </p>
-        </div>
-      )}
+      </div>
 
       <div className="space-y-2">
         <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
